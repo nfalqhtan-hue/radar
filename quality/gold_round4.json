@@ -1,0 +1,25 @@
+{
+ "_about": "مراجعة يدوية للجولة 4 (الأسبوع السابع): عينة جديدة كلياً من بيانات حية (seed 7، نافذة 24 ساعة) بعد إصلاحي 11 و12. نفس معايير الجولات السابقة. summary_ok=null: حارس الجودة منع الملخص.",
+ "items": [
+  {"n": 1, "type_ok": true, "relevant": false, "summary_ok": false, "note": "خبر شخصي عن رئيس Nvidia (قليل الصلة بالفئة). الملخص أضاف أن المتهمة «امرأة» وهذا غير موجود في المصدر، و«لجنة إدارته» بدل «مجلس إدارته»"},
+  {"n": 2, "type_ok": true, "relevant": true, "summary_ok": null, "note": "الحارس منع الملخص (كلمة إنجليزية مشوهة Shel)"},
+  {"n": 3, "type_ok": true, "relevant": true, "summary_ok": true, "note": "صحيح؛ خطأ نحوي بسيط «حملة ... كبيرًا»"},
+  {"n": 4, "type_ok": true, "relevant": false, "summary_ok": true, "note": "خبر شخصي عن رئيس Nvidia (قليل الصلة). الملخص صحيح"},
+  {"n": 5, "type_ok": true, "relevant": true, "summary_ok": null, "note": "الحارس منع الملخص (كلمة عربية ولاتينية ملتصقة)"},
+  {"n": 6, "type_ok": false, "relevant": true, "summary_ok": true, "note": "مشكلة بعد تحديثات ويندوز: الأنسب «أنظمة التشغيل»، صُنّف «عام» لأن النص يذكر Microsoft لا Windows. الملخص صحيح"},
+  {"n": 7, "type_ok": true, "relevant": true, "summary_ok": true, "note": "صحيح المعنى؛ «لجنة الاتحاد الأوروبي» الأدق «المفوضية الأوروبية»، وخطأ إملائي «اختراقوا»"},
+  {"n": 8, "type_ok": true, "relevant": true, "summary_ok": true, "note": ""},
+  {"n": 9, "type_ok": true, "relevant": true, "summary_ok": true, "note": "صحيح؛ «أدناه» الأصح «دون»"},
+  {"n": 10, "type_ok": true, "relevant": true, "summary_ok": true, "note": "صحيح"},
+  {"n": 11, "type_ok": true, "relevant": true, "summary_ok": false, "note": "التصنيف صحيح (يثبت إصلاح 11: bootkit صار أمنياً). الملخص أضاف «عن بعد دون مصادقة» وهذا غير موجود في المصدر"},
+  {"n": 12, "type_ok": true, "relevant": true, "summary_ok": false, "note": "«تم تجاوز الترميز منذ فبراير 2016» خطأ: المصدر يقول إن الثغرة موجودة في الكود منذ 2016"},
+  {"n": 13, "type_ok": true, "relevant": true, "system_ok": true, "severity_ok": true, "score_ok": true, "summary_ok": false, "note": "SSRF تُرجمت «طلب المصادقة من جانب الخادم» والصحيح «تزوير الطلب من جانب الخادم». الخطورة حرجة لأنها في KEV (NVD 8.7)"},
+  {"n": 14, "type_ok": true, "relevant": true, "system_ok": true, "severity_ok": true, "score_ok": true, "summary_ok": false, "note": "Deserialization تُرجمت «ترميز البيانات» والصحيح «إلغاء تسلسل البيانات»"},
+  {"n": 15, "type_ok": true, "relevant": true, "system_ok": true, "severity_ok": true, "score_ok": true, "summary_ok": true, "note": "ملخص قالبي. النظام «Wikimedia Foundation» مقبول (الأدق MediaWiki Parsoid)"},
+  {"n": 16, "type_ok": true, "relevant": true, "system_ok": false, "severity_ok": true, "score_ok": true, "summary_ok": false, "note": "النظام غير محدد والصحيح Symfony. الملخص قال «تحديث 7.2 يعالج الثغرة» والمصدر يقول إن الثغرة بدأت منذ 7.2، و«تعبيرًا منطقيًا» بدل «تعبير نمطي»"},
+  {"n": 17, "type_ok": true, "relevant": true, "system_ok": false, "severity_ok": true, "score_ok": true, "summary_ok": true, "note": "النظام غير محدد والصحيح compose-farm (نمط «منتج إصدار before إصدار»). الملخص صحيح لكنه أغفل تنفيذ الأوامر"},
+  {"n": 18, "type_ok": true, "relevant": true, "system_ok": true, "severity_ok": true, "score_ok": true, "summary_ok": null, "note": "الحارس منع الملخص"},
+  {"n": 19, "type_ok": true, "relevant": true, "system_ok": true, "severity_ok": true, "score_ok": true, "summary_ok": true, "note": "ملخص قالبي. النظام Samsung (الأدق Samsung Walrus)"},
+  {"n": 20, "type_ok": true, "relevant": true, "system_ok": true, "severity_ok": true, "score_ok": true, "summary_ok": true, "note": "ملخص قالبي"}
+ ]
+}

@@ -146,6 +146,7 @@ Untrusted Data Admin Administrator On Rejected""".split())
 _SYS_LEAD = re.compile(r"\b(?:vulnerability|flaw|issue|weakness|bug)\s+(?:has been\s+|was\s+)?(?:found|discovered|identified|detected)?\s*in\s+(?:the\s+)?", re.I)
 _SYS_IN = re.compile(r"\b(?:[Ii]n|affects|of)\s+(?:the\s+)?(?=[A-Za-z])")
 _SYS_MOZ = re.compile(r"fixed in (Firefox|Thunderbird)\b")
+_SYS_VER = re.compile(r"^(?:Since\s+)?([A-Za-z][\w.\-]*[A-Za-z0-9])\s+v?\d+(?:\.\d+)+\b")
 
 def _product_at(text, pos):
     """يقرأ اسم منتج من الموضع pos: كلمات تبدأ بحرف كبير (أو فيها حرف كبير مثل rConfig/iOS)، ويتوقف عند رقم إصدار أو كلمة عادية."""
@@ -166,6 +167,10 @@ def extract_system(desc):
     p = _product_at(desc, 0)                                   # «FFmpeg before 9.1 contains...» / «Apache Axis contains...»
     if p and re.match(re.escape(p) + r"[\s,]+(?:before|through|up to|prior to|versions?|\d|contains|is|has|allows|could|may|does|-)", desc):
         return p.rstrip("!")
+    # [إصلاح أسبوع 7 - جولة 4] منتج بحروف صغيرة يليه إصدار («compose-farm 0.19.0 before 1.22.0») أو «Since Symfony 7.2, ...»
+    m = _SYS_VER.match(desc)
+    if m and m.group(1) not in _SYS_STOP:
+        return m.group(1)
     for m in _SYS_LEAD.finditer(desc):
         p = _product_at(desc, m.end())
         if p: return p
@@ -211,7 +216,11 @@ SUM_SYSTEM = ("You are a tech news editor. Write the summary in Modern Standard 
               "Use these Arabic terms: vulnerability = ثغرة, attacker = المهاجم, remote = عن بُعد, unauthenticated = دون مصادقة, "
               "encoding = الترميز (not التشفير), encryption = التشفير, extortion = الابتزاز, data breach = تسريب بيانات, "
               "phishing = التصيد الاحتيالي, vishing = التصيد الصوتي, ransomware = برامج الفدية, malware = برمجيات خبيثة, "
-              "arbitrary code = شيفرة عشوائية, exploit = استغلال, patch/update = تحديث, cloud = السحابة, outage = انقطاع.")
+              "arbitrary code = شيفرة عشوائية, exploit = استغلال, patch/update = تحديث, cloud = السحابة, outage = انقطاع, "
+              # [إصلاح أسبوع 7 - جولة 4] مصطلحات أخطأ فيها النموذج في الجولة الرابعة
+              "server-side request forgery (SSRF) = تزوير الطلب من جانب الخادم, deserialization = إلغاء التسلسل (not الترميز), "
+              "regular expression = تعبير نمطي, board (of directors) = مجلس الإدارة, European Commission = المفوضية الأوروبية, "
+              "bootkit = برمجية إقلاع خبيثة.")
 SUM_USER = "Title: {t}\nText: {x}\n\nArabic summary:"
 
 FOREIGN_RE = re.compile(r"[぀-ヿ㐀-鿿豈-﫿가-힯Ѐ-ӿ֐-׿]")   # صيني/ياباني/كوري/روسي/عبري

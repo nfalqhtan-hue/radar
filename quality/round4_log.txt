@@ -1,0 +1,18 @@
+  summarized 1/20 in 41.9s
+  summarized 2/20 in 26.7s
+  summarized 3/20 in 11.9s
+  summarized 4/20 in 11.1s
+  summarized 5/20 in 23.0s
+  summarized 6/20 in 13.2s
+  summarized 7/20 in 10.4s
+  summarized 8/20 in 6.3s
+  summarized 9/20 in 11.0s
+  summarized 10/20 in 10.0s
+  summarized 11/20 in 9.7s
+  summarized 12/20 in 13.7s
+  summarized 13/20 in 18.2s
+  summarized 14/20 in 18.2s
+  summarized 15/20 in 25.2s
+  summarized 16/20 in 15.1s
+  summarized 17/20 in 30.5s
+DONE -> C:\Users\nfalq\Documents\radar\quality\round4_results.json

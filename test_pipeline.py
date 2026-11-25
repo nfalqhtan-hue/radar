@@ -158,4 +158,10 @@ s9 = rp.run(a9, dict(kev=lambda: (set(), []), nvd=lambda: [], rss=news), bad, No
 c9 = sqlite3.connect(a9.db)
 check("bad summary: title+link published, not retried, other items still summarized",
       s9["published"] == 2 and s9.get("bad_summaries") == 2 and c9.execute("select count(*) from items where pending=1").fetchone()[0] == 0)
+# [أسبوع 7 - جولة 4] أنماط النظام المتأثر التي فاتت في الجولة الرابعة، والتأكد أن الأنماط القديمة لم تنكسر
+check("system: lowercase product + version (compose-farm)",
+      rp.extract_system("compose-farm 0.19.0 before 1.22.0 contains a cross-site WebSocket hijacking") == "compose-farm")
+check("system: 'Since Symfony 7.2'", rp.extract_system("Since Symfony 7.2, expressions can contain comments.") == "Symfony")
+check("system: 'Version 2.1' is not a product", rp.extract_system("Version 2.1 of the plugin allows XSS") != "Version")
+check("glossary has SSRF and deserialization terms", "تزوير الطلب" in rp.SUM_SYSTEM and "إلغاء التسلسل" in rp.SUM_SYSTEM)
 print(f"\n{ok} checks passed")
