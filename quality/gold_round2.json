@@ -1,0 +1,24 @@
+{
+ "_about": "مراجعة يدوية للجولة 2: نفس عينة الجولة 1 بعد الإصلاحات + Qwen3 8B. العنصر 15 من الجولة 1 (CVE مرفوض) استُبعد آلياً فصارت العينة 19. summary_ok=null يعني أن حارس الجودة رفض الملخص فنُشر العنوان والرابط فقط (لم يُنشر ملخص خاطئ).",
+ "items": [
+  {"n": 1,  "type_ok": true, "relevant": true,  "summary_ok": null,  "note": "حارس الجودة رفض الملخص (حروف صينية) مرتين ← العنوان والرابط فقط"},
+  {"n": 2,  "type_ok": true, "relevant": true,  "summary_ok": true,  "note": ""},
+  {"n": 3,  "type_ok": true, "relevant": true,  "summary_ok": true,  "note": "صياغة ركيكة قليلاً لكن المعنى مطابق للعنوان"},
+  {"n": 4,  "type_ok": true, "relevant": true,  "summary_ok": false, "note": "حرف زائد «م maple»"},
+  {"n": 5,  "type_ok": true, "relevant": true,  "summary_ok": false, "note": "ترجمة خاطئة: data extortion ← «بيانات الإفلاس» والصحيح «ابتزاز البيانات»"},
+  {"n": 6,  "type_ok": true, "relevant": true,  "summary_ok": true,  "note": ""},
+  {"n": 7,  "type_ok": true, "relevant": false, "summary_ok": false, "note": "كلمة مشوهة «باليومن»؛ والخبر غير تقني (من الخلاصة القديمة)"},
+  {"n": 8,  "type_ok": true, "relevant": true,  "summary_ok": true,  "note": ""},
+  {"n": 9,  "type_ok": true, "relevant": true,  "summary_ok": true,  "note": ""},
+  {"n": 10, "type_ok": true, "relevant": true,  "summary_ok": null,  "note": "حارس الجودة رفض الملخص ← العنوان والرابط فقط"},
+  {"n": 11, "type_ok": true, "relevant": false, "summary_ok": true,  "note": "خبر فضاء (من الخلاصة القديمة)"},
+  {"n": 12, "type_ok": true, "relevant": false, "summary_ok": true,  "note": "خبر فضاء (من الخلاصة القديمة)"},
+  {"n": 13, "type_ok": true, "relevant": true, "system_ok": true, "severity_ok": true, "score_ok": true, "summary_ok": true,  "note": "«لصادر خارجي» لفظ غريب للمهاجم لكن المعنى سليم"},
+  {"n": 14, "type_ok": true, "relevant": true, "system_ok": true, "severity_ok": true, "score_ok": true, "summary_ok": false, "note": "encoding ← «التشفير» (خطأ تقني، الصحيح «الترميز»)"},
+  {"n": 15, "type_ok": true, "relevant": true, "system_ok": true, "severity_ok": true, "score_ok": true, "summary_ok": true,  "note": "ملخص قالبي من الحقائق"},
+  {"n": 16, "type_ok": true, "relevant": true, "system_ok": true, "severity_ok": true, "score_ok": true, "summary_ok": true,  "note": "ملخص قالبي"},
+  {"n": 17, "type_ok": true, "relevant": true, "system_ok": true, "severity_ok": true, "score_ok": true, "summary_ok": true,  "note": "ملخص قالبي"},
+  {"n": 18, "type_ok": true, "relevant": true, "system_ok": true, "severity_ok": true, "score_ok": true, "summary_ok": null,  "note": "حارس الجودة رفض الملخص (كلمة مشوهة) ← العنوان والرابط فقط"},
+  {"n": 19, "type_ok": true, "relevant": true, "system_ok": true, "severity_ok": true, "score_ok": true, "summary_ok": true,  "note": "ملخص قالبي"}
+ ]
+}

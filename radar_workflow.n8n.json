@@ -1,0 +1,106 @@
+{
+  "name": "رادار التقنية - الدورة الآلية (v0.7)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "a1",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python C:/PATH/TO/radar/radar_pipeline.py --json --no-alert --db C:/PATH/TO/radar/radar.db --out C:/PATH/TO/radar/site/data.json"
+      },
+      "id": "a2",
+      "name": "Run radar pipeline",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        260,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// الرسائل جاهزة من السكربت (مرتبة: المستغلة فعلياً أولاً، ومع رسالة ملخّصة عند كثرة التنبيهات)\nconst out = JSON.parse($input.first().json.stdout);\nreturn (out.alert_messages || []).map(m => ({ json: { message: m } }));"
+      },
+      "id": "a3",
+      "name": "Critical alerts only",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_CHAT_ID",
+        "text": "={{ $json.message }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "a4",
+      "name": "Telegram alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        780,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Run radar pipeline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run radar pipeline": {
+      "main": [
+        [
+          {
+            "node": "Critical alerts only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Critical alerts only": {
+      "main": [
+        [
+          {
+            "node": "Telegram alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

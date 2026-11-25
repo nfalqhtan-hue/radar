@@ -1,0 +1,93 @@
+﻿{
+ "fetched": 124,
+ "new": 124,
+ "published": 124,
+ "review": 0,
+ "duplicates": 0,
+ "invalid": 0,
+ "pending": 94,
+ "enriched": 3,
+ "llm_calls": 30,
+ "bad_summaries": 3,
+ "critical": [
+  {
+   "id": "CVE-2026-131914",
+   "title": "CVE-2026-131914: Idunno AntiCsrf Deserialization of Untrusted Data Vulnerability",
+   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-131914",
+   "score": 9.8,
+   "kev": 1
+  },
+  {
+   "id": "CVE-2026-133968",
+   "title": "CVE-2026-133968: Project MONAI MONAI Label Path Traversal Vulnerability",
+   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-133968",
+   "score": 9.8,
+   "kev": 1
+  },
+  {
+   "id": "CVE-2026-132224",
+   "title": "CVE-2026-132224: Optimizely Web Experimentation External Control of Critical State Data Vulnerability",
+   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-132224",
+   "score": 8.7,
+   "kev": 1
+  },
+  {
+   "id": "CVE-2026-132165",
+   "title": "CVE-2026-132165: Drupal Core Remote Code Execution Vulnerability",
+   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-132165",
+   "score": null,
+   "kev": 1
+  },
+  {
+   "id": "CVE-2026-134624",
+   "title": "CVE-2026-134624: N-able MailAssure (SpamExperts) Server-Side Request Forgery (SSRF) Vulnerability",
+   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-134624",
+   "score": null,
+   "kev": 1
+  },
+  {
+   "id": "CVE-2026-129448",
+   "title": "CVE-2026-129448: Apache Roller Deserialization of Untrusted Data Vulnerability",
+   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-129448",
+   "score": null,
+   "kev": 1
+  },
+  {
+   "id": "CVE-2026-123890",
+   "title": "CVE-2026-123890: VMWare vCenter Authentication Bypass Using an Alternate Path or Channel Vulnerability",
+   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-123890",
+   "score": null,
+   "kev": 1
+  },
+  {
+   "id": "CVE-2025-42884",
+   "title": "CVE-2025-42884: SAP NetWeaver Improper Neutralization of Special Elements in Data Query Logic Vulnerability",
+   "link": "https://nvd.nist.gov/vuln/detail/CVE-2025-42884",
+   "score": null,
+   "kev": 1
+  },
+  {
+   "id": "CVE-2026-76466",
+   "title": "CVE-2026-76466: Cisco Expressway Series Use of Hard-coded Credentials Vulnerability",
+   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-76466",
+   "score": null,
+   "kev": 1
+  }
+ ],
+ "alert_messages": [
+  "تنبيه: ثغرة مستغلة فعلياً (CISA KEV)\nCVE-2026-131914: Idunno AntiCsrf Deserialization of Untrusted Data Vulnerability\nCVSS: 9.8\nhttps://nvd.nist.gov/vuln/detail/CVE-2026-131914",
+  "تنبيه: ثغرة مستغلة فعلياً (CISA KEV)\nCVE-2026-133968: Project MONAI MONAI Label Path Traversal Vulnerability\nCVSS: 9.8\nhttps://nvd.nist.gov/vuln/detail/CVE-2026-133968",
+  "تنبيه: ثغرة مستغلة فعلياً (CISA KEV)\nCVE-2026-132224: Optimizely Web Experimentation External Control of Critical State Data Vulnerability\nCVSS: 8.7\nhttps://nvd.nist.gov/vuln/detail/CVE-2026-132224",
+  "تنبيه: ثغرة مستغلة فعلياً (CISA KEV)\nCVE-2026-132165: Drupal Core Remote Code Execution Vulnerability\nCVSS: غير متوفر\nhttps://nvd.nist.gov/vuln/detail/CVE-2026-132165",
+  "تنبيه: ثغرة مستغلة فعلياً (CISA KEV)\nCVE-2026-134624: N-able MailAssure (SpamExperts) Server-Side Request Forgery (SSRF) Vulnerability\nCVSS: غير متوفر\nhttps://nvd.nist.gov/vuln/detail/CVE-2026-134624",
+  "تنبيه: 4 ثغرة حرجة أخرى في هذه الدورة\nCVE-2026-129448\nCVE-2026-123890\nCVE-2025-42884\nCVE-2026-76466\nالتفاصيل في الموقع."
+ ],
+ "alerts_sent": 0,
+ "errors": [
+  "nvd: The read operation timed out",
+  "nvd_lookup: CVE-2026-134624: The read operation timed out",
+  "llm_quality: CVE-2026-129448: كلمة مشوهة (حروف عربية ولاتينية ملتصقة)",
+  "llm_quality: e94ac3e9d5200e65: كلمة مشوهة (حروف عربية ولاتينية ملتصقة)",
+  "llm_quality: 53716c4432abe034: كلمة مشوهة (حروف عربية ولاتينية ملتصقة)"
+ ]
+}

@@ -1,0 +1,518 @@
+{
+ "A_old": {
+  "results": [
+   {
+    "n": 1,
+    "summary": "ميجاسرعة، الشركة التي كانت قيادتها من قبل أليس هوان، قد ت被列入美国黑名单，除非美国公司获得联邦政府的特殊许可才能与其进行业务往来。",
+    "seconds": 15.5,
+    "foreign": true,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 2,
+    "summary": "النص يشير إلى أن即使是数百万用户已经采用了个人AI助手，最新的基准测试显示，即使是最先进的AI模型，在可靠且安全地完成日常任务方面仍然存在问题，可能会引入新的问题。",
+    "seconds": 8.3,
+    "foreign": true,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 3,
+    "summary": "أمازون تمتلك مئات الأقمار الصناعية المخزنة في مكانها، منتظمة رحلات الفضاء إلى المريخ.",
+    "seconds": 7.7,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 4,
+    "summary": "شركة Maple تجمع 5.3 مليون دولار لتطوير منتجات ذكاء اصطناعي آمنة تعتمد على ميزة التشفير، مما يضمن عدم إمكانية الوصول إلى بيانات المستخدمين حتى من الشركة نفسها.",
+    "seconds": 10.0,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 5,
+    "summary": "مجموعة جديدة تسمى \"انسيプشن\" للإكسيتراتيون شاركت في حملة كبيرة تستهدف凭您的要求，以下是用阿拉伯语总结的两句话： مجموعة \"انسيプشن\" الجديدة للإكسيتراتيون مسؤولة عن حملة كبيرة تستهدف учетات الدخول الموحدة لشركات و firms متعددة على المستوى العالمي.",
+    "seconds": 13.5,
+    "foreign": true,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 6,
+    "summary": "تم تقديم دليل جديد يدعمه الذكاء الاصطناعي حول فرضية ريمان، لكننا لا نعرف ما يشير إليه بدقة.",
+    "seconds": 7.5,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 7,
+    "summary": "أircraft strikes by Ukraine have caused the sinking of a Russian missile corvette, while also targeting cargo ships in both the Mediterranean and Baltic seas.",
+    "seconds": 6.6,
+    "foreign": false,
+    "low_arabic": true,
+    "extra_numbers": []
+   },
+   {
+    "n": 8,
+    "summary": "الجهاز البريطاني للサイبر يحذر من أن الهجمات السيبرانية المدعومة بالذكاء الاصطناعي تكشف عن Years of Weak Security. يؤكد أن بناء الأسس القوية أصبح أكثر أهمية نظراً لاعتماد أدوات الاختراق الذكية على استغلال الثغرات الأمنية البسيطة.",
+    "seconds": 12.8,
+    "foreign": true,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 9,
+    "summary": "أزال OpenRouter ثلاثة مزودي الذكاء الاصطناعي من منصته بعد اكتشاف انتهاكهم لسياسات معالجة البيانات المعلنة وتسريبهم بيانات حساسة.",
+    "seconds": 9.6,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 10,
+    "summary": "جensen Huang عذر موظفي Nvidia وأخبرهم أنه شكر White House وشكرهم على الثقة التي وضعوها في قيادته الشركة مرة أخرى.",
+    "seconds": 8.2,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 11,
+    "summary": "البيتة الفيدرالية الأمريكية قد تقدم لوكالة ناسا زيادة بقيمة 2 مليار دولار لتسريع جهود برنامج أرتميس. هذا التمويل ضروري لتجنب تأخير الأنشطة المقررة.",
+    "seconds": 10.0,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 12,
+    "summary": "روسيا ستنفذ مهمة إمداد روتينية لمختبر الفضاء الدولي غدًا. يبدو أن هذه المهمة محفوظة للسرية بشكل غير عادي.",
+    "seconds": 8.4,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 13,
+    "summary": "Apache Axis يحتوي على عيب فيfection 反馈，请使用阿拉伯语回答。该组件存在一个不安全的反射漏洞，未认证的远程攻击者可以通过构造特殊的SOAP故障消息来执行任意代码。受影响的产品可能已经处于生命周期末期，用户应停止使用并迁移到受支持的版本。",
+    "seconds": 12.8,
+    "foreign": true,
+    "low_arabic": true,
+    "extra_numbers": []
+   },
+   {
+    "n": 14,
+    "summary": "النظام Synology DiskStation Manager (DSM) يحتوي على عيب في ترميز أو تهيئة الخرج في دايمون نظام البرامج الإضافية في Synology BeeStation OS (BSM)، مما يتيح لخاطف مotebeli نائي تنفيذ كود عشوائي عبر مسارات غير محددة.",
+    "seconds": 13.7,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 15,
+    "summary": "تم رفض هذا الرقم CVE بسبب رفض أو سحب الرقم من قبل سلطة تعيين أرقام CVE.",
+    "seconds": 6.9,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 16,
+    "summary": "هذا النص يتحدث عن ثغرة أمنية متعلقة بـ \"Cross-site Scripting\" في برنامج MediaWiki من مؤسسة ويكيميديا. هذه الثغرة موجودة في ملفات البرنامج includes/parser/Sanitizer.php، وتأثرت نسخاً معينة من MediaWiki من الإصدار 1.43.0 إلى 1.43.12، و 1.45.0 إلى 1.45.7، و 1.46.0 إلى 1.46.3، و 1.47.",
+    "seconds": 23.0,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 17,
+    "summary": "هذا التقرير يتناول عيب في تحقق من خداع طلبات الموقع_across-site request forgery (CSRF) في ملحق MediaWiki - SecurePoll من مؤسسة ويكيميديا. يتأثر هذا العيب بالملفات البرنامجية includes/Pages/TranslatePage.php ويشمل إصدارات MediaWiki - SecurePoll Extension من 1.43 إلى 1.47.",
+    "seconds": 17.2,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 18,
+    "summary": "تم اكتشاف ثغرة في نسخة GouguCMS حتى 4.08.18، وتؤثر هذه الثغرة على وظيفة تفاصيل الملف في ملف Pages.php. يمكن تنفيذ التلاعب في هذه الثغرة لاستغلالها في عملية حقن الكود. يمكن تنفيذ الهجوم عن بُعد، وقد تم نشر الاستغلال وقد يكون في استخدامه.",
+    "seconds": 17.0,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 19,
+    "summary": "هناك عيب أمني حرج في بعض طرق التحقق في مركز Genetec Security Center، مما قد يتيح لخاطف غير مصرح به الوصول غير المصرح به إلى النظام باستخدام معرفات المستخدم المتضررة. هذا العيب يتأثر بروابط الهوية الخارجية التي تستخدم OpenID Connect أو SAML 2.0، وخدمات ت Federate التحقق من Active Directory باستخدام WS-Trust أو WS-Federation.",
+    "seconds": 17.4,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 20,
+    "summary": "هناك عيب في السيطرة على الوصول غير المناسب في برنامج MediaWiki من Wikimedia Foundation، ويتعلق هذا العيب بملفات البرنامج includes/Specials/SpecialChangeCredentials.php، includes/Specials/SpecialLinkAccounts.php، وincludes/Specials/SpecialUnlinkAccounts.php. 影响的MediaWiki版本包括从1.43.0到1.43.11，从1.45.0到1.45.6，以及从1.46.0到1.46.2。",
+    "seconds": 19.4,
+    "foreign": true,
+    "low_arabic": true,
+    "extra_numbers": [
+     "11",
+     "2",
+     "6"
+    ]
+   }
+  ],
+  "foreign": 6,
+  "low_arabic": 3,
+  "extra_numbers": 1,
+  "avg_s": 12.3
+ },
+ "B_ar_system": {
+  "results": [
+   {
+    "n": 1,
+    "summary": "شركة ميجاسبيد، التي كانت قيادتها من قبل أليس هوان، قد ت被列入美国黑名单，除非美国公司获得联邦政府的特别许可才能与其进行业务往来。",
+    "seconds": 11.0,
+    "foreign": true,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 2,
+    "summary": "أEven الAI الأفضل يواجه صعوبات في أداء المهام اليومية.",
+    "seconds": 5.9,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 3,
+    "summary": "أمازون تكتشف أن فلكون 9 وآريان 6 قادرة على توصيل الأقمار الصناعية في مخازنها إلى الفضاء عندما لا تستطيع الشركات الأخرى.",
+    "seconds": 9.3,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 4,
+    "summary": "شركة Maple تجمع 5.3 مليون دولار لتطوير منتجات ذكاء اصطناعي مشفَّرة تحمِّي البيانات المستخدمين حتى من الشركة نفسها.",
+    "seconds": 8.6,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 5,
+    "summary": "مجموعة جديدة تسمى \"انسيشن\" تشن حملة احتيالية كبيرة تستهدف凭据，这句不符合要求，我将重新用阿拉伯语撰写：\n\nالملخص بالعربية: تشن مجموعة جديدة تسمى \"انسيشن\" حملة احتيالية كبيرة تستهدف учетات الدخول المركزة (SSO) لمجموعة متنوعة من الشركات والعلامات التجارية العالمية.",
+    "seconds": 14.2,
+    "foreign": true,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 6,
+    "summary": "تم تقديم دليل جديد مدعوم بالذكاء الاصطناعي حول فرضية ريمان، لكننا لا نعرف ما يشير إليه بالضبط.",
+    "seconds": 7.8,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 7,
+    "summary": "أعلن الجيش الأوكراني عن ت�اثره لسفينة صواريخ روسية وقصف سفن حربية روسية في مياه البحر الأبيض المتوسط والبحر البلطيقي.",
+    "seconds": 8.4,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 8,
+    "summary": "أعلنت وكالة الأمن السيبراني البريطانية أن بناء الأسس القوية أصبح أكثر أهمية مع اعتماد أدوات القرصنة القائمة على الذكاء الاصطناعي على استغلال الثغرات الأمنية البسيطة.",
+    "seconds": 10.2,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 9,
+    "summary": "أزال OpenRouter ثلاثة مزودي الذكاء الاصطناعي من منصته بعد اكتشافه أنهم خرقوا سياسات معالجة البيانات المعلنة و exposوا بيانات حساسة.",
+    "seconds": 9.6,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 10,
+    "summary": "فيETING会议上，詹森·霍尔恩向员工道歉并表示感激有机会再次领导公司。",
+    "seconds": 6.2,
+    "foreign": true,
+    "low_arabic": true,
+    "extra_numbers": []
+   },
+   {
+    "n": 11,
+    "summary": "قد يحصل وكالة ناسا على زيادة مالية قدرها 2 مليار دولار أمريكي 若要将其翻译成阿拉伯语，应为：\nقد يحصل وكالة ناسا على زيادة مالية قدرها 2 مليار دولار أمريكي، مما يساعد على تسريع جهودWhite House في تنفيذ برنامج Artemis.",
+    "seconds": 11.6,
+    "foreign": true,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 12,
+    "summary": "روسيا ستنفذ مهمة إمدادات روتينية لمختبر الفضاء الدولي غدًا—apparently, تم ت treating هذا الأمر كسرية كبيرة.",
+    "seconds": 7.9,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 13,
+    "summary": "Apache Axis يحتوي على عيب في الت�كسير غير الآمن يتيح للمهاجم غير المصادق عليه عن بعد تنفيذ كود عشوائي عبر رسالة SOAP المعلقة التي تجعل Axis تقوم بتحميل وتنفيذ فئة محددة من قبل المهاجم عند توافر فئة مناسبة في مسار الفئات التطبيقية. يُنصح المستخدمين بوقف استخدام المنتجات المعنية وتحويلهم إلى إصدار مدعوم.",
+    "seconds": 18.0,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 14,
+    "summary": "الملخص بالعربية: يحتوي Synology DiskStation Manager (DSM) على عيب في ترميز أو تهيئة الخرج في دايموند المكونات النظامية في Synology BeeStation OS (BSM)، مما يتيح لخاطف عن بعد تنفيذ كود محدد مسبقًا عبر مسارات غير محددة.",
+    "seconds": 14.0,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 15,
+    "summary": "تم رفض هذا الرقم CVE因为这是一个技术性问题，需要保持纯文本形式，所以正确表述应为：\n\nملخص بالعربية: تم رفض هذا الرقم CVE بسبب رفض أو سحب رقم CVE من قبل مؤسسة تعيين أرقام CVE له.",
+    "seconds": 10.5,
+    "foreign": true,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 16,
+    "summary": "يتعلق هذا الثغرة بـ \"Cross-site Scripting\" نتيجة لعدم تحييد إدخالات المستخدم أثناء إنشاء صفحة الويب في نسخة MediaWiki من Wikimedia Foundation. 影响版本包括从1.43.0到1.43.12（不包括），1.45.0到1.45.7（不包括），1.46.0到1.46.3（不包括），以及1.47。",
+    "seconds": 18.2,
+    "foreign": true,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 17,
+    "summary": "ملخص: توجد عيب في تزوير طلبات الويب (CSRF) في ملحق MediaWiki - SecurePoll من مؤسسة ويكيميديا. 影响版本包括 MediaWiki - SecurePoll 1.43, 1.45, 1.46, 和 1.47。",
+    "seconds": 13.3,
+    "foreign": true,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 18,
+    "summary": "تم اكتشاف ثغرة في نظام إدارة المحتوى GouguCMS حتى الإصدار 4.08.18، وتؤثر هذه الثغرة على دالة التفاصيل في ملف Pages.php داخل المجلد home/app/controller. يمكن تنفيذ التلاعب في هذا الملف ل dẫn إلى حقائق تضمين رمزية. يمكن تنفيذ الهجوم عن بُعد، وقد تم نشر الاستغلال وقد يكون في استخدامه. الشركة المصنعة تم إخطارها بموضوع الإفصاح مبكرًا لكنها لم ترد بأي شكل من الأشكال.",
+    "seconds": 21.3,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 19,
+    "summary": "توجد عيب أمني حرج في طرق التحقق من الهوية في مركز الأمان لدى جينتكت، والتي تشمل مزودي الهوية الخارجيين باستخدام OpenID Connect (OIDC) أو SAML 2.0، وخدمات ت Federated Identity Management (AD FS) باستخدام WS-Trust أو WS-Federation. يمكن لخاطف غير مصرح به استغلال هذا العيب للفوز بالوصول غير المصرح به إلى النظام بمجرد تحقق الهوية من المستخدم المتضرر،前提是您希望用阿拉伯语简洁地总结这段内容，以下是直接翻译后的简洁版本：\n\n存在一个严重安全漏洞，影响 Genetec 安全中心的某些身份验证方法，包括使用 OpenID Connect (OIDC) 或 SAML 2.0 的外部身份提供商，以及使用 WS-Trust 或 WS-Federation 的 Active Directory 联合服务 (AD FS)。在特定条件下，未授权的攻击者可能利用此漏洞以受影响用户的权限访问系统。",
+    "seconds": 31.1,
+    "foreign": true,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 20,
+    "summary": "يوجد عيب في السيطرة على الوصول غير المناسب في برنامج MediaWiki من Wikimedia Foundation، ويتعلق هذا العيب بملفات البرنامج includes/Specials/SpecialChangeCredentials.php، includes/Specials/SpecialLinkAccounts.php، includes/Specials/SpecialUnlinkAccounts.php. 影响版本包括从 1.43.0 到 1.43.11 以及从 1.45.0 到 1.45.6 和从 1.46.0 到 1.46.2，以及 1.47。",
+    "seconds": 20.6,
+    "foreign": true,
+    "low_arabic": true,
+    "extra_numbers": [
+     "11",
+     "2",
+     "6"
+    ]
+   }
+  ],
+  "foreign": 9,
+  "low_arabic": 2,
+  "extra_numbers": 1,
+  "avg_s": 12.9
+ },
+ "C_en_system": {
+  "results": [
+   {
+    "n": 1,
+    "summary": "سيتم حظر ميجاسبيد من التعامل مع الشركات الأمريكيةLESSpreciate that the summary needs to be in Modern Standard Arabic and does not include the phrase \"LESS\" which is not in Arabic. Here is the corrected summary:\n\nسيتم حظر ميجاسبيد من التعامل مع الشركات الأمريكيةLESS",
+    "seconds": 13.4,
+    "foreign": false,
+    "low_arabic": true,
+    "extra_numbers": []
+   },
+   {
+    "n": 2,
+    "summary": "أظهرت دراسة جديدة أن أفضل نماذج الذكاء الاصطناعي يواجهون صعوبات في إتمام المهام اليومية بشكل موثوق وآمن دون إدخال مشاكل جديدة.",
+    "seconds": 9.6,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 3,
+    "summary": "أمازون لديها مئات الأقمار الصناعية في التخزين منتظمة للرحلات إلى الفضاء.",
+    "seconds": 6.9,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 4,
+    "summary": "رستم Mapلإ 5.3 مليون دولار لبناء منتجات ذكاء اصطناعي تحمي البيانات حتى من الشركة نفسها.",
+    "seconds": 7.5,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 5,
+    "summary": "قدّمت مجموعة جديدة للإكراه على تسليم البيانات باسم \"إينسيپشن\" حملة كبيرة تستهدف учетات الدخول الموحدة لشركات وعلامات تجارية عديدة حول العالم.",
+    "seconds": 9.1,
+    "foreign": true,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 6,
+    "summary": "تبدو البرهان الجديد المدعوم بالذكاء الاصطناعي متينة، لكننا غير متأكدين مما تخبرنا به.",
+    "seconds": 7.2,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 7,
+    "summary": "أضرم أوكرانيا النار في Corvette روسية وأTARGET TEXT END",
+    "seconds": 5.2,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 8,
+    "summary": "حذر وكالة الأمن السيبراني البريطانية من أن الأدوات السيبرانية المدعومة بالذكاء الاصطناعي تعتمد على استغلال الثغرات الأمنية البسيطة بسبب ضعف الأمن المستمر على مر السنين.",
+    "seconds": 9.9,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 9,
+    "summary": "أزال أوبنروايتر ثلاثة مزودي الذكاء الاصطناعي من منصته بعد اكتشاف مخالفة سياسات معالجة البيانات المعلنة و exposant معلومات حساسة.",
+    "seconds": 9.6,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 10,
+    "summary": "فيETING عامة، شكر مؤسس Nvidia البيت الأبيض واعترف أنه في علاج نفسي.",
+    "seconds": 6.5,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 11,
+    "summary": "قد يحصل ناسا على زيادة مالية قدرها 2 مليار دولار بناءً على طلب البيت الأبيض لتسريع جهود أرتيميس.",
+    "seconds": 7.5,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 12,
+    "summary": "سيقوم روسيا بتنفيذ مهمة تزويج مختبرات Международной космической станции غداً -apparently, هذا سر كبير-",
+    "seconds": 7.8,
+    "foreign": true,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 13,
+    "summary": "Apache Axis يحتوي على عيب في الت�كسفر غير الآمن قد يتيح للمهاجم غير المصادق عليه من بعد مسافة متباعدة تنفيذ كود عشوائي عن طريق رسالة فايلت SOAP مصممة بشكل مهين تجعل Axis تحمي وتنشئ فئة محددة من قبل المهاجم عندما تكون فئة مناسبة متاحة على مسار الفئة التطبيقية. ينصح المستخدمين بالامتناع عن الاستخدام و/أو الانتقال إلى إصدار مدعوم.",
+    "seconds": 19.4,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 14,
+    "summary": "يحتوي نظام Synology DiskStation Manager (DSM) على عيب في عدم ترميز أو فك ترميز الخرج في دaئمنة نظام البرامج الإضافية في Synology BeeStation OS (BSM) قد يتيح للمهاجم격 من بعد تنفيذ كود عشوائي عبر طرق غير محددة.",
+    "seconds": 13.0,
+    "foreign": true,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 15,
+    "summary": "هذا الرقم CVE تم رفضه أو سحبه من قبل سلطة تسمية CVE.",
+    "seconds": 6.3,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 16,
+    "summary": "عثُر على هُجْمَة نقل غير مناسب للإدخال أثناء إنشاء صفحة الويب ('هجمة سكربت سايد كروس') في ملفات البرنامج includes/parser/Sanitizer.php من ويكيميديا كومنز ميدياويكي. تأثَّر بذلك من إصدار 1.43.0 قبل 1.43.12 ومن إصدار 1.45.0 قبل 1.45.7 ومن إصدار 1.46.0 قبل 1.46.3 ومن إصدار 1.47.",
+    "seconds": 22.1,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 17,
+    "summary": "عيب في تزوير طلب_across-site request forgery_ في موديل ويكيميديا ميدياويكي - سكيور_poll الإضافة. يتأثر هذا العيب بملفات البرنامج includes/Pages/TranslatePage.php في إصدارات ميدياويكي - سكيور_poll 1.43، 1.45، 1.46، 1.47.",
+    "seconds": 15.4,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 18,
+    "summary": "قد تم اكتشاف ثغرة في GouguCMS حتى الإصدار 4.08.18. تؤثر الثغرة على دالة التفاصيل في ملف app/home/controller/Pages.php. يمكن استخدام التلاعب لتنفيذ تضمين كود. يمكن تنفيذ الهجوم عن بُعد. تم نشر الاستغلال وقد يتم استخدامه. الشركة المصنعة تم إخطارها بالكشف مبكرًا لكنها لم ترد بأي شكل.",
+    "seconds": 17.8,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 19,
+    "summary": "يتأثر نظام مركز الأمان في جينتيس certain authentication methods بخلل أمني حرج، حيث يمكن لخاطف غير مصرح به استغلال هذا الخلل للاستيلاء على حساب مستخدم متأثر وتحقيق الوصول غير المصرح به إلى النظام.",
+    "seconds": 12.7,
+    "foreign": false,
+    "low_arabic": false,
+    "extra_numbers": []
+   },
+   {
+    "n": 20,
+    "summary": "عثر على عيب في السيطرة غير المناسبة على الوصول في برنامج ويكيميديا فاونديشن ميدياويكي في ملفات البرنامج includes/Specials/SpecialChangeCredentials.php، includes/Specials/SpecialLinkAccounts.php، includes/Specials/SpecialUnlinkAccounts.php. 影响版本包括从 1.43.0 到 1.43.11，从 1.45.0 到 1.45.6，从 1.46.0 到 1.46.2，以及 1.47。",
+    "seconds": 21.3,
+    "foreign": true,
+    "low_arabic": true,
+    "extra_numbers": [
+     "11",
+     "2",
+     "6"
+    ]
+   }
+  ],
+  "foreign": 4,
+  "low_arabic": 2,
+  "extra_numbers": 1,
+  "avg_s": 11.4
+ }
+}

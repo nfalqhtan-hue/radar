@@ -1,0 +1,26 @@
+{
+ "_about": "مراجعة يدوية لعينة الجولة 1 (20 عنصراً) مقارنة بنص المصدر. type_ok: التصنيف صحيح. relevant: الخبر تقني ومناسب للفئة المستفيدة. system_ok و severity_ok و score_ok للثغرات فقط. summary_ok: الملخص عربي سليم ولا يضيف معلومة غير موجودة في المصدر. note: سبب الخطأ.",
+ "reviewer": "مراجعة يدوية - الأسبوع 6",
+ "items": [
+  {"n": 1,  "type_ok": true,  "relevant": true,  "summary_ok": false, "note": "الملخص تحول للصينية في منتصف الجملة، وترجم اسم الشركة Megaspeed إلى «ميجاسرعة»"},
+  {"n": 2,  "type_ok": true,  "relevant": true,  "summary_ok": false, "note": "الملخص بالصينية بعد أول كلمتين"},
+  {"n": 3,  "type_ok": true,  "relevant": true,  "summary_ok": false, "note": "هلوسة: أضاف «رحلات الفضاء إلى المريخ» وهي غير موجودة في المصدر"},
+  {"n": 4,  "type_ok": true,  "relevant": true,  "summary_ok": true,  "note": ""},
+  {"n": 5,  "type_ok": true,  "relevant": true,  "summary_ok": false, "note": "خليط عربي وياباني وصيني وروسي + نص وصفي من النموذج («بناءً على طلبك...»)"},
+  {"n": 6,  "type_ok": true,  "relevant": true,  "summary_ok": true,  "note": ""},
+  {"n": 7,  "type_ok": true,  "relevant": false, "summary_ok": false, "note": "خبر حرب غير تقني (خلاصة Ars Technica العامة)، والملخص بالإنجليزية ويضيف «aircraft»"},
+  {"n": 8,  "type_ok": true,  "relevant": true,  "summary_ok": false, "note": "حروف يابانية («للサイبر») وعبارة إنجليزية"},
+  {"n": 9,  "type_ok": true,  "relevant": true,  "summary_ok": true,  "note": ""},
+  {"n": 10, "type_ok": true,  "relevant": true,  "summary_ok": false, "note": "خليط إنجليزي ومعنى غير دقيق (شكر الموظفين على الثقة غير مذكور)"},
+  {"n": 11, "type_ok": true,  "relevant": false, "summary_ok": false, "note": "خبر فضاء/تمويل غير مناسب للفئة، و«البيتة الفيدرالية» بدل البيت الأبيض"},
+  {"n": 12, "type_ok": true,  "relevant": false, "summary_ok": true,  "note": "خبر فضاء غير مناسب للفئة"},
+  {"n": 13, "type_ok": true,  "relevant": true,  "system_ok": true,  "severity_ok": true,  "score_ok": false, "summary_ok": false, "note": "عنصر KEV بلا درجة CVSS (NVD = 9.8)، والملخص بالصينية"},
+  {"n": 14, "type_ok": true,  "relevant": true,  "system_ok": true,  "severity_ok": true,  "score_ok": false, "summary_ok": false, "note": "عنصر KEV بلا درجة CVSS (NVD = 9.8)، وكلمات مشوهة («لخاطف مotebeli نائي»)"},
+  {"n": 15, "type_ok": false, "relevant": false, "system_ok": true,  "severity_ok": false, "score_ok": true,  "summary_ok": true,  "note": "رقم CVE مرفوض (Rejected) نُشر كثغرة بخطورة «منخفضة»؛ يجب استبعاده"},
+  {"n": 16, "type_ok": true,  "relevant": true,  "system_ok": false, "severity_ok": true,  "score_ok": true,  "summary_ok": false, "note": "النظام «غير محدد» والصحيح MediaWiki؛ الملخص قال «إلى 1.43.12» والمصدر «قبل 1.43.12»"},
+  {"n": 17, "type_ok": true,  "relevant": true,  "system_ok": false, "severity_ok": true,  "score_ok": true,  "summary_ok": false, "note": "النظام غير محدد (MediaWiki SecurePoll)؛ كلمات مشوهة «_across-site»"},
+  {"n": 18, "type_ok": true,  "relevant": true,  "system_ok": false, "severity_ok": true,  "score_ok": true,  "summary_ok": true,  "note": "النظام غير محدد (GouguCMS)"},
+  {"n": 19, "type_ok": true,  "relevant": true,  "system_ok": false, "severity_ok": true,  "score_ok": true,  "summary_ok": false, "note": "النظام غير محدد (Genetec Security Center)؛ «ت Federate» مشوهة"},
+  {"n": 20, "type_ok": true,  "relevant": true,  "system_ok": false, "severity_ok": true,  "score_ok": true,  "summary_ok": false, "note": "النظام غير محدد (MediaWiki)؛ نصف الملخص بالصينية وأرقام الإصدارات معدّلة (1.43.11)"}
+ ]
+}

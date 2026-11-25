@@ -1,0 +1,25 @@
+{
+ "_about": "مراجعة يدوية للجولة 3: عينة جديدة كلياً من بيانات حية بعد الإصلاحات والخلاصات التقنية الجديدة + Qwen3 8B. summary_ok=null: حارس الجودة منع الملخص (نُشر العنوان والرابط فقط).",
+ "items": [
+  {"n": 1,  "type_ok": true,  "relevant": true, "summary_ok": true,  "note": ""},
+  {"n": 2,  "type_ok": false, "relevant": true, "summary_ok": null,  "note": "خبر ثغرات مستغلة صُنّف «ذكاء اصطناعي» لأن قاعدة AI تسبق قاعدة الأمن؛ الحارس منع الملخص"},
+  {"n": 3,  "type_ok": true,  "relevant": true, "summary_ok": true,  "note": ""},
+  {"n": 4,  "type_ok": true,  "relevant": true, "summary_ok": false, "note": "«سي testify» و«مجلس الشيوط» مشوهة، و«الشريك الصيني» بدل «الجاسوس الصيني المشتبه به»"},
+  {"n": 5,  "type_ok": true,  "relevant": true, "summary_ok": null,  "note": "الحارس منع الملخص (كلمة مشوهة)"},
+  {"n": 6,  "type_ok": true,  "relevant": true, "summary_ok": null,  "note": "الحارس منع الملخص (كلمة مشوهة)"},
+  {"n": 7,  "type_ok": true,  "relevant": true, "summary_ok": true,  "note": ""},
+  {"n": 8,  "type_ok": true,  "relevant": true, "summary_ok": false, "note": "خطأ في الكمية: «مئات الجيجاواط» والمصدر «عشرات» (لا يكشفه فحص الأرقام لأنه بالكلمات)"},
+  {"n": 9,  "type_ok": true,  "relevant": true, "summary_ok": true,  "note": ""},
+  {"n": 10, "type_ok": true,  "relevant": true, "summary_ok": true,  "note": ""},
+  {"n": 11, "type_ok": false, "relevant": true, "summary_ok": null,  "note": "خبر برمجية خبيثة (UEFI bootkit) صُنّف «أنظمة» لأن كلمة bootkit غير موجودة في قاعدة الأمن؛ الحارس منع الملخص (حروف صينية)"},
+  {"n": 12, "type_ok": true,  "relevant": true, "summary_ok": null,  "note": "الحارس منع الملخص (رقم 1000 غير موجود بهذه الصيغة)"},
+  {"n": 13, "type_ok": true,  "relevant": true, "system_ok": true,  "severity_ok": true, "score_ok": true, "summary_ok": null,  "note": "الحارس منع الملخص؛ الدرجة 9.8 جاءت من تكميل NVD"},
+  {"n": 14, "type_ok": true,  "relevant": true, "system_ok": true,  "severity_ok": true, "score_ok": true, "summary_ok": false, "note": "اسم Drupal كُتب بحروف عبرية «دרוזل» (الحارس لا يفحص العبرية)، وأضاف «عن بُعد». CVE غير موجود في NVD بعد: لا درجة، والخطورة حرجة بسبب KEV (صحيح)"},
+  {"n": 15, "type_ok": true,  "relevant": true, "system_ok": true,  "severity_ok": true, "score_ok": true, "summary_ok": true,  "note": "ملخص قالبي"},
+  {"n": 16, "type_ok": true,  "relevant": true, "system_ok": false, "severity_ok": true, "score_ok": true, "summary_ok": true,  "note": "النظام «CBOR» والصحيح مكتبة zcbor داخل MCUboot"},
+  {"n": 17, "type_ok": true,  "relevant": true, "system_ok": true,  "severity_ok": true, "score_ok": true, "summary_ok": true,  "note": "ملخص قالبي"},
+  {"n": 18, "type_ok": true,  "relevant": true, "system_ok": true,  "severity_ok": true, "score_ok": true, "summary_ok": true,  "note": "ملخص قالبي"},
+  {"n": 19, "type_ok": true,  "relevant": true, "system_ok": true,  "severity_ok": true, "score_ok": true, "summary_ok": true,  "note": "ملخص قالبي"},
+  {"n": 20, "type_ok": true,  "relevant": true, "system_ok": true,  "severity_ok": true, "score_ok": true, "summary_ok": true,  "note": "ملخص قالبي"}
+ ]
+}

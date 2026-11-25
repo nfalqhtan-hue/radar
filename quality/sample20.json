@@ -1,0 +1,162 @@
+[
+ {
+  "n": 1,
+  "uid": "e94ac3e9d5200e65",
+  "title": "New Shirudo tool uses AI to shield unpatched Linux systems from exploits",
+  "text": "OpenAI and Cisco launched an open-source Linux security tool named Shirudo that deploys temporary runtime protections to block vulnerability exploitation while administrators prepare and roll out patches, without restarting services. [...]",
+  "link": "https://www.bleepingcomputer.com/news/security/new-shirudo-tool-uses-ai-to-shield-unpatched-linux-systems-from-exploits/",
+  "kind": "news"
+ },
+ {
+  "n": 2,
+  "uid": "7601f68fa236425c",
+  "title": "Google Search’s AI Mode can now tap into Drive and Wallet for more personalized responses",
+  "text": "By bringing Personal Intelligence in AI Mode to Drive, Wallet, and the Gemini app, Google is leveraging the wealth of user data that's already within its ecosystem",
+  "link": "https://techcrunch.com/2026/11/23/google-searchs-ai-mode-can-now-tap-into-drive-and-wallet-for-more-personalized-responses/",
+  "kind": "news"
+ },
+ {
+  "n": 3,
+  "uid": "42cb577d7e7884cb",
+  "title": "Walmart teams up with Meta to bring Black Friday deals to AI agent Muse",
+  "text": "Walmart now lets customers shop Black Friday deals through Muse, Meta’s AI agent.",
+  "link": "https://techcrunch.com/2026/11/24/walmart-teams-up-with-meta-to-bring-black-friday-deals-to-ai-agent-muse/",
+  "kind": "news"
+ },
+ {
+  "n": 4,
+  "uid": "5ce3ed5a9fcd22ed",
+  "title": "Microsoft's historic cloud outage exposed an engineering “fog of war”",
+  "text": "Internal memos reveal a “Code Red” overhaul and ambitious one-hour recovery goals.",
+  "link": "https://arstechnica.com/gadgets/2026/11/microsofts-historic-cloud-outage-exposed-an-engineering-fog-of-war/",
+  "kind": "news"
+ },
+ {
+  "n": 5,
+  "uid": "5f76ac4f7ca9daa3",
+  "title": "Turnitin discloses cyberattack affecting customer-facing systems",
+  "text": "Turnitin disclosed via a statement from its CEO, Chris Caren, that it recently detected unauthorized activity involving certain customer-facing systems. [...]",
+  "link": "https://www.bleepingcomputer.com/news/security/turnitin-discloses-cyberattack-affecting-customer-facing-systems/",
+  "kind": "news"
+ },
+ {
+  "n": 6,
+  "uid": "6c270107d3982041",
+  "title": "Rackspace shuts down Spot cloud platform after security breach",
+  "text": "Rackspace is shutting down its Rackspace Spot cloud platform after a security breach allowed hackers to access customer Kubernetes clusters and secrets, giving customers until December 8 to migrate their services and download their data. [...]",
+  "link": "https://www.bleepingcomputer.com/news/security/rackspace-shuts-down-spot-cloud-platform-after-security-breach/",
+  "kind": "news"
+ },
+ {
+  "n": 7,
+  "uid": "230a967c24e64f71",
+  "title": "McDonald's Japan data breach exposes customer location information",
+  "text": "McDonald's Japan, the fast-food giant's Japanese subsidiary, has disclosed a data breach after attackers accessed a database containing sensitive information for users of the company's official smartphone app. [...]",
+  "link": "https://www.bleepingcomputer.com/news/security/mcdonalds-japan-data-breach-exposes-customer-location-information/",
+  "kind": "news"
+ },
+ {
+  "n": 8,
+  "uid": "83b7d0d15eb92c92",
+  "title": "Now Firefox can select which sites use its VPN, and clear your browsing history with one click",
+  "text": "Mozilla released Firefox 161 on Tuesday with a new setting you can use to choose which pages automatically open with the browser's VPN active. Using the \"Manage VPN rules\" option in Firefox's VPN panel, you can set it to \"always on\" or \"always off\" for specific sites, so you don't have to toggle it manually […]",
+  "link": "https://www.theverge.com/tech/1041474/firefox-161-vpn-rules-fire-button",
+  "kind": "news"
+ },
+ {
+  "n": 9,
+  "uid": "897edcb402e0b25d",
+  "title": "The Verge’s 2026 holiday gift guide for moms",
+  "text": "Given everything moms do for us, it feels good to give back during the holidays. But where to start? How do you come up with a physical representation of how you feel about such a key and influential figure in your life? The possibilities seem as endless as they are daunting, but fear not, we've […]",
+  "link": "https://www.theverge.com/gadgets/1021621/best-gifts-for-mom-2026",
+  "kind": "news"
+ },
+ {
+  "n": 10,
+  "uid": "8baea03fafc65f5c",
+  "title": "One terminal command gave my forgotten Android device a desk job",
+  "text": "The free, open source PhoneBox dashboard puts old Android screens back to work.",
+  "link": "https://arstechnica.com/gadgets/2026/11/one-terminal-command-gave-my-forgotten-android-device-a-desk-job/",
+  "kind": "news"
+ },
+ {
+  "n": 11,
+  "uid": "a2f14d06f82b7f3a",
+  "title": "Jensen Huang scheduled to testify next week in Senate following reinstatement as Nvidia CEO",
+  "text": "The public hearing follows bipartisan calls for Huang to testify about the affair with the suspected Chinese spy.",
+  "link": "https://techcrunch.com/2026/11/23/jensen-huang-scheduled-to-testify-next-week-in-senate-following-reinstatement-as-nvidia-ceo/",
+  "kind": "news"
+ },
+ {
+  "n": 12,
+  "uid": "6e5f032fb046721a",
+  "title": "Even the best AI agents struggle with everyday life",
+  "text": "As millions embrace personal AI assistants, a new benchmark reveals that even the most advanced AI models struggle to complete everyday tasks reliably and safely without introducing potential new problems.",
+  "link": "https://techcrunch.com/2026/11/24/even-the-best-ai-agents-struggle-with-everyday-life/",
+  "kind": "news"
+ },
+ {
+  "n": 13,
+  "uid": "34b536284971b1a8",
+  "title": "Tidal announces ban on AI-generated music; 27 million tracks will be deleted",
+  "text": "AI songs account for 6.3 percent of Tidal's catalog, but it's about to be zero.",
+  "link": "https://arstechnica.com/ai/2026/11/tidal-will-ban-fully-ai-generated-music-on-december-9/",
+  "kind": "news"
+ },
+ {
+  "n": 14,
+  "uid": "6382aa733e8c6ae1",
+  "title": "Amazon discovers Falcon 9 and Ariane 6 can deliver when nobody else can",
+  "text": "Amazon has hundreds of satellites in storage waiting for rides to space.",
+  "link": "https://arstechnica.com/space/2026/11/amazon-surges-launches-with-rival-spacex-after-ula-fails-to-deliver/",
+  "kind": "news"
+ },
+ {
+  "n": 15,
+  "uid": "724878a26e68ea5b",
+  "title": "Maple raises $5.3M to build AI products that protect your data, even from itself",
+  "text": "The startup's encrypted AI architecture is designed to prevent even the company itself from accessing users' private data.",
+  "link": "https://techcrunch.com/2026/11/24/maple-raises-5-3m-to-build-ai-products-that-protect-your-data-even-from-itself/",
+  "kind": "news"
+ },
+ {
+  "n": 16,
+  "uid": "0bc0f9692115f3dd",
+  "title": "New Inception extortion gang launches large-scale vishing campaign",
+  "text": "A newly formed data extortion group named 'Inception' has been linked to a large-scale campaign that targets single sign-on (SSO) credentials of multiple global brands and firms. [...]",
+  "link": "https://www.bleepingcomputer.com/news/security/new-inception-extortion-gang-launches-large-scale-vishing-campaign/",
+  "kind": "news"
+ },
+ {
+  "n": 17,
+  "uid": "CVE-2026-134624",
+  "title": "CVE-2026-134624: N-able MailAssure (SpamExperts) Server-Side Request Forgery (SSRF) Vulnerability",
+  "text": "N-able MailAssure (SpamExperts) contains a server-side request forgery vulnerability in the LDAP synchronization connection check that allows an authenticated API user to connect to arbitrary internal hosts and ports, determine which are reachable, and send crafted data to internal services.",
+  "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-134624",
+  "kind": "vuln"
+ },
+ {
+  "n": 18,
+  "uid": "CVE-2025-42884",
+  "title": "CVE-2025-42884: SAP NetWeaver Improper Neutralization of Special Elements in Data Query Logic Vulnerability",
+  "text": "SAP NetWeaver Enterprise Portal contains an improper neutralization of special elements in data query logic vulnerability that allows an unauthenticated attacker to disclose or modify server information via injected JNDI environment properties or a URL used during JNDI lookup operations.",
+  "link": "https://nvd.nist.gov/vuln/detail/CVE-2025-42884",
+  "kind": "vuln"
+ },
+ {
+  "n": 19,
+  "uid": "CVE-2026-133968",
+  "title": "CVE-2026-133968: Project MONAI MONAI Label Path Traversal Vulnerability",
+  "text": "Project MONAI MONAI Label contains a path traversal vulnerability that allows an unauthenticated remote attacker to write arbitrary files outside the intended datastore directory, potentially resulting in remote code execution.",
+  "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-133968",
+  "kind": "vuln"
+ },
+ {
+  "n": 20,
+  "uid": "CVE-2026-123890",
+  "title": "CVE-2026-123890: VMWare vCenter Authentication Bypass Using an Alternate Path or Channel Vulnerability",
+  "text": "Broadcom VMware vCenter contains an authentication bypass using an alternate path or channel vulnerability in the VMware Directory Service that allows an unauthenticated attacker with network access to vCenter to bypass authentication and gain unauthorized access to the system.",
+  "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-123890",
+  "kind": "vuln"
+ }
+]

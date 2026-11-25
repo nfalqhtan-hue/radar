@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>رادار التقنية</title>
+<meta name="description" content="آخر أخبار التقنية والثغرات الأمنية، مصنفة وملخصة بالعربية تلقائياً.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%2314213d'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23c9a063' stroke-width='2'/%3E%3Cpath d='M16 16 L27 9' stroke='%23c9a063' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='2.5' fill='%23c9a063'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #14213d;
+  --gold: #b8894a;
+  --gold-soft: #f4ecdf;
+  --bg: #f6f4ef;
+  --card: #ffffff;
+  --text: #1d2433;
+  --muted: #5f6878;
+  --line: #e4ded3;
+  --crit: #b42318;
+  --crit-soft: #fdecea;
+  --high: #c4500c;
+  --high-soft: #fff0e5;
+  --med: #8a6d00;
+  --med-soft: #fdf6d8;
+  --low: #2e7d4f;
+  --low-soft: #e7f5ec;
+  --unk: #5f6878;
+  --unk-soft: #eef0f3;
+  --chip: #ffffff;
+  --shadow: 0 1px 2px rgba(20, 33, 61, .06), 0 4px 14px rgba(20, 33, 61, .05);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1523; --card: #182033; --text: #e8ebf1; --muted: #9aa3b5; --line: #2a344a;
+    --gold-soft: #2a2416; --chip: #182033;
+    --crit: #ff8a80; --crit-soft: #3a1a1a; --high: #ffb27a; --high-soft: #3a2616;
+    --med: #f0d264; --med-soft: #332c12; --low: #7fd6a0; --low-soft: #15301f;
+    --unk: #aab2c2; --unk-soft: #252e42;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1523; --card: #182033; --text: #e8ebf1; --muted: #9aa3b5; --line: #2a344a;
+  --gold-soft: #2a2416; --chip: #182033;
+  --crit: #ff8a80; --crit-soft: #3a1a1a; --high: #ffb27a; --high-soft: #3a2616;
+  --med: #f0d264; --med-soft: #332c12; --low: #7fd6a0; --low-soft: #15301f;
+  --unk: #aab2c2; --unk-soft: #252e42;
+  --shadow: none;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+  font-size: 16px; line-height: 1.7;
+}
+a { color: inherit; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+
+/* الرأس */
+header.top { background: var(--navy); color: #fff; border-bottom: 4px solid var(--gold); }
+header.top .wrap { padding-top: 28px; padding-bottom: 24px; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand svg { width: 52px; height: 52px; flex: none; }
+.brand h1 { margin: 0; font-size: 30px; line-height: 1.2; font-weight: 700; }
+.brand p { margin: 2px 0 0; color: #c9d1e0; font-size: 15px; }
+.updated { font-size: 14px; color: #c9d1e0; text-align: start; }
+.updated b { color: #fff; font-weight: 600; }
+.radar-sweep { transform-origin: 26px 26px; animation: sweep 4s linear infinite; }
+@keyframes sweep { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .radar-sweep { animation: none; } }
+
+/* شريط التنبيه */
+.alert-band { background: var(--crit-soft); border: 1px solid color-mix(in srgb, var(--crit) 35%, transparent); border-radius: 12px; margin: 20px 0 0; padding: 14px 16px; }
+.alert-band h2 { margin: 0 0 8px; font-size: 17px; color: var(--crit); display: flex; align-items: center; gap: 8px; }
+.alert-band ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.alert-band li { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.alert-band li a { font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
+.alert-band li a:hover { text-decoration: underline; }
+.alert-band .more { margin-top: 8px; font-size: 14px; }
+.alert-band button.linklike { background: none; border: 0; padding: 0; color: var(--crit); font: inherit; font-weight: 600; cursor: pointer; text-decoration: underline; }
+
+/* الأرقام */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
+.stat { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; box-shadow: var(--shadow); }
+.stat .n { font-size: 26px; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.stat .l { color: var(--muted); font-size: 14px; }
+.stat.crit .n { color: var(--crit); }
+
+/* الأدوات */
+.tools { display: grid; gap: 12px; margin-bottom: 18px; }
+.search-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.search-row input, .search-row select {
+  font: inherit; font-size: 15px; color: var(--text); background: var(--card);
+  border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; min-height: 44px;
+}
+.search-row input { flex: 1 1 260px; }
+.search-row select { flex: 0 1 200px; }
+.search-row input:focus-visible, .search-row select:focus-visible, .chip:focus-visible, .card a:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+  font: inherit; font-size: 14px; cursor: pointer; color: var(--text);
+  background: var(--chip); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; min-height: 36px;
+}
+.chip .c { color: var(--muted); margin-inline-start: 4px; font-variant-numeric: tabular-nums; }
+.chip[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff; }
+.chip[aria-pressed="true"] .c { color: #c9d1e0; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip[aria-pressed="true"] { background: var(--gold); border-color: var(--gold); color: #14213d; } :root:not([data-theme="light"]) .chip[aria-pressed="true"] .c { color: #14213d; } }
+:root[data-theme="dark"] .chip[aria-pressed="true"] { background: var(--gold); border-color: var(--gold); color: #14213d; }
+.count { color: var(--muted); font-size: 14px; margin: 0 0 10px; }
+
+/* البطاقات */
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 30px; }
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px;
+  box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 8px; min-width: 0;
+}
+.card.is-crit { border-inline-start: 4px solid var(--crit); }
+.meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.badge { font-size: 13px; font-weight: 600; border-radius: 6px; padding: 1px 9px; line-height: 1.8; white-space: nowrap; }
+.t-type { background: var(--gold-soft); color: var(--text); font-weight: 500; }
+.sev-critical { background: var(--crit-soft); color: var(--crit); }
+.sev-high { background: var(--high-soft); color: var(--high); }
+.sev-medium { background: var(--med-soft); color: var(--med); }
+.sev-low { background: var(--low-soft); color: var(--low); }
+.sev-unknown { background: var(--unk-soft); color: var(--unk); }
+.kev { background: var(--crit); color: #fff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .kev { color: #14213d; } }
+:root[data-theme="dark"] .kev { color: #14213d; }
+.card h3 { margin: 0; font-size: 16.5px; line-height: 1.5; font-weight: 600; overflow-wrap: anywhere; }
+.card h3 a { text-decoration: none; }
+.card h3 a:hover { text-decoration: underline; }
+.summary { margin: 0; color: var(--text); }
+.summary.none { color: var(--muted); font-size: 14.5px; }
+.advice { margin: 0; font-size: 14.5px; background: var(--gold-soft); border-radius: 8px; padding: 6px 10px; }
+.foot { margin-top: auto; padding-top: 8px; border-top: 1px dashed var(--line); display: flex; gap: 10px; flex-wrap: wrap; justify-content: space-between; align-items: center; color: var(--muted); font-size: 13.5px; }
+.foot a.src { color: var(--gold); font-weight: 600; text-decoration: none; white-space: nowrap; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .foot a.src { color: #d9b37a; } }
+:root[data-theme="dark"] .foot a.src { color: #d9b37a; }
+.foot a.src:hover { text-decoration: underline; }
+.sys { overflow-wrap: anywhere; }
+.ltr { direction: ltr; unicode-bidi: isolate; }
+
+.state { text-align: center; color: var(--muted); padding: 40px 16px; background: var(--card); border: 1px dashed var(--line); border-radius: 14px; margin-bottom: 30px; }
+.morebtn { display: block; margin: -10px auto 30px; font: inherit; font-size: 15px; cursor: pointer; background: var(--card); color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 9px 22px; min-height: 44px; }
+
+footer.bottom { border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; padding: 20px 0 32px; }
+footer.bottom p { margin: 4px 0; }
+
+@media (max-width: 760px) {
+  .grid { grid-template-columns: minmax(0, 1fr); }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .brand h1 { font-size: 25px; }
+  .brand svg { width: 44px; height: 44px; }
+  .search-row select { flex: 1 1 40%; }
+  .alert-band li:nth-child(n+4) { display: none; }
+  .alert-band li a { font-size: 14.5px; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <svg viewBox="0 0 52 52" aria-hidden="true">
+        <circle cx="26" cy="26" r="24" fill="none" stroke="#3a4a6b" stroke-width="2"/>
+        <circle cx="26" cy="26" r="15" fill="none" stroke="#3a4a6b" stroke-width="2"/>
+        <circle cx="26" cy="26" r="6" fill="none" stroke="#3a4a6b" stroke-width="2"/>
+        <g class="radar-sweep"><path d="M26 26 L26 2 A24 24 0 0 1 46.8 14 Z" fill="#c9a063" opacity=".35"/><line x1="26" y1="26" x2="26" y2="2" stroke="#c9a063" stroke-width="2.5" stroke-linecap="round"/></g>
+        <circle cx="26" cy="26" r="3" fill="#c9a063"/>
+        <circle cx="37" cy="15" r="2.6" fill="#ff8a80"/>
+      </svg>
+      <div>
+        <h1>رادار التقنية</h1>
+        <p>أخبار التقنية والثغرات الأمنية، مصنفة وملخصة بالعربية تلقائياً</p>
+      </div>
+    </div>
+    <div class="updated" id="updated" aria-live="polite">جارٍ التحميل…</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="alerts" class="alert-band" hidden aria-labelledby="alerts-h">
+    <h2 id="alerts-h">
+      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 L22 20 H2 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><line x1="12" y1="10" x2="12" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.2" fill="currentColor"/></svg>
+      <span>تنبيه: ثغرات حرجة</span>
+    </h2>
+    <ul id="alerts-list"></ul>
+    <div class="more" id="alerts-more"></div>
+  </section>
+
+  <section class="stats" aria-label="أرقام سريعة">
+    <div class="stat"><div class="n" id="s-total">–</div><div class="l">عنصر منشور</div></div>
+    <div class="stat"><div class="n" id="s-vul">–</div><div class="l">ثغرة</div></div>
+    <div class="stat crit"><div class="n" id="s-crit">–</div><div class="l">ثغرة حرجة</div></div>
+    <div class="stat"><div class="n" id="s-sum">–</div><div class="l">ملخص عربي</div></div>
+  </section>
+
+  <section class="tools" aria-label="البحث والتصفية">
+    <div class="search-row">
+      <input id="q" type="search" placeholder="ابحث بالعنوان أو الملخص أو رقم CVE…" aria-label="بحث">
+      <select id="sev" aria-label="الخطورة">
+        <option value="">كل درجات الخطورة</option>
+        <option value="critical">حرجة</option>
+        <option value="high">عالية</option>
+        <option value="medium">متوسطة</option>
+        <option value="low">منخفضة</option>
+        <option value="unknown">غير مقيّمة بعد</option>
+        <option value="kev">مستغلة فعلياً (CISA KEV)</option>
+      </select>
+      <select id="sort" aria-label="الترتيب">
+        <option value="imp">الأهم أولاً</option>
+        <option value="new">الأحدث أولاً</option>
+      </select>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="نوع العنصر"></div>
+  </section>
+
+  <p class="count" id="count" aria-live="polite"></p>
+  <div class="grid" id="grid"></div>
+  <button class="morebtn" id="more" hidden>عرض المزيد</button>
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <p>مشروع تدريبي: عبدالله طلال القحطاني وعبدالله يعقوب الخليفة.</p>
+    <p>المصادر: NVD و CISA KEV وخلاصات RSS تقنية. الملخصات مولّدة آلياً بنموذج لغوي محلي وقد تحتوي أخطاء، فارجع دائماً لرابط المصدر قبل اتخاذ أي إجراء.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var TYPES = { vul: "ثغرة", gen: "أخبار تقنية وأمنية", ai: "ذكاء اصطناعي", fix: "مشكلة محلولة", os: "أنظمة التشغيل", dev: "أجهزة وجوالات" };
+  var TYPE_ORDER = ["vul", "gen", "ai", "fix", "os", "dev"];
+  var SEV = { critical: "حرجة", high: "عالية", medium: "متوسطة", low: "منخفضة", unknown: "غير مقيّمة بعد" };
+  var PAGE = 30;
+
+  var SOURCES = { "feeds.feedburner.com": "The Hacker News", "feeds.arstechnica.com": "Ars Technica", "www.theverge.com": "The Verge",
+    "techcrunch.com": "TechCrunch", "www.bleepingcomputer.com": "BleepingComputer", "services.nvd.nist.gov": "NVD" };
+  function srcName(s) { return SOURCES[s] || String(s || "").replace(/^www\./, ""); }
+  var all = [], state = { type: "", sev: "", q: "", sort: "imp", shown: PAGE };
+  function rank(it) { return (it.type === "vul" && isCrit(it) ? 2 : 0) + (it.summary ? 1 : 0); }
+  function sorter(a, b) {
+    if (state.sort === "imp") { var r = rank(b) - rank(a); if (r) return r; }
+    return new Date(b.date) - new Date(a.date);
+  }
+  var $ = function (id) { return document.getElementById(id); };
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function safeUrl(u) {
+    try { var x = new URL(u); return (x.protocol === "https:" || x.protocol === "http:") ? x.href : null; } catch (e) { return null; }
+  }
+  var nf = new Intl.NumberFormat("ar-SA-u-nu-latn");
+  var df = new Intl.DateTimeFormat("ar-SA-u-nu-latn-ca-gregory", { day: "numeric", month: "long", year: "numeric" });
+  var tf = new Intl.DateTimeFormat("ar-SA-u-nu-latn-ca-gregory", { day: "numeric", month: "long", hour: "numeric", minute: "2-digit" });
+  function fmtDate(s) { var d = new Date(s); return isNaN(d) ? "" : df.format(d); }
+  function ago(s) {
+    var d = new Date(s); if (isNaN(d)) return "";
+    var m = Math.round((Date.now() - d) / 60000);
+    if (m < 1) return "الآن";
+    if (m < 60) return "قبل " + nf.format(m) + " دقيقة";
+    var h = Math.round(m / 60); if (h < 24) return "قبل " + nf.format(h) + " ساعة";
+    var dd = Math.round(h / 24); return "قبل " + nf.format(dd) + " يوم";
+  }
+  function isCrit(it) { return it.severity === "critical" || it.kev; }
+  function sevOf(it) { return it.type === "vul" ? (it.severity || "unknown") : null; }
+
+  function matches(it, ignoreType) {
+    if (!ignoreType && state.type && it.type !== state.type) return false;
+    if (state.sev === "kev") { if (!it.kev) return false; }
+    else if (state.sev && sevOf(it) !== state.sev) return false;
+    if (state.q) {
+      var hay = (it.title + " " + (it.summary || "") + " " + (it.system || "") + " " + (it.source || "")).toLowerCase();
+      if (hay.indexOf(state.q) === -1) return false;
+    }
+    return true;
+  }
+
+  function card(it) {
+    var c = el("article", "card" + (isCrit(it) ? " is-crit" : ""));
+    var meta = el("div", "meta");
+    meta.appendChild(el("span", "badge t-type", TYPES[it.type] || "أخرى"));
+    var sv = sevOf(it);
+    if (sv) {
+      var label = SEV[sv] || sv;
+      if (it.score != null) label += " · " + Number(it.score).toFixed(1);
+      meta.appendChild(el("span", "badge sev-" + (SEV[sv] ? sv : "unknown"), label));
+    }
+    if (it.kev) meta.appendChild(el("span", "badge kev", "مستغلة فعلياً"));
+    c.appendChild(meta);
+
+    var h = el("h3"); h.setAttribute("dir", "auto");
+    var url = safeUrl(it.link);
+    if (url) { var a = el("a", null, it.title); a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer"; h.appendChild(a); }
+    else h.textContent = it.title;
+    c.appendChild(h);
+
+    if (it.summary) c.appendChild(el("p", "summary", it.summary));
+    else c.appendChild(el("p", "summary none", "لا يتوفر ملخص عربي لهذا العنصر بعد. اقرأ التفاصيل في المصدر."));
+    if (it.advice) c.appendChild(el("p", "advice", "الإجراء المقترح: " + it.advice));
+
+    var f = el("div", "foot");
+    var left = el("span");
+    var bits = [];
+    if (it.system) bits.push(["النظام: ", it.system]);
+    var line = el("span", "sys");
+    bits.forEach(function (b) { line.appendChild(document.createTextNode(b[0])); line.appendChild(el("bdi", null, b[1])); line.appendChild(document.createTextNode(" · ")); });
+    line.appendChild(el("bdi", null, srcName(it.source)));
+    var dt = fmtDate(it.date); if (dt) line.appendChild(document.createTextNode(" · " + dt));
+    left.appendChild(line);
+    f.appendChild(left);
+    if (url) { var s = el("a", "src", "المصدر ↗"); s.href = url; s.target = "_blank"; s.rel = "noopener noreferrer"; f.appendChild(s); }
+    c.appendChild(f);
+    return c;
+  }
+
+  function renderChips() {
+    var box = $("chips"); box.textContent = "";
+    var counts = {}; var base = all.filter(function (it) { return matches(it, true); });
+    base.forEach(function (it) { counts[it.type] = (counts[it.type] || 0) + 1; });
+    var opts = [["", "الكل", base.length]].concat(TYPE_ORDER.filter(function (t) { return counts[t]; }).map(function (t) { return [t, TYPES[t], counts[t]]; }));
+    opts.forEach(function (o) {
+      var b = el("button", "chip"); b.type = "button";
+      b.setAttribute("aria-pressed", String(state.type === o[0]));
+      b.appendChild(document.createTextNode(o[1]));
+      b.appendChild(el("span", "c", nf.format(o[2])));
+      b.addEventListener("click", function () { state.type = o[0]; state.shown = PAGE; render(); });
+      box.appendChild(b);
+    });
+  }
+
+  function render() {
+    renderChips();
+    var list = all.filter(function (it) { return matches(it, false); }).sort(sorter);
+    var grid = $("grid"); grid.textContent = "";
+    $("count").textContent = list.length ? ("عدد النتائج: " + nf.format(list.length)) : "";
+    if (!list.length) {
+      grid.appendChild(el("div", "state", "لا توجد نتائج مطابقة. جرّب كلمة بحث أخرى أو ألغِ التصفية."));
+      grid.firstChild.style.gridColumn = "1 / -1";
+    }
+    list.slice(0, state.shown).forEach(function (it) { grid.appendChild(card(it)); });
+    var more = $("more");
+    more.hidden = list.length <= state.shown;
+    more.textContent = "عرض المزيد (" + nf.format(list.length - state.shown) + " متبقٍ)";
+  }
+
+  function renderAlerts() {
+    var crit = all.filter(function (it) { return it.type === "vul" && isCrit(it); });
+    crit.sort(function (a, b) { return (b.kev - a.kev) || ((b.score || 0) - (a.score || 0)) || (new Date(b.date) - new Date(a.date)); });
+    if (!crit.length) return;
+    var ul = $("alerts-list");
+    crit.slice(0, 5).forEach(function (it) {
+      var li = el("li");
+      var url = safeUrl(it.link);
+      var a = el(url ? "a" : "span", null, it.title); a.setAttribute("dir", "auto");
+      if (url) { a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer"; }
+      li.appendChild(a);
+      var tag = it.kev ? "مستغلة فعلياً" : ("CVSS " + Number(it.score).toFixed(1));
+      li.appendChild(el("span", "badge " + (it.kev ? "kev" : "sev-critical"), tag));
+      ul.appendChild(li);
+    });
+    if (crit.length > 3) {
+      var b = el("button", "linklike", "عرض كل الثغرات الحرجة (" + nf.format(crit.length) + ")"); b.type = "button";
+      b.addEventListener("click", function () { state.type = "vul"; state.sev = "critical"; $("sev").value = "critical"; state.shown = PAGE; render(); $("count").scrollIntoView({ behavior: "smooth" }); });
+      $("alerts-more").appendChild(b);
+    }
+    $("alerts").hidden = false;
+  }
+
+  function stats(gen) {
+    $("s-total").textContent = nf.format(all.length);
+    $("s-vul").textContent = nf.format(all.filter(function (it) { return it.type === "vul"; }).length);
+    $("s-crit").textContent = nf.format(all.filter(function (it) { return it.type === "vul" && isCrit(it); }).length);
+    $("s-sum").textContent = nf.format(all.filter(function (it) { return it.summary; }).length);
+    var u = $("updated"); u.textContent = "";
+    if (gen) {
+      u.appendChild(document.createTextNode("آخر تحديث: "));
+      u.appendChild(el("b", null, ago(gen)));
+      u.appendChild(el("div", null, tf.format(new Date(gen))));
+    }
+  }
+
+  var t;
+  $("q").addEventListener("input", function (e) { clearTimeout(t); t = setTimeout(function () { state.q = e.target.value.trim().toLowerCase(); state.shown = PAGE; render(); }, 150); });
+  $("sev").addEventListener("change", function (e) { state.sev = e.target.value; state.shown = PAGE; render(); });
+  $("sort").addEventListener("change", function (e) { state.sort = e.target.value; state.shown = PAGE; render(); });
+  $("more").addEventListener("click", function () { state.shown += PAGE; render(); });
+
+  fetch("data.json?t=" + Date.now(), { cache: "no-store" })
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (d) {
+      all = (d.items || []).filter(function (it) { return it && it.title; });
+      all.sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
+      stats(d.generated_at); renderAlerts(); render();
+    })
+    .catch(function () {
+      $("updated").textContent = "";
+      var g = $("grid"); g.textContent = "";
+      var s = el("div", "state", "تعذّر تحميل البيانات (data.json). إذا فتحت الصفحة من ملف مباشرة، شغّلها عبر خادم محلي أو من رابط GitHub Pages.");
+      s.style.gridColumn = "1 / -1"; g.appendChild(s);
+    });
+})();
+</script>
+</body>
+</html>
