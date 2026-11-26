@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-26T12:55:36+00:00",
+ "generated_at": "2026-11-26T13:07:47+00:00",
  "items": [
   {
    "id": "CVE-2026-137280",
@@ -5661,8 +5661,8 @@
    "type": "vul",
    "title": "CVE-2026-134624: N-able MailAssure (SpamExperts) Server-Side Request Forgery (SSRF) Vulnerability",
    "summary": "تحتوي نابل ميل أسور (سبام إكسبرتس) على ثغرة في طلب المصادقة من جانب الخادم (SSRF) تسمح للمستخدم المصادق عبر واجهة برمجة التطبيقات بالاتصال بمضيفات داخلية عشوائية وتحديد الأنظمة التي يمكن الوصول إليها وإرسال بيانات مُعدّلة إلى خدمات داخلية.",
-   "severity": "unknown",
-   "score": null,
+   "severity": "high",
+   "score": 8.7,
    "kev": true,
    "system": "N-able MailAssure",
    "source": "CISA KEV",
