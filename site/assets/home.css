@@ -21,7 +21,7 @@
 .now-title { display: block; font-weight: 600; font-size: 15.5px; line-height: 1.55; overflow-wrap: anywhere; }
 .now-meta { display: block; color: #93A0B8; font-size: 13.5px; }
 .now-empty { color: #B9C3D6; padding: 12px 0; }
-.now-more { margin-top: 12px; background: none; border: 0; padding: 0; min-height: 40px; color: var(--brass); cursor: pointer; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+.now-more { display: inline-flex; align-items: center; margin-top: 12px; background: none; border: 0; padding: 0; min-height: 40px; color: var(--brass); cursor: pointer; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
 
 /* ===== شاشة الرادار ===== */
 .radar { position: relative; width: 100%; max-width: 470px; justify-self: center; margin: 0; }

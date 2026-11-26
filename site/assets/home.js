@@ -34,8 +34,8 @@
     if (st.q) p.set("q", st.q);
     if (st.sort !== "new") p.set("sort", st.sort);
     if (st.newOnly) p.set("new", "1");
-    var h = p.toString();
-    try { history.replaceState(null, "", h ? "#" + h : location.pathname + location.search); } catch (e) {}
+    var v = R.hashParams().get("v"); if (v) p.set("v", v);   // نافذة تفاصيل مفتوحة تبقى في الرابط
+    R.setHash(p);
   }
 
   // ---------- التصفية والترتيب
@@ -76,7 +76,12 @@
 
     var h = el("h3"); h.setAttribute("dir", "auto");
     var url = R.safeUrl(it.link), text = cv.rest || it.title;
-    if (url) h.appendChild(R.link(el("a", null, text), url)); else h.textContent = text;
+    if (it.type === "vul") {
+      // عنوان الثغرة يفتح نافذة التفاصيل، ورابط NVD يبقى في أسفل العنصر
+      var da = el("a", null, text); da.href = "#v=" + encodeURIComponent(it.id);
+      da.onclick = function (e) { e.preventDefault(); R.openDetail(it); };
+      h.appendChild(da);
+    } else if (url) h.appendChild(R.link(el("a", null, text), url)); else h.textContent = text;
     body.appendChild(h);
     if (hasText(it)) { var p = el("p", "sum", it.summary); p.setAttribute("dir", "auto"); body.appendChild(p); }
     if (it.advice && R.isCrit(it)) {
@@ -187,20 +192,23 @@
   // ---------- قائمة «ما يحتاج انتباهك الآن»
   function renderNow() {
     var c = all.filter(R.isCrit).sort(function (a, b) { return rank(b) - rank(a) || b.t - a.t; });
+    // الخطورة (درجة CVSS) وثبوت الاستغلال (قائمة CISA) أمران مستقلان، فنعدّ كلاً منهما وحده
+    var crit = c.filter(function (it) { return it.severity === "critical"; }).length;
     var kev = c.filter(function (it) { return it.kev; }).length;
     var lede = $("lede"); lede.textContent = "";
     if (c.length) {
-      lede.appendChild(el("strong", null, R.count(c.length, "ثغرة حرجة واحدة", "ثغرتان حرجتان", "ثغرات حرجة", "ثغرة حرجة")));
-      lede.appendChild(document.createTextNode(kev
-        ? " في آخر تحديث، وثبت أن المهاجمين استغلوا " + (kev === 1 ? "واحدة منها" : kev === 2 ? "اثنتين منها" : nf.format(kev) + " منها") + " بحسب وكالة CISA. ابدأ بهذه."
-        : " في آخر تحديث. ابدأ بالأعلى درجة."));
-    } else lede.textContent = "لا توجد ثغرات حرجة في آخر تحديث. آخر الأخبار في الأسفل.";
+      if (crit) lede.appendChild(el("strong", null, R.count(crit, "ثغرة حرجة واحدة", "ثغرتان حرجتان", "ثغرات حرجة", "ثغرة حرجة")));
+      if (crit && kev) lede.appendChild(document.createTextNode(" حسب درجتها، و"));
+      if (kev) lede.appendChild(el("strong", null, R.count(kev, "ثغرة واحدة", "ثغرتان", "ثغرات", "ثغرة") + " ثبت أن المهاجمين استغلوها"));
+      lede.appendChild(document.createTextNode((kev ? " بحسب وكالة CISA" : " حسب درجتها") + ". ابدأ بهذه."));
+    } else lede.textContent = "لا توجد ثغرات حرجة أو مستغلة في بيانات الرادار الآن. آخر الأخبار في الأسفل.";
     var ol = $("now"); ol.textContent = ""; topIds = {};
     if (!c.length) { ol.appendChild(el("li", "now-empty", "لا شيء عاجل الآن.")); }
     c.slice(0, 4).forEach(function (it) {
       topIds[it.id] = true;
       var li = el("li"), a = el("a", "now-item"); a.href = "#i-" + it.id;
-      a.onclick = function (e) { e.preventDefault(); focusItem(it.id); };
+      a.href = "#v=" + encodeURIComponent(it.id);
+      a.onclick = function (e) { e.preventDefault(); R.openDetail(it); };
       var sc = el("span", "score" + (it.kev ? " kev" : ""), it.score != null ? Number(it.score).toFixed(1) : "؟");
       sc.appendChild(el("small", null, it.kev ? "مستغلة" : "CVSS"));
       a.appendChild(sc);
@@ -215,10 +223,7 @@
     });
     var more = $("now-more");
     more.hidden = c.length <= 4;
-    if (c.length > 4) {
-      more.textContent = "كل الثغرات الحرجة (" + nf.format(c.length) + ")";
-      more.onclick = function () { st.type = "vul"; st.sev = "critical"; st.sort = "imp"; st.q = ""; st.newOnly = false; $("q").value = ""; update(); scrollTo($("main")); };
-    }
+    if (c.length > 4) more.textContent = "افتح مركز التنبيهات";
   }
 
   // ---------- شاشة الرادار
@@ -277,7 +282,7 @@
       }
       function hide() { tip.classList.remove("show"); grp.classList.remove("on"); }
       grp.addEventListener("mouseenter", show); grp.addEventListener("mouseleave", hide);
-      grp.addEventListener("click", function () { hide(); focusItem(it.id); });
+      grp.addEventListener("click", function () { hide(); if (it.type === "vul") R.openDetail(it); else focusItem(it.id); });
       bl.appendChild(grp);
     });
     var crit = pts.filter(function (it) { return sevOf(it) === "critical"; }).length;
@@ -295,7 +300,11 @@
   document.querySelectorAll(".sort button").forEach(function (b) { b.onclick = function () { st.sort = b.dataset.sort; update(); }; });
   var ft = $("filters-toggle"), fp = $("filter-panel");
   ft.onclick = function () { var open = ft.getAttribute("aria-expanded") !== "true"; ft.setAttribute("aria-expanded", String(open)); fp.classList.toggle("closed", !open); };
-  window.addEventListener("hashchange", function () { if (!all.length || location.hash.indexOf("#i-") === 0) return; readHash(); update(); });
+  window.addEventListener("hashchange", function () {
+    if (!all.length || location.hash.indexOf("#i-") === 0) return;
+    if (!R.openFromHash(byId)) R.closeDetail();
+    readHash(); update();
+  });
 
   // ---------- التحميل
   radarGrid();
@@ -316,6 +325,7 @@
       readHash(); renderNow(); renderRadar(); update(true);
       // إذا فُتحت الصفحة برابط عنصر (#i-...) ننتقل إليه
       if (location.hash.indexOf("#i-") === 0) focusItem(decodeURIComponent(location.hash.slice(3)));
+      else R.openFromHash(byId);   // رابط مشارَك لثغرة (#v=CVE-...)
     }).catch(function (err) {
       $("now").textContent = ""; $("lede").textContent = "تعذّر تحميل آخر البيانات.";
       var ld = $("radar-load"); if (ld) ld.textContent = "لا توجد بيانات";

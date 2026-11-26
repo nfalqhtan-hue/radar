@@ -111,7 +111,9 @@ sent6 = []
 s6 = rp.run(a6, dict(kev=lambda: ({"CVE-2026-6666"}, kev_item), nvd=lambda: mid, rss=lambda: [], nvd_lookup=lookup), spy, sent6.append)
 c6 = sqlite3.connect(a6.db); c6.row_factory = sqlite3.Row
 k = c6.execute("select * from items where uid='CVE-2026-6666'").fetchone(); m = c6.execute("select * from items where uid='CVE-2026-7777'").fetchone()
-check("KEV score enriched from NVD (8.6) and kept critical", looked == ["CVE-2026-6666"] and k["score"] == 8.6 and k["severity"] == "critical")
+# [المرحلة 3] الخطورة من الدرجة وحدها: مستغلة بدرجة 8.6 تبقى «عالية» مع علامة الاستغلال (لم تعد تُرفع إلى «حرجة»)
+check("KEV score enriched from NVD (8.6): severity high, exploited flag kept separately",
+      looked == ["CVE-2026-6666"] and k["score"] == 8.6 and k["severity"] == "high" and k["kev"] == 1)
 check("medium vuln: template summary, LLM not called", "متوسطة" in m["summary"] and "CVSS 5.0" in m["summary"] and llm_seen == ["CVE-2026-6666: KEV flaw"])
 check("KEV alert labelled as exploited", len(sent6) == 1 and "CISA KEV" in sent6[0] and "8.6" in sent6[0])
 
@@ -180,4 +182,54 @@ c10 = sqlite3.connect(a10.db)
 s10b = rp.run(a10, dict(kev=lambda: (set(), []), nvd=lambda: [], rss=lambda: [], nvd_lookup=lambda u: None), rec, None)
 check("pending queue uses the whole remaining budget on the next cycle",
       s10b["llm_calls"] == 4 and c10.execute("select count(*) from items where pending=1").fetchone()[0] == 5)
+
+# ---------------- المرحلة 3: تفاصيل الثغرة، فصل الخطورة عن الاستغلال، سجل الأحداث
+# قاعدة قديمة (قبل أعمدة المرحلة 3) فيها ثغرة مستغلة درجتها 7.2 مخزنة «حرجة»: الترقية تضيف الأعمدة وتصحح الخطورة وتملأ السجل
+dbo = os.path.join(tempfile.mkdtemp(), "old.db"); co = sqlite3.connect(dbo)
+co.executescript("""CREATE TABLE items(uid TEXT PRIMARY KEY, kind, type, title, link, text, summary, pending INT, source, published,
+  severity, score REAL, kev INT, system, status, reason, created); CREATE TABLE errors(ts, stage, msg);""")
+co.execute("INSERT INTO items VALUES('CVE-2026-1200','vuln','vul','CVE-2026-1200: x','https://nvd/1200','Old desc.','ملخص.',0,'NVD',"
+           "'2026-11-20T00:00:00+00:00','critical',7.2,1,'Acme','published',NULL,'2026-11-25T01:00:00+00:00')")
+co.execute("INSERT INTO items VALUES('CVE-2026-1201','vuln','vul','CVE-2026-1201: y','https://nvd/1201','Other.','ثغرة أمنية خطورتها متوسطة.',0,'NVD',"
+           "'2026-11-20T00:00:00+00:00','medium',5.0,0,'Acme','published',NULL,'2026-11-25T02:00:00+00:00')")
+co.commit(); co.close()
+cat = rp.KevIds({"CVE-2026-1201"}); cat.info["CVE-2026-1201"] = dict(kev_added="2026-11-26", kev_action="Apply updates.", kev_due="2026-12-17", kev_ransom="Unknown")
+refreshed = []
+def refresh(uid):
+    refreshed.append(uid); return dict(score=9.1, vector="CVSS:3.1/AV:N", cvss_ver="3.1", modified="2026-11-26T10:00:00.000") if uid == "CVE-2026-1200" else None
+ao = argparse.Namespace(db=dbo, out=os.path.join(tempfile.mkdtemp(), "site", "data.json"), hours=2, no_llm=True, no_alert=False)
+sento = []
+so = rp.run(ao, dict(kev=lambda: (cat, []), nvd=lambda: [], rss=lambda: [], refresh=refresh), None, lambda m: sento.append(m) or True)
+co = sqlite3.connect(dbo); co.row_factory = sqlite3.Row
+r0 = co.execute("select * from items where uid='CVE-2026-1200'").fetchone(); r1 = co.execute("select * from items where uid='CVE-2026-1201'").fetchone()
+ev = [(e["kind"], e["uid"]) for e in co.execute("select * from events")]
+check("old DB upgraded: new columns added, summary source inferred", r0["summary_src"] == "llm" and r1["summary_src"] == "template")
+check("stored vuln found in CISA catalog -> exploited, with date and required action, severity unchanged",
+      r1["kev"] == 1 and r1["kev_added"] == "2026-11-26" and r1["kev_action"] == "Apply updates." and r1["severity"] == "medium" and ("kev", "CVE-2026-1201") in ev)
+check("refresh from NVD: new score 9.1 -> critical, last-modified and vector stored, change logged",
+      r0["score"] == 9.1 and r0["severity"] == "critical" and r0["modified"].startswith("2026-11-26") and r0["vector"] == "CVSS:3.1/AV:N"
+      and any(e["kind"] == "score" and e["detail"].startswith("7.2>9.1") for e in co.execute("select * from events")))
+check("events backfilled from stored discovery time + fetch results logged",
+      ("new", "CVE-2026-1200") in ev and sum(1 for k, _ in ev if k == "fetch") == 3)
+check("alert sent for the newly exploited vuln and logged as an alert event", any("CVE-2026-1201" in m for m in sento) and ("alert", "CVE-2026-1201") in ev)
+det = json.load(open(os.path.join(os.path.dirname(ao.out), "details.json"), encoding="utf-8"))["items"]
+check("details.json carries original description, last-modified and CISA data",
+      det["CVE-2026-1200"]["text"] == "Old desc." and det["CVE-2026-1200"]["modified"].startswith("2026-11-26") and det["CVE-2026-1201"]["kev_due"] == "2026-12-17")
+dj = {i["id"]: i for i in json.load(open(ao.out, encoding="utf-8"))["items"]}
+check("data.json says where each summary came from", dj["CVE-2026-1200"]["sum_src"] == "llm" and dj["CVE-2026-1201"]["sum_src"] == "template")
+so2 = rp.run(ao, dict(kev=lambda: (cat, []), nvd=lambda: [], rss=lambda: [], refresh=refresh), None, lambda m: sento.append(m) or True)
+evj = json.load(open(os.path.join(os.path.dirname(ao.out), "events.json"), encoding="utf-8"))
+check("events.json: real events (no fetch noise) + last success per source",
+      any(e["kind"] == "score" for e in evj["events"]) and not any(e["kind"] == "fetch" for e in evj["events"]) and evj["sources"]["nvd"]["last_ok"])
+old_kev = [dict(kind="vuln", source="NVD", uid=f"CVE-2026-81{i:03d}", title=f"CVE-2026-81{i:03d}: n", link=f"https://nvd/{i}", text="d",
+                date=f"2026-11-26T{i % 24:02d}:00:00+00:00", score=5.0) for i in range(260)]
+ak = argparse.Namespace(db=os.path.join(tempfile.mkdtemp(), "t.db"), out=os.path.join(tempfile.mkdtemp(), "data.json"), hours=2, no_llm=True, no_alert=True)
+oldk = dict(kind="vuln", source="CISA KEV", uid="CVE-2020-0001", title="CVE-2020-0001: old exploited", link="https://nvd/old", text="d",
+            date="2020-01-01T00:00:00+00:00", score=None, kev=1)
+rp.run(ak, dict(kev=lambda: ({"CVE-2020-0001"}, [oldk]), nvd=lambda: list(old_kev), rss=lambda: []), None, None)
+ek = json.load(open(ak.out, encoding="utf-8"))["items"]
+check("old exploited vuln is exported even when 250 newer vulns exist", any(i["id"] == "CVE-2020-0001" for i in ek) and len(ek) == 251)
+check("refreshed items are not re-checked every cycle", so2["refreshed"] == 0 and len(refreshed) == 2)
+check("severity scale: 9 critical, 7 high, 4 medium, 0.1 low, none unknown",
+      [rp.severity_of(x) for x in (9.0, 7.0, 4.0, 0.1, None)] == ["critical", "high", "medium", "low", "unknown"])
 print(f"\n{ok} checks passed")
