@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-26T14:03:36+00:00",
+ "generated_at": "2026-11-26T14:18:04+00:00",
  "items": [
   {
    "id": "CVE-2026-86470",
@@ -350,7 +350,7 @@
    "id": "CVE-2026-134481",
    "type": "vul",
    "title": "CVE-2026-134481: Deserialization of Untrusted Data vulnerability in Ultimate Member Ultimate Member ultimat",
-   "summary": "",
+   "summary": "تم الكشف عن ثغرة في تطبيق Ultimate Member تتعلق بإلغاء التسلسل البيانات غير الموثوقة مما يسمح بحقن الكائنات. الثغرة تؤثر على إصدارات Ultimate Member من ن / أ إلى 2.14.1.",
    "severity": "critical",
    "score": 9.8,
    "kev": false,
@@ -358,7 +358,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-134481",
    "date": "2026-11-26T13:16:41+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -440,7 +440,7 @@
    "id": "CVE-2026-131767",
    "type": "vul",
    "title": "CVE-2026-131767: Deserialization of Untrusted Data vulnerability in Aman FunnelKit Automations wp-marketing",
-   "summary": "",
+   "summary": "تم الكشف عن ثغرة في تطبيق Aman FunnelKit Automations wp-marketing-automations تتعلق بإلغاء التسلسل البيانات غير الموثوقة، مما يسمح بحقن الكائنات. تؤثر الثغرة على إصدارات FunnelKit Automations من ن / أ إلى 3.9.0.1.",
    "severity": "critical",
    "score": 9.8,
    "kev": false,
@@ -448,7 +448,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-131767",
    "date": "2026-11-26T13:16:40+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -635,7 +635,7 @@
    "id": "CVE-2026-124843",
    "type": "vul",
    "title": "CVE-2026-124843: SEPPmail Secure Email Gateway before 15.1.2 uses a source-visible hard-coded fallback secr",
-   "summary": "",
+   "summary": "تحتوي إصدارات SEPPmail Secure Email Gateway قبل 15.1.2 على ثغرة تتعلق باستخدام سر مُحَدَّد مسبقًا ومرئي المصدر كخيار احتياطي لعملية التشفير عند عدم توفر المواد المفتاحية. يمكن للمهاجم عن بُعد التلاعب برموز الدخول وفك تشفير محتوى نقل الملفات الكبيرة.",
    "severity": "critical",
    "score": 9.2,
    "kev": false,
@@ -643,7 +643,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-124843",
    "date": "2026-11-26T13:16:38+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -1550,7 +1550,7 @@
    "id": "CVE-2026-135203",
    "type": "vul",
    "title": "CVE-2026-135203: In Eclipse Ditto versions 0.3.0-M1 through 3.8.15 and 3.9.0 through 3.9.9, the JavaScript",
-   "summary": "",
+   "summary": "تحتوي إصدارات Eclipse Ditto من 0.3.0-M1 إلى 3.8.15 و3.9.0 إلى 3.9.9 على ثغرة في مُصغّر JavaScript لخدمة الاتصال، حيث يمكن للمهاجم تنفيذ شيفرة عشوائية عبر تعديل فصول جافا باستخدام استثناءات جافا.",
    "severity": "critical",
    "score": 9.4,
    "kev": false,
@@ -1558,7 +1558,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-135203",
    "date": "2026-11-26T11:17:03+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -1865,7 +1865,7 @@
    "id": "CVE-2026-123903",
    "type": "vul",
    "title": "CVE-2026-123903: VMware vCenter contains an authentication bypass vulnerability in the VMware Directory Ser",
-   "summary": "",
+   "summary": "تحتوي وحدة VMware Directory Service في VMware vCenter على ثغرة تمكن المهاجم من تجاوز المصادقة، وقد تم تقييم خطورتها على أنها حرجة مع درجة CVSSv3 تصل إلى 9.8. تم إصلاح الثغرة في إصدارات مختلفة من VMware vCenter Server ومنتجات VMware الأخرى.",
    "severity": "critical",
    "score": 9.8,
    "kev": false,
@@ -1873,7 +1873,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-123903",
    "date": "2026-11-26T11:17:00+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -2510,7 +2510,7 @@
    "id": "457c08cf27ea6f55",
    "type": "gen",
    "title": "Drupal Warns of New Highly Critical Site Takeover Vulnerability Under Active Exploitation",
-   "summary": "",
+   "summary": "تحذير Drupal من ثغرة جديدة من الدرجة العالية تؤثر على نواة Drupal وتُستخدم في استغلال مواقع من قبل المهاجمين. الثغرة تحمل الرقم CVE-2026-136716 وتتعلق بفحص غير صحيح لحالات غير اعتيادية.",
    "severity": null,
    "score": null,
    "kev": false,
@@ -2518,7 +2518,7 @@
    "source": "feeds.feedburner.com",
    "link": "https://thehackernews.com/2026/11/drupal-warns-of-new-highly-critical.html",
    "date": "2026-11-26T07:02:34+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": null
   },
   {
@@ -2780,7 +2780,7 @@
    "id": "CVE-2026-137043",
    "type": "vul",
    "title": "CVE-2026-137043: A security vulnerability has been detected in TOTOLINK N350RT 9.3.5u.6468_B20250827/9.3.5u",
-   "summary": "",
+   "summary": "تم اكتشاف ثغرة أمنية في TOTOLINK N350RT 9.3.5u.6468_B20250827/9.3.5u.6466_B20250825. تؤدي محاولة التلاعب بمعامل lang في دالة setLanguageCfg من ملف /cgi-bin/cstecgi.cgi إلى تجاوز التحقق من الهوية ويمكن تنفيذ الهجوم عن بُعد.",
    "severity": "critical",
    "score": 10.0,
    "kev": false,
@@ -2788,7 +2788,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-137043",
    "date": "2026-11-26T03:16:39+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -3902,6 +3902,21 @@
    "advice": null
   },
   {
+   "id": "019518586f07180c",
+   "type": "gen",
+   "title": "Samsung’s R95H TV shows what RGB LED is capable of",
+   "summary": "تُظهر سلسلة تلفزيونات سامسونج R95H ما يمكن أن تفعله تقنية RGB LED.",
+   "severity": null,
+   "score": null,
+   "kev": false,
+   "system": "",
+   "source": "www.theverge.com",
+   "link": "https://www.theverge.com/tech/1042613/samsung-r95h-rgb-led-tv-review",
+   "date": "2026-11-25T22:05:18+00:00",
+   "sum_src": "llm",
+   "advice": null
+  },
+  {
    "id": "50a53afadcff1570",
    "type": "gen",
    "title": "Palo Alto Networks warns of Fragnesia flaw exploited in PAN-OS attacks",
@@ -4295,7 +4310,7 @@
    "id": "d52cc031d711c026",
    "type": "fix",
    "title": "Drupal Fail2Install Exploit Details Emerge as Critical RCE Flaw Faces Active Exploitation",
-   "summary": "",
+   "summary": "أصدرت المفوضية الأوروبية تحذيرًا بشأن ثغرة تُعرف باسم Fail2Install تؤثر على منصة Drupal وتسمح للمهاجمين بالاستغلال عن بُعد.",
    "severity": null,
    "score": null,
    "kev": false,
@@ -4303,7 +4318,7 @@
    "source": "feeds.feedburner.com",
    "link": "https://thehackernews.com/2026/11/drupal-fail2install-exploit-details.html",
    "date": "2026-11-25T11:23:26+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": null
   },
   {
@@ -4355,7 +4370,7 @@
    "id": "916629091cfddbe4",
    "type": "gen",
    "title": "Hackers Exploited CVSS 10.0 Hex.pm RCE Flaw to Compromise 6 Package Registry Servers",
-   "summary": "",
+   "summary": "المهاجم استغل ثغرة في Hex.pm أدت إلى تنفيذ أوامر نظام التشغيل على ستة خوادم إنتاجية يوم الاثنين، وقد كانت الثغرة موجودة في كود النظام منذ فبراير 2016.",
    "severity": null,
    "score": null,
    "kev": false,
@@ -4363,7 +4378,7 @@
    "source": "feeds.feedburner.com",
    "link": "https://thehackernews.com/2026/11/hackers-exploited-cvss-100-hexpm-rce.html",
    "date": "2026-11-25T09:06:59+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": null
   },
   {
@@ -4610,7 +4625,7 @@
    "id": "CVE-2026-133323",
    "type": "vul",
    "title": "CVE-2026-133323: Mitel MiCollab OS Command Injection Vulnerability",
-   "summary": "",
+   "summary": "تحتوي منصة Mitel MiCollab على ثغرة في مكون Audio, Web, and Video Conferencing (AWV) تسمح للمهاجم دون مصادقة بتنفيذ شيفرة عشوائية على النظام.",
    "severity": "critical",
    "score": 9.8,
    "kev": true,
@@ -4618,7 +4633,7 @@
    "source": "CISA KEV",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-133323",
    "date": "2026-11-25T00:00:00+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -5075,7 +5090,7 @@
    "id": "4a847676e926b3bb",
    "type": "gen",
    "title": "Amazon’s Decart acquisition is a bet on using software to narrow the silicon gap with Nvidia",
-   "summary": "",
+   "summary": "أعلن أمازون عن اقتناء شركة Decart بقيمة 7.5 مليار دولار كاستثمار في تحسين كفاءة أجهزة Trainium الخاصة بها.",
    "severity": null,
    "score": null,
    "kev": false,
@@ -5083,7 +5098,7 @@
    "source": "techcrunch.com",
    "link": "https://techcrunch.com/2026/11/24/amazons-decart-acquisition-is-a-bet-on-using-software-to-narrow-the-gap-with-nvidia-in-the-ai-chip-race/",
    "date": "2026-11-24T15:51:07+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": null
   },
   {
@@ -5548,7 +5563,7 @@
    "source": "feeds.feedburner.com",
    "link": "https://thehackernews.com/2026/11/weekly-recap-vmware-0-day-java4shell.html",
    "date": "2026-11-23T15:10:48+00:00",
-   "sum_src": "pending",
+   "sum_src": "failed",
    "advice": null
   },
   {
@@ -5570,7 +5585,7 @@
    "id": "33d65726f50ee8a4",
    "type": "gen",
    "title": "Hackers Exploit Critical ScreenConnect Flaw to Hijack MSP Technician PCs Without Warning",
-   "summary": "",
+   "summary": "المهاجمون يستغلون ثغرة حرجة في ScreenConnect من ConnectWise لاختراق أجهزة مسؤولي الخدمة المدارة دون تحذير. الثغرة تسمح للمهاجم بتنفيذ شيفرة خبيثة على جهاز الفني المتصل عبر CVE-2026-84869.",
    "severity": null,
    "score": null,
    "kev": false,
@@ -5578,7 +5593,7 @@
    "source": "feeds.feedburner.com",
    "link": "https://thehackernews.com/2026/11/hackers-exploit-critical-screenconnect.html",
    "date": "2026-11-23T12:41:04+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": null
   },
   {
@@ -5608,7 +5623,7 @@
    "source": "feeds.feedburner.com",
    "link": "https://thehackernews.com/2026/11/hackers-exploit-critical-aspnet-anti.html",
    "date": "2026-11-23T09:11:56+00:00",
-   "sum_src": "pending",
+   "sum_src": "failed",
    "advice": null
   },
   {
@@ -5673,7 +5688,7 @@
   },
   {
    "id": "78074d39dfa2deb1",
-   "type": "ai",
+   "type": "gen",
    "title": "OpenRouter Drops 3 Providers After Researchers Catch Months of Prompt Theft at AI Hosting Firms",
    "summary": "أفادت شركة الأمن السيبراني الصناعي Dragos أن مهاجمين سرقوا بيانات من داخل ثلاث شركات تقديم استنتاجات الذكاء الاصطناعي لأشهر دون أن تعرف الشركات الثلاث حتى بعد أن أبلغها الباحثون. بعض طلبات السرقة تم تحديدها كـ \"Zero Data Retention\" والتي تُقصد أن لا تخزن طلبات المستخدم.",
    "severity": null,
@@ -5735,7 +5750,7 @@
    "id": "16765aea3bd9ae9d",
    "type": "gen",
    "title": "Attackers' AI Agents Found a Zero-Day in Medical-Imaging Software and Gained Root Access",
-   "summary": "",
+   "summary": "اكتشاف ثغرة صفرية في برنامج تطبيقي للتصوير الطبي من قبل المهاجمين باستخدام الذكاء الاصطناعي، مما سمح للمهاجمين بالوصول إلى جذر خادم جامعة.",
    "severity": null,
    "score": null,
    "kev": false,
@@ -5743,7 +5758,7 @@
    "source": "feeds.feedburner.com",
    "link": "https://thehackernews.com/2026/11/attackers-ai-agents-found-zero-day-in.html",
    "date": "2026-11-21T11:03:17+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": null
   },
   {
@@ -5759,21 +5774,6 @@
    "link": "https://thehackernews.com/2026/11/signal-blocks-ai-agents-from-reading.html",
    "date": "2026-11-21T08:49:20+00:00",
    "sum_src": "llm",
-   "advice": null
-  },
-  {
-   "id": "a3eac34b29cf4ec4",
-   "type": "gen",
-   "title": "Hackers Exploit Critical VMware, Cisco, and Apache Flaws as Espionage Attacks Emerge",
-   "summary": "",
-   "severity": null,
-   "score": null,
-   "kev": false,
-   "system": "",
-   "source": "feeds.feedburner.com",
-   "link": "https://thehackernews.com/2026/11/hackers-exploit-critical-vmware-cisco.html",
-   "date": "2026-11-21T08:49:13+00:00",
-   "sum_src": "failed",
    "advice": null
   },
   {
