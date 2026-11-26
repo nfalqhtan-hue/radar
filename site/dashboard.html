@@ -3,43 +3,44 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>الإحصائيات | رادار التقنية</title>
+<title data-en="Statistics | Tech Radar">الإحصائيات | رادار التقنية</title>
 <meta name="description" content="أرقام محسوبة من كل ما رصده رادار التقنية: الثغرات حسب الخطورة والوقت والمنتج، والأخبار، وجودة الملخصات.">
 <meta name="theme-color" content="#0A1428">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-hoi5ni4vu4NLlWr/4idxGltf51+wMxiLL21mF7iaOwo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-LLm5XCccwQJVd/6axRIc9eVFKHLYmMjx4m9vl7w5tl8='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%230A1428'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23C9A063' stroke-width='1.5' opacity='.6'/%3E%3Cpath d='M16 16 L16 3 A13 13 0 0 1 27.3 9.5 Z' fill='%23C9A063' opacity='.55'/%3E%3Ccircle cx='22' cy='9' r='2.4' fill='%23FF6B66'/%3E%3C/svg%3E">
-<script>try{var t=localStorage.getItem("radar-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+<script>try{var d=document.documentElement,t=localStorage.getItem("radar-theme");if(t==="dark"||t==="light")d.dataset.theme=t;var l=new URLSearchParams(location.search).get("lang")||localStorage.getItem("radar-lang");if(l==="en"){d.lang="en";d.dir="ltr"}}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/app.css">
-<link rel="stylesheet" href="assets/dashboard.css">
+<link rel="stylesheet" href="assets/app.css?v=p5">
+<link rel="stylesheet" href="assets/dashboard.css?v=p5">
 </head>
 <body>
-<a class="skip" href="#main">انتقل إلى الإحصائيات</a>
+<a class="skip" href="#main" data-en="Skip to the statistics">انتقل إلى الإحصائيات</a>
 <header class="scope">
   <div class="wrap">
     <div class="topbar">
-      <a class="brand" href="./" aria-label="رادار التقنية، الصفحة الرئيسية">
+      <a class="brand" href="./" aria-label="رادار التقنية، الصفحة الرئيسية" data-en-aria-label="Tech Radar, home">
         <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="none" stroke="#2A4170"/><circle cx="16" cy="16" r="9" fill="none" stroke="#2A4170"/><path d="M16 16 L16 1 A15 15 0 0 1 29 8.5 Z" fill="#C9A063" opacity=".5"/><circle cx="22" cy="9" r="2.2" fill="#FF6B66"/></svg>
-        <b>رادار التقنية</b>
+        <b data-en="Tech Radar">رادار التقنية</b>
       </a>
-      <nav class="nav" aria-label="أقسام الموقع">
-        <a href="./">الرئيسية</a>
-        <a href="alerts.html">التنبيهات</a>
-        <a href="dashboard.html" aria-current="page">الإحصائيات</a>
-        <a href="./#how-h">كيف يعمل</a>
+      <nav class="nav" aria-label="أقسام الموقع" data-en-aria-label="Site sections">
+        <a href="./" data-en="Home">الرئيسية</a>
+        <a href="alerts.html" data-en="Alerts">التنبيهات</a>
+        <a href="dashboard.html" aria-current="page" data-en="Statistics">الإحصائيات</a>
+        <a href="./#how-h" data-en="How it works">كيف يعمل</a>
       </nav>
       <div class="top-actions">
-        <span class="status loading" id="status" role="status"><span class="status-dot" aria-hidden="true"></span><span class="status-text" id="status-text">جارٍ التحميل</span></span>
-        <button class="icon-btn" id="theme" type="button" aria-label="تبديل الوضع الليلي والفاتح">
+        <span class="status loading" id="status" role="status"><span class="status-dot" aria-hidden="true"></span><span class="status-text" id="status-text" data-en="Loading">جارٍ التحميل</span></span>
+        <button class="icon-btn lang-btn" id="lang" type="button" lang="en" aria-label="Switch to English">EN</button>
+        <button class="icon-btn" id="theme" type="button" aria-label="تبديل الوضع الليلي والفاتح" data-en-aria-label="Toggle dark and light mode">
           <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
         </button>
       </div>
     </div>
     <div class="page-head">
-      <h1>الإحصائيات</h1>
+      <h1 data-en="Statistics">الإحصائيات</h1>
       <p id="intro">أرقام محسوبة من كل ما رصده الرادار، وتتحدث مع كل دورة.</p>
     </div>
   </div>
@@ -48,56 +49,56 @@
 <main id="main" class="wrap s-page" tabindex="-1">
   <div id="state"></div>
   <div id="dash" hidden>
-    <section class="kpis" aria-label="أرقام رئيسية">
-      <div class="kpi"><b class="num" id="k-total"></b><span>ثغرة رصدها الرادار</span></div>
-      <div class="kpi"><b class="num" id="k-24"></b><span>نُشرت في آخر 24 ساعة</span></div>
-      <div class="kpi"><b class="num" id="k-7"></b><span>نُشرت في آخر 7 أيام</span></div>
+    <section class="kpis" aria-label="أرقام رئيسية" data-en-aria-label="Key figures">
+      <div class="kpi"><b class="num" id="k-total"></b><span data-en="vulnerabilities tracked">ثغرة رصدها الرادار</span></div>
+      <div class="kpi"><b class="num" id="k-24"></b><span data-en="published in the last 24 hours">نُشرت في آخر 24 ساعة</span></div>
+      <div class="kpi"><b class="num" id="k-7"></b><span data-en="published in the last 7 days">نُشرت في آخر 7 أيام</span></div>
       <div class="kpi kev"><b class="num" id="k-kev"></b><span id="k-kev-l">ثبت استغلالها</span></div>
     </section>
 
     <div class="s-grid">
       <section class="card" aria-labelledby="h-sev">
-        <h2 id="h-sev">الثغرات حسب الخطورة</h2>
-        <p class="s-note">درجة CVSS من قاعدة NVD. اضغط أي مستوى لعرض ثغراته.</p>
+        <h2 id="h-sev" data-en="Vulnerabilities by severity">الثغرات حسب الخطورة</h2>
+        <p class="s-note" data-en="CVSS score from NVD. Click a level to see its vulnerabilities.">درجة CVSS من قاعدة NVD. اضغط أي مستوى لعرض ثغراته.</p>
         <ul class="hbars" id="sev"></ul>
       </section>
 
       <section class="card wide" aria-labelledby="h-hour">
         <div class="card-head">
-          <h2 id="h-hour">الثغرات المنشورة حسب الوقت</h2>
-          <div class="seg" role="group" aria-label="المدة">
-            <button type="button" data-range="hour" aria-pressed="true">آخر 48 ساعة</button>
-            <button type="button" data-range="day" aria-pressed="false">بالأيام</button>
+          <h2 id="h-hour" data-en="Vulnerabilities published over time">الثغرات المنشورة حسب الوقت</h2>
+          <div class="seg" role="group" aria-label="المدة" data-en-aria-label="Range">
+            <button type="button" data-range="hour" aria-pressed="true" data-en="Last 48 hours">آخر 48 ساعة</button>
+            <button type="button" data-range="day" aria-pressed="false" data-en="By day">بالأيام</button>
           </div>
         </div>
         <p class="s-note" id="time-note"></p>
         <div class="cols" id="cols" role="img"></div>
         <div class="cols-axis" id="cols-axis" aria-hidden="true"></div>
         <div class="tip" id="tip" role="status" aria-live="polite"></div>
-        <details class="as-table"><summary>عرض كجدول</summary><div id="t-time"></div></details>
+        <details class="as-table"><summary data-en="Show as a table">عرض كجدول</summary><div id="t-time"></div></details>
       </section>
 
       <section class="card" aria-labelledby="h-sys">
-        <h2 id="h-sys">أكثر المنتجات ظهوراً</h2>
+        <h2 id="h-sys" data-en="Most frequent products">أكثر المنتجات ظهوراً</h2>
         <p class="s-note" id="sys-note"></p>
         <ol class="hbars plain" id="sys"></ol>
       </section>
 
       <section class="card" aria-labelledby="h-news">
-        <h2 id="h-news">الأخبار التقنية</h2>
-        <div class="mini-kpis"><div><b class="num" id="n-total"></b><span>خبراً</span></div><div><b class="num" id="n-24"></b><span>آخر 24 ساعة</span></div><div><b class="num" id="n-7"></b><span>آخر 7 أيام</span></div></div>
-        <h3>حسب التصنيف</h3>
+        <h2 id="h-news" data-en="Tech news">الأخبار التقنية</h2>
+        <div class="mini-kpis"><div><b class="num" id="n-total"></b><span data-en="stories">خبراً</span></div><div><b class="num" id="n-24"></b><span data-en="last 24 hours">آخر 24 ساعة</span></div><div><b class="num" id="n-7"></b><span data-en="last 7 days">آخر 7 أيام</span></div></div>
+        <h3 data-en="By category">حسب التصنيف</h3>
         <ul class="hbars plain" id="n-type"></ul>
-        <h3>حسب المصدر</h3>
+        <h3 data-en="By source">حسب المصدر</h3>
         <ul class="hbars plain" id="n-src"></ul>
       </section>
 
       <section class="card" aria-labelledby="h-sum">
-        <h2 id="h-sum">مصدر الملخصات العربية</h2>
-        <p class="s-note">كل ملخص إما كتبه النموذج اللغوي ونجح في فحص الجودة، أو بُني من بيانات الثغرة مباشرة، أو رفضه الفحص فلم يُنشر.</p>
-        <h3>الثغرات</h3>
+        <h2 id="h-sum" data-en="Where the Arabic summaries come from">مصدر الملخصات العربية</h2>
+        <p class="s-note" data-en="Each summary was either written by the language model and passed the quality check, built directly from the vulnerability's data, or rejected by the check and not published.">كل ملخص إما كتبه النموذج اللغوي ونجح في فحص الجودة، أو بُني من بيانات الثغرة مباشرة، أو رفضه الفحص فلم يُنشر.</p>
+        <h3 data-en="Vulnerabilities">الثغرات</h3>
         <ul class="hbars plain" id="sum-v"></ul>
-        <h3>الأخبار</h3>
+        <h3 data-en="News">الأخبار</h3>
         <ul class="hbars plain" id="sum-n"></ul>
       </section>
     </div>
@@ -106,12 +107,12 @@
 
 <div class="wrap">
   <footer class="foot">
-    <p>مشروع تخرج من إعداد عبدالله طلال القحطاني وعبدالله يعقوب الخليفة.</p>
-    <p>كل رقم هنا محسوب من قاعدة بيانات الرادار نفسها، وليس من بيانات تجريبية.</p>
+    <p data-en="A graduation project by Abdullah Talal Alqahtani and Abdullah Yaqoub Alkhalifa.">مشروع تخرج من إعداد عبدالله طلال القحطاني وعبدالله يعقوب الخليفة.</p>
+    <p data-en="Every number here is computed from the radar's own database, not from sample data.">كل رقم هنا محسوب من قاعدة بيانات الرادار نفسها، وليس من بيانات تجريبية.</p>
   </footer>
 </div>
 
-<script src="assets/core.js"></script>
-<script src="assets/dashboard.js"></script>
+<script src="assets/core.js?v=p5"></script>
+<script src="assets/dashboard.js?v=p5"></script>
 </body>
 </html>

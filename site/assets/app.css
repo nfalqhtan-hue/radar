@@ -179,3 +179,9 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
   .scope, .nav, .icon-btn, .skip, aside.side, .more, .sort, .newswitch { display: none !important; }
   body { background: #fff; color: #000; }
 }
+
+/* ===== مفتاح اللغة ===== */
+.lang-btn { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+:root[dir="ltr"] .lang-btn { font-family: var(--f-display); font-size: 16px; }
+/* بالإنجليزية: نص المصدر الأصلي يُقرأ أفضل بمحاذاة اليسار */
+:root[lang="en"] body { line-height: 1.65; }

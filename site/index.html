@@ -3,37 +3,38 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>رادار التقنية</title>
-<meta name="description" content="الثغرات الأمنية وأخبار التقنية من مصادرها الرسمية، ملخصة بالعربية وتتحدث كل ساعة.">
+<title data-en="Tech Radar">رادار التقنية</title>
+<meta name="description" content="الثغرات الأمنية وأخبار التقنية من مصادرها الرسمية، ملخصة بالعربية وتتحدث كل ساعة." data-en-content="Security vulnerabilities and tech news from official sources, summarized in Arabic and updated hourly.">
 <meta name="theme-color" content="#0A1428">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-hoi5ni4vu4NLlWr/4idxGltf51+wMxiLL21mF7iaOwo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-LLm5XCccwQJVd/6axRIc9eVFKHLYmMjx4m9vl7w5tl8='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%230A1428'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23C9A063' stroke-width='1.5' opacity='.6'/%3E%3Cpath d='M16 16 L16 3 A13 13 0 0 1 27.3 9.5 Z' fill='%23C9A063' opacity='.55'/%3E%3Ccircle cx='22' cy='9' r='2.4' fill='%23FF6B66'/%3E%3C/svg%3E">
-<script>try{var t=localStorage.getItem("radar-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+<script>try{var d=document.documentElement,t=localStorage.getItem("radar-theme");if(t==="dark"||t==="light")d.dataset.theme=t;var l=new URLSearchParams(location.search).get("lang")||localStorage.getItem("radar-lang");if(l==="en"){d.lang="en";d.dir="ltr"}}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/app.css">
-<link rel="stylesheet" href="assets/home.css">
+<link rel="stylesheet" href="assets/app.css?v=p5">
+<link rel="stylesheet" href="assets/home.css?v=p5">
 </head>
 <body>
-<a class="skip" href="#main">انتقل إلى الخلاصة</a>
+<a class="skip" href="#main" data-en="Skip to the feed">انتقل إلى الخلاصة</a>
 <header class="scope">
   <div class="wrap">
     <div class="topbar">
-      <a class="brand" href="./" aria-label="رادار التقنية، الصفحة الرئيسية">
+      <a class="brand" href="./" aria-label="رادار التقنية، الصفحة الرئيسية" data-en-aria-label="Tech Radar, home">
         <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="none" stroke="#2A4170"/><circle cx="16" cy="16" r="9" fill="none" stroke="#2A4170"/><path d="M16 16 L16 1 A15 15 0 0 1 29 8.5 Z" fill="#C9A063" opacity=".5"/><circle cx="22" cy="9" r="2.2" fill="#FF6B66"/></svg>
-        <b>رادار التقنية</b>
+        <b data-en="Tech Radar">رادار التقنية</b>
       </a>
-      <nav class="nav" aria-label="أقسام الموقع">
-        <a href="./" aria-current="page">الرئيسية</a>
-        <a href="alerts.html">التنبيهات</a>
-        <a href="dashboard.html">الإحصائيات</a>
-        <a href="#how-h">كيف يعمل</a>
+      <nav class="nav" aria-label="أقسام الموقع" data-en-aria-label="Site sections">
+        <a href="./" aria-current="page" data-en="Home">الرئيسية</a>
+        <a href="alerts.html" data-en="Alerts">التنبيهات</a>
+        <a href="dashboard.html" data-en="Statistics">الإحصائيات</a>
+        <a href="#how-h" data-en="How it works">كيف يعمل</a>
       </nav>
       <div class="top-actions">
-        <span class="status loading" id="status" role="status"><span class="status-dot" aria-hidden="true"></span><span class="status-text" id="status-text">جارٍ التحميل</span></span>
-        <button class="icon-btn" id="theme" type="button" aria-label="تبديل الوضع الليلي والفاتح">
+        <span class="status loading" id="status" role="status"><span class="status-dot" aria-hidden="true"></span><span class="status-text" id="status-text" data-en="Loading">جارٍ التحميل</span></span>
+        <button class="icon-btn lang-btn" id="lang" type="button" lang="en" aria-label="Switch to English">EN</button>
+        <button class="icon-btn" id="theme" type="button" aria-label="تبديل الوضع الليلي والفاتح" data-en-aria-label="Toggle dark and light mode">
           <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
         </button>
       </div>
@@ -41,8 +42,8 @@
 
     <div class="hero">
       <div class="hero-head">
-        <h1>ما يحتاج انتباهك الآن</h1>
-        <p class="lede" id="lede">نرصد الثغرات الأمنية وأخبار التقنية كل ساعة، ونرتبها حسب الخطورة.</p>
+        <h1 data-en="What needs your attention now">ما يحتاج انتباهك الآن</h1>
+        <p class="lede" id="lede" data-en="We track security vulnerabilities and tech news every hour, ranked by severity.">نرصد الثغرات الأمنية وأخبار التقنية كل ساعة، ونرتبها حسب الخطورة.</p>
       </div>
       <div class="hero-list">
         <ol class="now-list" id="now"><li class="now-skel" aria-hidden="true"><span class="skel"></span><span class="skel"></span><span class="skel"></span></li></ol>
@@ -61,11 +62,11 @@
           <g class="sweep"><path d="M0 0 L-60 -85 A104 104 0 0 1 0 -104 Z" fill="url(#sweep-g)"/><line x1="0" y1="0" x2="0" y2="-104" stroke="#C9A063" stroke-width=".9" opacity=".95"/></g>
           <g id="blips"></g>
           <circle r="2.2" fill="#C9A063"/>
-          <text class="radar-load" id="radar-load" y="22">جارٍ المسح…</text>
+          <text class="radar-load" id="radar-load" y="22" data-en="Scanning…">جارٍ المسح…</text>
         </svg>
         <figcaption class="radar-key"><span class="sr" id="radar-cap">خريطة رادار لعناصر آخر 24 ساعة</span>
           <span class="radar-count" id="radar-count"></span>
-          <span class="k" style="--c:#FF6B66">حرجة</span><span class="k" style="--c:#FF9F4D">عالية</span><span class="k" style="--c:#E8C547">متوسطة</span><span class="k" style="--c:#D7AE6E">خبر</span><span class="k ring">ثبت استغلالها</span><span>الأحدث في المركز</span>
+          <span class="k" style="--c:#FF6B66" data-en="Critical">حرجة</span><span class="k" style="--c:#FF9F4D" data-en="High">عالية</span><span class="k" style="--c:#E8C547" data-en="Medium">متوسطة</span><span class="k" style="--c:#D7AE6E" data-en="News">خبر</span><span class="k ring" data-en="Known exploited">ثبت استغلالها</span><span data-en="Newest at the center">الأحدث في المركز</span>
         </figcaption>
         <div class="radar-tip" id="tip" role="presentation"></div>
       </figure>
@@ -74,40 +75,46 @@
 </header>
 
 <div class="wrap page">
-  <aside class="side" aria-label="البحث والتصفية">
+  <aside class="side" aria-label="البحث والتصفية" data-en-aria-label="Search and filters">
     <div class="search-box">
-      <label class="sr" for="q">بحث</label>
+      <label class="sr" for="q" data-en="Search">بحث</label>
       <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      <input class="search" id="q" type="search" placeholder="ابحث باسم منتج أو رقم CVE" autocomplete="off" maxlength="80" enterkeyhint="search">
+      <input class="search" id="q" type="search" placeholder="ابحث برقم CVE أو منتج أو كلمة" data-en-placeholder="Search by CVE, product or keyword" autocomplete="off" maxlength="80" enterkeyhint="search" aria-describedby="q-hint">
+      <p class="q-hint" id="q-hint" data-en="Example: CVE-2026-1234, Chrome, ransomware. Every word must match.">مثال: CVE-2026-1234 أو Chrome أو برامج الفدية. يجب أن تطابق كل الكلمات.</p>
     </div>
     <button class="filters-toggle" id="filters-toggle" type="button" aria-expanded="false" aria-controls="filter-panel">
-      <span>التصفية <span class="on" id="filters-on"></span></span>
+      <span><span data-en="Filters">التصفية</span> <span class="on" id="filters-on"></span></span>
       <svg class="chev" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="filter-panel closed" id="filter-panel">
       <div>
-        <h2>النوع</h2>
-        <div class="filters" id="types" role="group" aria-label="النوع"></div>
+        <h2 data-en="Type">النوع</h2>
+        <div class="filters" id="types" role="group" aria-label="النوع" data-en-aria-label="Type"></div>
+      </div>
+      <div>
+        <h2 id="dates-h" data-en="Date">التاريخ</h2>
+        <div class="filters" id="dates" role="group" aria-labelledby="dates-h"></div>
       </div>
       <div id="sev-box">
-        <h2 id="sev-h">خطورة الثغرات</h2>
+        <h2 id="sev-h" data-en="Vulnerability severity">خطورة الثغرات</h2>
         <div class="sevbar" id="sevbar" aria-hidden="true"></div>
         <ul class="sevlegend" id="sevlegend" aria-labelledby="sev-h"></ul>
       </div>
-      <p class="side-note" id="clear-wrap" hidden><button class="clear" id="clear" type="button">إلغاء التصفية</button></p>
+      <p class="side-note" id="clear-wrap" hidden><button class="clear" id="clear" type="button" data-en="Clear filters">إلغاء التصفية</button></p>
     </div>
   </aside>
 
   <main id="main" tabindex="-1">
     <div class="feed-head">
-      <h2>كل ما رصدناه</h2>
+      <h2 data-en="Everything we tracked">كل ما رصدناه</h2>
       <div class="head-controls">
         <button class="newswitch" id="newonly" type="button" role="switch" aria-checked="false">
-          <span class="track" aria-hidden="true"></span><span id="newonly-label">الجديد فقط</span><span class="c" id="newonly-count"></span>
+          <span class="track" aria-hidden="true"></span><span id="newonly-label" data-en="New only">الجديد فقط</span><span class="c" id="newonly-count"></span>
         </button>
-        <div class="sort" role="group" aria-label="الترتيب">
-          <button type="button" data-sort="new" aria-pressed="true">الأحدث</button>
-          <button type="button" data-sort="imp" aria-pressed="false">الأخطر</button>
+        <div class="sort" role="group" aria-label="الترتيب" data-en-aria-label="Sort">
+          <button type="button" data-sort="new" aria-pressed="true" data-en="Newest">الأحدث</button>
+          <button type="button" data-sort="old" aria-pressed="false" data-en="Oldest">الأقدم</button>
+          <button type="button" data-sort="imp" aria-pressed="false" data-en="Most severe">الأخطر</button>
         </div>
       </div>
     </div>
@@ -124,24 +131,24 @@
 
 <div class="wrap">
   <section class="how" aria-labelledby="how-h">
-    <h2 id="how-h">كيف يعمل الرادار</h2>
-    <p class="intro">يعمل الرادار على جهاز أحدنا ويتحدث كل ساعة. الملخصات يكتبها نموذج لغوي يعمل على الجهاز نفسه (Qwen3)، ودرجة خطورة كل ثغرة منقولة كما هي من قاعدة NVD الأمريكية.</p>
+    <h2 id="how-h" data-en="How the radar works">كيف يعمل الرادار</h2>
+    <p class="intro" data-en="The radar runs on one of our computers and updates every hour. Arabic summaries are written by a language model running on the same machine (Qwen3); each vulnerability's severity score is copied as-is from the US NVD database.">يعمل الرادار على جهاز أحدنا ويتحدث كل ساعة. الملخصات يكتبها نموذج لغوي يعمل على الجهاز نفسه (Qwen3)، ودرجة خطورة كل ثغرة منقولة كما هي من قاعدة NVD الأمريكية.</p>
     <ol class="steps">
-      <li><b>الجلب</b><span>من NVD وقائمة CISA للثغرات المستغلة وخلاصات أخبار تقنية</span></li>
-      <li><b>التنظيف</b><span>إزالة التكرار وتوحيد الصيغة</span></li>
-      <li><b>التصنيف</b><span>النوع والنظام المتأثر ودرجة الخطورة</span></li>
-      <li><b>التلخيص</b><span>سطر أو سطران بالعربية من نص المصدر فقط</span></li>
-      <li><b>التحقق</b><span>مطابقة رقم CVE والتاريخ، وفحص جودة الملخص</span></li>
-      <li><b>النشر والتنبيه</b><span>تحديث هذه الصفحة، ورسالة تيليجرام عند ظهور ثغرة حرجة</span></li>
+      <li><b data-en="Fetch">الجلب</b><span data-en="From NVD, CISA's exploited list and tech news feeds">من NVD وقائمة CISA للثغرات المستغلة وخلاصات أخبار تقنية</span></li>
+      <li><b data-en="Clean">التنظيف</b><span data-en="Remove duplicates and normalize the format">إزالة التكرار وتوحيد الصيغة</span></li>
+      <li><b data-en="Classify">التصنيف</b><span data-en="Type, affected system and severity">النوع والنظام المتأثر ودرجة الخطورة</span></li>
+      <li><b data-en="Summarize">التلخيص</b><span data-en="One or two Arabic sentences from the source text only">سطر أو سطران بالعربية من نص المصدر فقط</span></li>
+      <li><b data-en="Verify">التحقق</b><span data-en="Match the CVE number and date, and check summary quality">مطابقة رقم CVE والتاريخ، وفحص جودة الملخص</span></li>
+      <li><b data-en="Publish and alert">النشر والتنبيه</b><span data-en="Update this page, and send a Telegram message for critical or exploited vulnerabilities">تحديث هذه الصفحة، ورسالة تيليجرام عند ظهور ثغرة حرجة أو مستغلة</span></li>
     </ol>
   </section>
   <footer class="foot">
-    <p>مشروع تخرج من إعداد عبدالله طلال القحطاني وعبدالله يعقوب الخليفة.</p>
-    <p>الملخصات يكتبها نموذج آلي وقد يخطئ، فارجع إلى المصدر قبل أن تتصرف بناءً عليها.</p>
+    <p data-en="A graduation project by Abdullah Talal Alqahtani and Abdullah Yaqoub Alkhalifa.">مشروع تخرج من إعداد عبدالله طلال القحطاني وعبدالله يعقوب الخليفة.</p>
+    <p data-en="Summaries are machine-written and can be wrong. Check the source before acting on them.">الملخصات يكتبها نموذج آلي وقد يخطئ، فارجع إلى المصدر قبل أن تتصرف بناءً عليها.</p>
   </footer>
 </div>
 
-<script src="assets/core.js"></script>
-<script src="assets/home.js"></script>
+<script src="assets/core.js?v=p5"></script>
+<script src="assets/home.js?v=p5"></script>
 </body>
 </html>
