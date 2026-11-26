@@ -23,15 +23,16 @@
   --text: #17213A;
   --muted: #586379;
   --line: #D8DEE8;
-  --accent: #8A6428;       /* ذهبي داكن مقروء على الفاتح */
-  --focus: #2F6FED;
+  --accent: #7E5A22;       /* ذهبي داكن مقروء على الفاتح */
+  --focus: #2558C8;
 
-  --s-critical: #C42B26;
-  --s-high: #B9540A;
-  --s-medium: #8A6A00;
-  --s-low: #2D7A4D;
-  --s-unknown: #667085;
-  --s-news: #8A6428;
+  /* سلّم الخطورة: كل لون ≥ 4.5:1 على الخلفية وداخل شارته الملونة (مراجعة ui-ux-pro-max) */
+  --s-critical: #B3261E;
+  --s-high: #974203;
+  --s-medium: #765A00;
+  --s-low: #276B43;
+  --s-unknown: #566074;
+  --s-news: #7E5A22;
 
   --f-display: "Noto Kufi Arabic", "IBM Plex Sans Arabic", Tahoma, sans-serif;
   --f-body: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
@@ -130,13 +131,27 @@ aside.side { position: sticky; top: 16px; display: grid; gap: 24px; }
 :root[data-theme="dark"] .filter[aria-pressed="true"] { background: var(--accent); color: #14213D; }
 :root[data-theme="dark"] .filter[aria-pressed="true"] .n { color: #14213D; }
 
-.sevbar { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--line); gap: 2px; }
-.sevbar button { border: 0; padding: 0; cursor: pointer; background: var(--c); min-width: 6px; }
-.sevbar button[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--text); }
-.sevlegend { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 2px; font-size: 14px; }
-.sevlegend li { display: flex; justify-content: space-between; }
-.sevlegend li span:first-child::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 2px; background: var(--c); margin-inline-end: 7px; vertical-align: middle; }
-.sevlegend .n { color: var(--muted); font-variant-numeric: tabular-nums; }
+.sevbar { display: flex; height: 12px; border-radius: 6px; overflow: hidden; background: var(--line); gap: 2px; }
+.sevbar span { background: var(--c); min-width: 6px; transition: opacity .15s; }
+.sevbar.picking span:not(.on) { opacity: .25; }
+.sevlegend { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 2px; }
+.sev-btn { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 8px; background: transparent; border: 0; border-radius: 8px; padding: 4px 10px; min-height: 36px; cursor: pointer; font-size: 14.5px; text-align: start; }
+.sev-btn:hover { background: color-mix(in srgb, var(--text) 6%, transparent); }
+.sev-btn[aria-pressed="true"] { background: color-mix(in srgb, var(--c) 16%, transparent); font-weight: 600; }
+.sev-btn span:first-child::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: var(--c); margin-inline-end: 8px; vertical-align: middle; }
+.sev-btn .n { color: var(--muted); font-variant-numeric: tabular-nums; }
+.sevlegend .kev-note { display: flex; justify-content: space-between; padding: 4px 10px; font-size: 14px; color: var(--muted); }
+
+/* مفتاح «الجديد فقط» */
+.newswitch { display: inline-flex; align-items: center; gap: 8px; background: none; border: 0; padding: 4px 6px; min-height: 40px; cursor: pointer; font-size: 14.5px; color: var(--text); border-radius: 8px; }
+.newswitch .track { position: relative; width: 36px; height: 20px; border-radius: 10px; background: var(--line); transition: background .15s; flex: none; }
+.newswitch .track::after { content: ""; position: absolute; top: 2px; inset-inline-start: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--surface); box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: inset-inline-start .15s; }
+.newswitch[aria-checked="true"] .track { background: var(--focus); }
+.newswitch[aria-checked="true"] .track::after { inset-inline-start: 18px; }
+.newswitch .c { color: var(--muted); font-variant-numeric: tabular-nums; }
+.newswitch:disabled { cursor: default; opacity: .6; }
+@media (prefers-reduced-motion: reduce) { .newswitch .track, .newswitch .track::after, .sevbar span { transition: none; } }
+.head-controls { display: flex; align-items: center; gap: 6px 14px; flex-wrap: wrap; }
 .side-note { margin: 0; }
 .clear { background: none; border: 0; padding: 0; color: var(--accent); cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 
@@ -144,7 +159,7 @@ aside.side { position: sticky; top: 16px; display: grid; gap: 24px; }
 .feed-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; border-bottom: 2px solid var(--text); padding-bottom: 8px; }
 .feed-head h2 { font-family: var(--f-display); font-weight: 700; margin: 0; font-size: 22px; }
 .sort { display: flex; gap: 4px; font-size: 14px; }
-.sort button { background: none; border: 0; padding: 4px 10px; border-radius: 6px; cursor: pointer; color: var(--muted); min-height: 34px; }
+.sort button { background: none; border: 0; padding: 4px 12px; border-radius: 6px; cursor: pointer; color: var(--muted); min-height: 40px; }
 .sort button[aria-pressed="true"] { color: var(--text); font-weight: 600; background: color-mix(in srgb, var(--text) 8%, transparent); }
 .result-line { color: var(--muted); font-size: 14px; margin: 8px 0 0; }
 .result-line:empty { display: none; }
@@ -197,8 +212,7 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
   .hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "radar" "list"; row-gap: 10px; padding: 14px 0 30px; }
   .radar { max-width: 300px; }
   .hero .lede { margin-bottom: 0; }
-  .sevlegend { display: flex; flex-wrap: wrap; gap: 2px 14px; }
-  .sevlegend li { gap: 6px; }
+  .sevlegend { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 8px; }
   .page { grid-template-columns: minmax(0, 1fr); gap: 22px; padding-top: 22px; }
   aside.side { position: static; gap: 18px; }
   .filters { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -266,9 +280,9 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
       <div class="filters" id="types" role="group" aria-label="النوع"></div>
     </div>
     <div id="sev-box">
-      <h2>خطورة الثغرات</h2>
-      <div class="sevbar" id="sevbar" role="group" aria-label="التصفية حسب الخطورة"></div>
-      <ul class="sevlegend" id="sevlegend"></ul>
+      <h2 id="sev-h">خطورة الثغرات</h2>
+      <div class="sevbar" id="sevbar" aria-hidden="true"></div>
+      <ul class="sevlegend" id="sevlegend" aria-labelledby="sev-h"></ul>
     </div>
     <p class="side-note" id="clear-wrap" hidden><button class="clear" id="clear" type="button">إلغاء التصفية</button></p>
   </aside>
@@ -276,9 +290,14 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
   <main id="main">
     <div class="feed-head">
       <h2>كل ما رصدناه</h2>
-      <div class="sort" role="group" aria-label="الترتيب">
-        <button type="button" data-sort="new" aria-pressed="true">الأحدث</button>
-        <button type="button" data-sort="imp" aria-pressed="false">الأخطر</button>
+      <div class="head-controls">
+        <button class="newswitch" id="newonly" type="button" role="switch" aria-checked="false">
+          <span class="track" aria-hidden="true"></span><span id="newonly-label">الجديد فقط</span><span class="c" id="newonly-count"></span>
+        </button>
+        <div class="sort" role="group" aria-label="الترتيب">
+          <button type="button" data-sort="new" aria-pressed="true">الأحدث</button>
+          <button type="button" data-sort="imp" aria-pressed="false">الأخطر</button>
+        </div>
       </div>
     </div>
     <p class="result-line" id="result" aria-live="polite"></p>
@@ -319,7 +338,10 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
   var PAGE = 40, WINDOW_H = 24;
 
   var all = [], byId = {}, genAt = null, lastVisit = null;
-  var st = { type: "", sev: "", q: "", sort: "new", shown: PAGE };
+  var st = { type: "", sev: "", q: "", sort: "new", newOnly: false, shown: PAGE };
+  var FIRST_VISIT_H = 6;   // في أول زيارة لا يوجد «منذ آخر زيارة»، فيُعد جديداً ما وصل في آخر 6 ساعات
+  function baseline() { return lastVisit || (genAt - FIRST_VISIT_H * 36e5); }
+  function isNew(it) { return it.t > baseline(); }
   var $ = function (id) { return document.getElementById(id); };
   var nf = new Intl.NumberFormat("ar-SA-u-nu-latn");
   var dayF = new Intl.DateTimeFormat("ar-SA-u-nu-latn-ca-gregory", { weekday: "long", day: "numeric", month: "long" });
@@ -362,6 +384,7 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
     st.sev = (SEV[p.get("sev")] || p.get("sev") === "kev") ? p.get("sev") : "";
     st.q = (p.get("q") || "").slice(0, 80);
     st.sort = p.get("sort") === "imp" ? "imp" : "new";
+    st.newOnly = p.get("new") === "1";
     $("q").value = st.q;
   }
   function writeHash() {
@@ -370,12 +393,14 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
     if (st.sev) p.set("sev", st.sev);
     if (st.q) p.set("q", st.q);
     if (st.sort !== "new") p.set("sort", st.sort);
+    if (st.newOnly) p.set("new", "1");
     var h = p.toString();
     try { history.replaceState(null, "", h ? "#" + h : location.pathname + location.search); } catch (e) {}
   }
 
   // ---------- التصفية والترتيب
   function match(it, skip) {
+    if (skip !== "new" && st.newOnly && !isNew(it)) return false;
     if (skip !== "type" && st.type && it.type !== st.type) return false;
     if (skip !== "sev" && st.sev) {
       if (st.sev === "kev") { if (!it.kev) return false; }
@@ -444,32 +469,41 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
 
     var vul = all.filter(function (it) { return it.type === "vul" && match(it, "sev"); }), sc = {};
     vul.forEach(function (it) { var s = sevOf(it); sc[s] = (sc[s] || 0) + 1; });
+    // الشريط للعرض فقط، والأزرار هي صفوف المفتاح (أهداف لمس أكبر من شريط ارتفاعه 12px)
     var bar = $("sevbar"), lg = $("sevlegend"); bar.textContent = ""; lg.textContent = "";
+    bar.classList.toggle("picking", !!st.sev && st.sev !== "kev");
     SEV_ORDER.forEach(function (s) {
       if (!sc[s]) return;
-      var b = el("button"); b.type = "button"; b.style.setProperty("--c", "var(--s-" + s + ")"); b.style.flex = String(sc[s]);
-      b.setAttribute("aria-pressed", String(st.sev === s)); b.setAttribute("aria-label", "إظهار الثغرات " + SEV[s] + " فقط: " + nf.format(sc[s]));
-      b.title = SEV[s] + ": " + nf.format(sc[s]);
+      var seg = el("span", st.sev === s ? "on" : null); seg.style.setProperty("--c", "var(--s-" + s + ")"); seg.style.flex = String(sc[s]); bar.appendChild(seg);
+      var li = el("li"), b = el("button", "sev-btn"); b.type = "button"; b.style.setProperty("--c", "var(--s-" + s + ")");
+      b.setAttribute("aria-pressed", String(st.sev === s));
+      b.appendChild(el("span", null, SEV[s])); b.appendChild(el("span", "n", nf.format(sc[s])));
       b.onclick = function () { st.sev = st.sev === s ? "" : s; if (st.sev) st.type = "vul"; update(); };
-      bar.appendChild(b);
-      var li = el("li"); li.style.setProperty("--c", "var(--s-" + s + ")");
-      li.appendChild(el("span", null, SEV[s])); li.appendChild(el("span", "n", nf.format(sc[s]))); lg.appendChild(li);
+      li.appendChild(b); lg.appendChild(li);
     });
     var kev = vul.filter(function (it) { return it.kev; }).length;
-    if (kev) { var li = el("li"); li.style.setProperty("--c", "var(--s-critical)"); li.appendChild(el("span", null, "منها مستغلة فعلياً")); li.appendChild(el("span", "n", nf.format(kev))); lg.appendChild(li); }
+    if (kev) { var li = el("li", "kev-note"); li.appendChild(el("span", null, "منها مستغلة فعلياً")); li.appendChild(el("span", null, nf.format(kev))); lg.appendChild(li); }
     $("sev-box").hidden = !vul.length;
-    $("clear-wrap").hidden = !(st.type || st.sev || st.q);
+    $("clear-wrap").hidden = !(st.type || st.sev || st.q || st.newOnly);
   }
 
   // ---------- الخلاصة
   function renderFeed() {
     var list = sorted(all.filter(function (it) { return match(it); }));
     var feed = $("feed"); feed.textContent = "";
-    $("result").textContent = (st.type || st.sev || st.q) ? ("النتائج: " + nf.format(list.length) + " من " + nf.format(all.length)) : "";
+    $("result").textContent = (st.type || st.sev || st.q || st.newOnly) ? ("النتائج: " + nf.format(list.length) + " من " + nf.format(all.length)) : "";
     if (!list.length) {
-      var e = el("div", "empty"); e.appendChild(el("b", null, "لا توجد نتائج مطابقة. "));
-      e.appendChild(document.createTextNode("جرّب كلمة أخرى، أو اضغط «إلغاء التصفية».")); feed.appendChild(e);
+      var e = el("div", "empty");
+      if (st.newOnly && !(st.type || st.sev || st.q)) {
+        e.appendChild(el("b", null, lastVisit ? "لا جديد منذ زيارتك الأخيرة. " : "لم يصل شيء في آخر " + count(FIRST_VISIT_H, "ساعة", "ساعتين", "ساعات", "ساعة") + ". "));
+        e.appendChild(document.createTextNode("الرادار يتحدث كل ساعة، أو أطفئ «الجديد فقط» لترى كل ما رصدناه."));
+      } else {
+        e.appendChild(el("b", null, "لا توجد نتائج مطابقة. "));
+        e.appendChild(document.createTextNode("جرّب كلمة أخرى، أو اضغط «إلغاء التصفية»."));
+      }
+      feed.appendChild(e);
     }
+    renderNewSwitch();
     var lastDay = null;
     list.slice(0, st.shown).forEach(function (it) {
       if (st.sort === "new") { var d = dayLabel(it.t); if (d !== lastDay) { feed.appendChild(el("h3", "day", d)); lastDay = d; } }
@@ -480,12 +514,24 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
     document.querySelectorAll(".sort button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.sort === st.sort)); });
   }
 
+  // ---------- مفتاح «الجديد فقط»
+  function renderNewSwitch() {
+    var n = all.filter(function (it) { return isNew(it) && match(it, "new"); }).length;
+    var b = $("newonly");
+    b.setAttribute("aria-checked", String(st.newOnly));
+    $("newonly-count").textContent = "(" + nf.format(n) + ")";
+    b.title = lastVisit
+      ? "ما وصل منذ زيارتك السابقة الساعة " + timeF.format(lastVisit) + " (" + dayLabel(lastVisit) + ")"
+      : "أول زيارة لك: نعرض ما وصل في آخر " + count(FIRST_VISIT_H, "ساعة", "ساعتين", "ساعات", "ساعة");
+    b.disabled = !st.newOnly && n === 0;
+  }
+
   function update(keepShown) { if (!keepShown) st.shown = PAGE; renderSide(); renderFeed(); writeHash(); }
 
   // ---------- الانتقال إلى عنصر (من الرادار أو قائمة «الآن»)
   function focusItem(id) {
     var it = byId[id]; if (!it) return;
-    if (!match(it)) { st.type = ""; st.sev = ""; st.q = ""; $("q").value = ""; }
+    if (!match(it)) { st.type = ""; st.sev = ""; st.q = ""; st.newOnly = false; $("q").value = ""; }
     var idx = sorted(all.filter(function (x) { return match(x); })).indexOf(it);
     if (idx >= st.shown) st.shown = Math.ceil((idx + 1) / PAGE) * PAGE;
     update(true);
@@ -587,7 +633,8 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
   // ---------- الأحداث
   var deb;
   $("q").addEventListener("input", function (e) { clearTimeout(deb); deb = setTimeout(function () { st.q = e.target.value.trim(); update(); }, 160); });
-  $("clear").onclick = function () { st.type = ""; st.sev = ""; st.q = ""; $("q").value = ""; update(); };
+  $("clear").onclick = function () { st.type = ""; st.sev = ""; st.q = ""; st.newOnly = false; $("q").value = ""; update(); };
+  $("newonly").onclick = function () { st.newOnly = !st.newOnly; update(); };
   $("more").onclick = function () { st.shown += PAGE; update(true); };
   document.querySelectorAll(".sort button").forEach(function (b) { b.onclick = function () { st.sort = b.dataset.sort; update(); }; });
   window.addEventListener("hashchange", function () { if (!all.length || location.hash.indexOf("#i-") === 0) return; readHash(); update(); });
@@ -599,7 +646,14 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
       genAt = Date.parse(d.generated_at) || Date.now();
       all = (d.items || []).filter(function (it) { return it && it.title && it.id; });
       all.forEach(function (it) { it.t = Date.parse(it.date) || genAt; byId[it.id] = it; });
-      var prev = Number(store("radar-last-visit")); lastVisit = prev > 0 ? prev : null;
+      // «آخر زيارة» تُثبَّت طوال الجلسة: إعادة تحميل الصفحة لا تمسح علامات «جديد»
+      var base = null;
+      try { base = sessionStorage.getItem("radar-visit-base"); } catch (e) {}
+      if (base === null) {
+        base = store("radar-last-visit") || "0";
+        try { sessionStorage.setItem("radar-visit-base", base); } catch (e) {}
+      }
+      lastVisit = Number(base) > 0 ? Number(base) : null;
       store("radar-last-visit", String(Date.now()));
       readHash(); renderStatus(); renderNow(); renderRadar(); update(true);
     })
