@@ -303,7 +303,10 @@ def alert_text(c):
     return f"تنبيه: ثغرة {tag}\n{c['title']}\nCVSS: {c['score'] if c['score'] is not None else 'غير متوفر'}\n{c['link']}"
 
 def export(con, out):
-    rows = con.execute("SELECT * FROM items WHERE status='published' ORDER BY published DESC LIMIT 200").fetchall()
+    # [أسبوع 7] حصة لكل نوع: NVD تنشر مئات الثغرات يومياً فكانت تدفع الأخبار خارج آخر 200 عنصر
+    q = "SELECT * FROM items WHERE status='published' AND kind=? ORDER BY published DESC LIMIT ?"
+    rows = sorted(con.execute(q, ("news", 120)).fetchall() + con.execute(q, ("vuln", 250)).fetchall(),
+                  key=lambda r: r["published"] or "", reverse=True)
     data = {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "items": [
         dict(id=r["uid"], type=r["type"], title=r["title"], summary=r["summary"], severity=r["severity"], score=r["score"],
              kev=bool(r["kev"]), system=r["system"], source=r["source"], link=r["link"], date=r["published"],
