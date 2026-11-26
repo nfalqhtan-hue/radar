@@ -116,7 +116,14 @@
       h.appendChild(da);
     } else if (url) h.appendChild(R.link(el("a", null, title), url)); else h.textContent = title;
     body.appendChild(h);
-    if (text) { var p = el("p", "sum", text); p.setAttribute("dir", "auto"); if (R.en) p.setAttribute("lang", "en"); body.appendChild(p); }
+    if (text) {
+      var p = el("p", "sum"); p.setAttribute("dir", "auto"); if (R.en) p.setAttribute("lang", "en");
+      // مصدر النص ظاهر دائماً: ملخص آلي بالعربية، أو نص المصدر الأصلي بالإنجليزية
+      if (!R.en && it.sumSrc === "llm") { var tg = el("span", "src-tag", "ملخص آلي"); tg.title = "كتبه نموذج لغوي (Qwen3) واجتاز فحص الجودة، وقد يخطئ"; p.appendChild(tg); }
+      p.appendChild(document.createTextNode(text)); body.appendChild(p);
+    } else if (it.sumSrc === "failed" && !R.en) {
+      var nf2 = el("p", "sum-failed", "لا يوجد ملخص عربي موثوق لهذا العنصر، فاعتمد على المصدر."); nf2.title = "رفض فحص الجودة الملخص المقترح"; body.appendChild(nf2);
+    }
     if (it.advice && R.isCrit(it)) {
       var ad = el("p", "advice"); ad.appendChild(el("b", null, L("ماذا تفعل: ", "What to do: "))); ad.appendChild(document.createTextNode(R.ADVICE)); body.appendChild(ad);
     }

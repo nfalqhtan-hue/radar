@@ -29,7 +29,7 @@ sent = []
 news = lambda: rp.parse_feed(RSS, "ex.com") + rp.parse_feed(RSS, "ex.com") + rp.parse_feed(ATOM, "ex.com")
 bad = lambda: [dict(kind="vuln", source="NVD", uid="BAD-ID", title="x", link="https://n", text="t", date="", score=5.0),
                dict(kind="news", source="x", title="", link="", text="", date="")]
-summ = lambda it: "ملخص عربي قصير."
+summ = lambda it: "ملخص عربي قصير يصف الخبر بدقة."
 
 st = rp.run(args, dict(kev=lambda: (set(), []), nvd=lambda: nvd + bad(), rss=news), summ, sent.append)
 check("dedupe inside batch (2 unique news + nvd + bad)", st["duplicates"] == 1 and st["new"] == 4)
@@ -105,7 +105,7 @@ kev_item = [dict(kind="vuln", source="CISA KEV", uid="CVE-2026-6666", title="CVE
                  text="Exploited.", date="", score=None, kev=1, system="Cisco IOS")]
 mid = [dict(kind="vuln", source="NVD", uid="CVE-2026-7777", title="CVE-2026-7777: mid", link="https://nvd/7777", text="d", date="", score=5.0)]
 def lookup(cid): looked.append(cid); return dict(score=8.6)
-def spy(it): llm_seen.append(it["title"]); return "ملخص."
+def spy(it): llm_seen.append(it["title"]); return "ملخص عربي للثغرة من نص المصدر."
 a6 = argparse.Namespace(db=os.path.join(tempfile.mkdtemp(), "t.db"), out=os.path.join(d, "o6.json"), hours=2, no_llm=False, no_alert=False)
 sent6 = []
 s6 = rp.run(a6, dict(kev=lambda: ({"CVE-2026-6666"}, kev_item), nvd=lambda: mid, rss=lambda: [], nvd_lookup=lookup), spy, sent6.append)
@@ -141,7 +141,7 @@ check("guard: glued Arabic/Latin word rejected", rp.summary_problem("في الا
 check("guard: English word not in source rejected", rp.summary_problem("أزال المزودين exposant بيانات حساسة", src))
 check("guard: number not in source rejected", rp.summary_problem("ستُحظر Megaspeed خلال 30 يوماً", src))
 check("guard: stray single letter before Latin name rejected", rp.summary_problem("أعلن م Megaspeed عن خطة", src))
-check("guard: 'و' before Latin name allowed", rp.summary_problem("تعاونت الشركات و Megaspeed مع الحكومة", src) is None)
+check("guard: 'و' before Latin name allowed", rp.summary_problem("تعاونت الشركات و Megaspeed مع الحكومة.", src) is None)
 check("guard: clean Arabic with source name passes", rp.summary_problem("ستُمنع Megaspeed من التعامل مع الشركات الأمريكية.", src) is None)
 check("rejected CVE skipped by parser", rp.parse_nvd({"vulnerabilities": [{"cve": {"id": "CVE-2026-1", "vulnStatus": "Rejected",
       "descriptions": [{"lang": "en", "value": "Rejected reason: withdrawn."}]}}]}) == [])
@@ -188,7 +188,7 @@ check("pending queue uses the whole remaining budget on the next cycle",
 dbo = os.path.join(tempfile.mkdtemp(), "old.db"); co = sqlite3.connect(dbo)
 co.executescript("""CREATE TABLE items(uid TEXT PRIMARY KEY, kind, type, title, link, text, summary, pending INT, source, published,
   severity, score REAL, kev INT, system, status, reason, created); CREATE TABLE errors(ts, stage, msg);""")
-co.execute("INSERT INTO items VALUES('CVE-2026-1200','vuln','vul','CVE-2026-1200: x','https://nvd/1200','Old desc.','ملخص.',0,'NVD',"
+co.execute("INSERT INTO items VALUES('CVE-2026-1200','vuln','vul','CVE-2026-1200: x','https://nvd/1200','Old desc.','ملخص عربي سليم لهذه الثغرة.',0,'NVD',"
            "'2026-11-20T00:00:00+00:00','critical',7.2,1,'Acme','published',NULL,'2026-11-25T01:00:00+00:00')")
 co.execute("INSERT INTO items VALUES('CVE-2026-1201','vuln','vul','CVE-2026-1201: y','https://nvd/1201','Other.','ثغرة أمنية خطورتها متوسطة.',0,'NVD',"
            "'2026-11-20T00:00:00+00:00','medium',5.0,0,'Acme','published',NULL,'2026-11-25T02:00:00+00:00')")
@@ -246,4 +246,37 @@ check("NVD window covers the time the machine was off (9h gap -> 10h), never bel
 check("refreshed items are not re-checked every cycle", so2["refreshed"] == 0 and len(refreshed) == 2)
 check("severity scale: 9 critical, 7 high, 4 medium, 0.1 low, none unknown",
       [rp.severity_of(x) for x in (9.0, 7.0, 4.0, 0.1, None)] == ["critical", "high", "medium", "low", "unknown"])
+
+# ---------------- المرحلة 6: جودة الملخصات والبيانات
+src6 = "A flaw was found in the SAML identity brokering component of Keycloak. It may allow account takeover."
+check("claim guard: «دون مصادقة» rejected when the source never says unauthenticated",
+      "دون مصادقة" in (rp.summary_problem("ثغرة في Keycloak تسمح بالاستيلاء على الحسابات دون مصادقة.", src6) or ""))
+check("claim guard: same claim accepted when the source says it",
+      rp.summary_problem("ثغرة في Keycloak تسمح بالاستيلاء على الحسابات دون مصادقة.", src6 + " An unauthenticated attacker can do it.") is None)
+check("claim guard: «عن بُعد» needs remote/network in the source",
+      bool(rp.summary_problem("ثغرة في Keycloak يمكن استغلالها عن بُعد.", src6)) and rp.summary_problem("ثغرة في Keycloak يمكن استغلالها عن بُعد.", src6 + " remote attackers") is None)
+check("broken output rejected: repeated words, truncated sentence",
+      bool(rp.summary_problem("طبيق تطبيق تطبيق تطبيق تطبيق تطبيق تطبيق تطبيق.", "app")) and bool(rp.summary_problem("ثغرة في Keycloak تسمح للمهاجم بالاستيلاء على", src6)))
+check("product: 'component of Keycloak' -> Keycloak (not SAML)", rp.extract_system(src6) == "Keycloak")
+check("product: Joomla extension name taken from the description",
+      rp.extract_system("Joomla Extension - chronoengine.com - Unauthenticated arbitrary file upload in ChronoForms extension 8.0.0-8.0.53 - When") == "Joomla ChronoForms")
+check("product: repeated name merged", rp.extract_system("Missing Authorization vulnerability in WP User Manager WP User Manager wp-user-manager allows X.") == "WP User Manager")
+check("product: algorithm names are not products (Crypt::JWT, not A128CBC-HS256)",
+      rp.extract_system("Crypt::JWT versions before 0.037_1 for Perl compare HMAC signatures. decode_jwt compares HS256 and A128CBC-HS256 tags.") == "Crypt::JWT"
+      and rp.extract_system("Issue in A128CBC-HS256 handling.") != "A128CBC-HS256")
+sw = rp.classify(dict(kind="news", title="SonicWall Warns Gen 6 Firewalls Won't Get Security Patches", text="Unlike newer AI features, old devices lose support.", score=None, kev=0))
+ai6 = rp.classify(dict(kind="news", title="OpenAI ships a new AI model", text="", score=None, kev=0))
+check("AI type needs the term in the title or twice in the text", sw["type"] != "ai" and ai6["type"] == "ai")
+# البيانات المخزنة تُفحص بالقواعد الجديدة مرة واحدة
+dq = os.path.join(tempfile.mkdtemp(), "q.db"); cq = sqlite3.connect(dq); cq.executescript(rp.SCHEMA); rp.migrate(cq)
+cq.execute("DELETE FROM meta")
+cq.execute("INSERT INTO items(uid,kind,type,title,text,summary,pending,source,status,summary_src,system) VALUES"
+           "('CVE-2026-6001','vuln','vul','CVE-2026-6001: x',?,'ثغرة في Keycloak يمكن استغلالها دون مصادقة.',0,'NVD','published','llm','SAML')", (src6,))
+cq.execute("INSERT INTO items(uid,kind,type,title,text,summary,pending,source,status,summary_src) VALUES"
+           "('n1','news','ai','SonicWall Warns Gen 6 Firewalls Won''t Get Patches','Old devices, unlike AI ones, lose support.','',0,'x','published','')")
+rq = rp.requality(cq); rq2 = rp.requality(cq)
+r6 = cq.execute("select summary, pending, summary_src, system from items where uid='CVE-2026-6001'").fetchone()
+check("stored summary with an unsupported claim is pulled and queued again; product and news type corrected; runs once",
+      r6 == ("", 1, "", "Keycloak") and cq.execute("select type from items where uid='n1'").fetchone()[0] == "gen"
+      and rq["summaries_pulled"] == 1 and rq2 == {})
 print(f"\n{ok} checks passed")

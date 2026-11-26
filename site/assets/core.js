@@ -269,6 +269,7 @@
     var dl = R.el("dl", "facts");
     fact(dl, L("التصنيف", "Rating"), R.SEV[sv], it.score != null ? L("حسب سلّم NVD لدرجة CVSS", "NVD's CVSS severity scale") : L("تظهر الدرجة حين تقيّمها NVD", "The score appears once NVD rates it"));
     fact(dl, R.dateLabel(it), R.fmtDate(it.date) || L("غير متوفر", "Not available"));
+    var pubN = kevSrc ? fact(dl, L("تاريخ النشر في NVD", "Published in NVD"), "…") : null;
     var mod = fact(dl, L("آخر تحديث في NVD", "Last modified in NVD"), "…");
     var seen = fact(dl, L("رصدها الرادار", "First seen by the radar"), "…");
     fact(dl, L("المنتج المتأثر", "Affected product"), R.el("bdi", null, R.sysName(it.system)),
@@ -319,6 +320,7 @@
         orig.appendChild(R.el("span", "d-label", kevSrc ? L("الوصف الأصلي من CISA", "Original description from CISA") : L("الوصف الأصلي من NVD", "Original description from NVD")));
         var t = R.el("p", "d-en", x.text); t.setAttribute("dir", "ltr"); t.setAttribute("lang", "en"); orig.appendChild(t);
       } else orig.appendChild(R.el("p", "d-note", L("الوصف الأصلي غير متوفر في بياناتنا. افتح المصدر للاطلاع عليه.", "The original description is not in our data. Open the source to read it.")));
+      if (pubN) pubN.textContent = x.nvd_published ? R.fmtDate(x.nvd_published) : L("لم نسجّله بعد", "Not recorded yet");
       mod.textContent = x.modified ? R.fmtDate(x.modified) : L("لم نسجّله بعد", "Not recorded yet");
       if (!x.modified) mod.appendChild(R.el("small", null, L("يُجلب تدريجياً في دورات التحديث", "Fetched gradually during update cycles")));
       seen.textContent = x.seen ? R.fmtDate(x.seen) + L("، الساعة ", ", ") + R.timeF.format(Date.parse(x.seen)) : L("غير مسجّل", "Not recorded");
@@ -339,6 +341,7 @@
       orig.textContent = ""; orig.appendChild(R.el("p", "d-note", L("تعذّر تحميل التفاصيل الإضافية (الوصف الأصلي وتاريخ التحديث). البيانات أعلاه من الملف الرئيسي.",
         "Could not load the extra details (original description and update date). The facts above come from the main data file.")));
       mod.textContent = L("غير متوفر", "Not available"); seen.textContent = L("غير متوفر", "Not available");
+      if (pubN) pubN.textContent = L("غير متوفر", "Not available");
     });
   };
   R.closeDetail = function () { if (dlg && dlg.open) dlg.close(); };
