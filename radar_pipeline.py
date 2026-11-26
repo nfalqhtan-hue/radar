@@ -167,7 +167,7 @@ Stack-based Buffer Integer Null NULL Authentication Authorization Server-Side SQ
 Exposure Allocation Uninitialized Reflected Stored DOM-based Open Insecure Hard-coded Unquoted Race Double Type Memory Input
 Command Injection Remote Code Execution Local Elevation Escalation Denial Information Disclosure Vulnerability Vulnerabilities
 Arbitrary Directory Traversal Search Element Bypass Spoofing Overflow Underflow Missing XSS CSRF SSRF SVG URL XML JSON HTML
-Untrusted Data Admin Administrator On Rejected""".split())
+Untrusted Data Admin Administrator On Rejected Relative Absolute Allocation Unchecked Excessive Weak Unsafe Cleartext""".split())
 _SYS_LEAD = re.compile(r"\b(?:vulnerability|flaw|issue|weakness|bug)\s+(?:has been\s+|was\s+)?(?:found|discovered|identified|detected)?\s*in\s+(?:the\s+)?", re.I)
 _SYS_IN = re.compile(r"\b(?:[Ii]n|affects|of)\s+(?:the\s+)?(?=[A-Za-z])")
 _SYS_MOZ = re.compile(r"fixed in (Firefox|Thunderbird)\b")
@@ -382,7 +382,7 @@ CREATE TABLE IF NOT EXISTS errors(ts, stage, msg);
 CREATE TABLE IF NOT EXISTS events(ts TEXT, uid TEXT, kind TEXT, detail TEXT);"""
 # [المرحلة 3] أعمدة أُضيفت بعد إنشاء القاعدة: تُضاف تلقائياً للقواعد القديمة (لا نفقد شيئاً من البيانات المخزنة)
 EXTRA_COLS = ["modified", "vector", "cvss_ver", "kev_added", "kev_action", "kev_due", "kev_ransom", "summary_src", "checked", "nvd_published"]
-QUALITY_VERSION = 8   # [المرحلة 6] رفعه يعيد فحص البيانات المخزنة بقواعد الجودة الحالية مرة واحدة
+QUALITY_VERSION = 9   # [المرحلة 6] رفعه يعيد فحص البيانات المخزنة بقواعد الجودة الحالية مرة واحدة
 ITEM_COLS = ["uid", "kind", "type", "title", "link", "text", "summary", "pending", "source", "published", "severity", "score", "kev",
              "system", "status", "reason", "created"] + EXTRA_COLS
 TEMPLATE_PREFIX = "ثغرة أمنية خطورتها"
