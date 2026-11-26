@@ -674,7 +674,7 @@ def run(a, fetchers=None, summarizer=None, notifier=None):
     if refresher and not enrich_down:
         recheck = (datetime.now(timezone.utc) - timedelta(hours=6)).isoformat(timespec="seconds")
         q = ("SELECT uid, score, severity, title, link, kev FROM items WHERE kind='vuln' AND status='published' "
-             "AND (checked IS NULL OR (score IS NULL AND checked < ?)) ORDER BY (checked IS NULL) DESC, (score IS NULL) DESC, published DESC LIMIT ?")
+             "AND (checked IS NULL OR (score IS NULL AND checked < ?) OR (source='CISA KEV' AND nvd_published IS NULL)) ORDER BY (checked IS NULL) DESC, (score IS NULL) DESC, published DESC LIMIT ?")
         for r in con.execute(q, (recheck, getattr(a, "max_refresh", MAX_REFRESH))).fetchall():
             try: n = refresher(r["uid"])
             except Exception as e: ERR.append(("nvd_refresh", f"{r['uid']}: {e}")); break
