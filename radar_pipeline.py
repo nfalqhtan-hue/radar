@@ -109,10 +109,22 @@ def nvd_lookup(cve_id):
 def fetch_nvd(hours):
     end = datetime.now(timezone.utc); start = end - timedelta(hours=hours)
     f = lambda d: urllib.parse.quote(d.strftime("%Y-%m-%dT%H:%M:%S.000+00:00"))
-    url = f"{NVD_URL}?pubStartDate={f(start)}&pubEndDate={f(end)}"
     h = {"User-Agent": "radar-altaqniya/0.6"}
     if NVD_KEY: h["apiKey"] = NVD_KEY
-    return parse_nvd(json.loads(http(url, h)))
+    out, idx = [], 0
+    while True:   # [المرحلة 4] صفحات: نافذة طويلة (بعد إطفاء الجهاز) قد تتجاوز 2000 ثغرة
+        d = json.loads(http(f"{NVD_URL}?pubStartDate={f(start)}&pubEndDate={f(end)}&startIndex={idx}", h))
+        page = d.get("vulnerabilities", [])
+        out += parse_nvd(d); idx += len(page)
+        if not page or idx >= d.get("totalResults", 0): return out
+        time.sleep(0.7 if NVD_KEY else 6.2)
+
+def nvd_window(con, default_hours, cap_hours=24 * 7):
+    """[المرحلة 4] نافذة الجلب من NVD = منذ آخر جلب ناجح + ساعة هامش (كانت ساعتين ثابتتين، فما نُشر والجهاز مطفأ يضيع)."""
+    last = con.execute("SELECT MAX(ts) FROM events WHERE kind='fetch' AND detail='nvd:ok'").fetchone()[0]
+    if not last: return default_hours
+    gap = (datetime.now(timezone.utc) - datetime.fromisoformat(last)).total_seconds() / 3600
+    return int(min(cap_hours, max(default_hours, gap + 1)) + 0.999)
 
 def kev_info(v):
     """[المرحلة 3] بيانات الاستغلال كما تنشرها CISA: تاريخ الإضافة، الإجراء المطلوب، الموعد النهائي، واستخدامها في حملات فدية."""
@@ -385,6 +397,74 @@ def export(con, out):
     with open(os.path.join(os.path.dirname(out) or ".", "events.json"), "w", encoding="utf-8") as f:
         json.dump({"generated_at": gen, "since": since, "logged_since": logged, "sources": sources,
                    "events": [dict(ts=e[0], id=e[1], kind=e[2], detail=e[3]) for e in evs]}, f, ensure_ascii=False, separators=(",", ":"))
+    with open(os.path.join(os.path.dirname(out) or ".", "stats.json"), "w", encoding="utf-8") as f:
+        json.dump(stats(con, gen), f, ensure_ascii=False, separators=(",", ":"))
+
+RIYADH = timezone(timedelta(hours=3))     # الأيام في الإحصائيات بتوقيت السعودية
+SEVS = ("critical", "high", "medium", "low", "unknown")
+
+def clean_system(s):
+    """اسم المنتج للإحصائيات: يُدمج التكرار («WP User Manager WP User Manager» = «WP User Manager»)."""
+    w = (s or "").split()
+    if len(w) >= 2 and len(w) % 2 == 0 and w[:len(w) // 2] == w[len(w) // 2:]: w = w[:len(w) // 2]
+    return " ".join(w)
+
+def stats(con, gen, days=14):
+    """[المرحلة 4] إحصائيات من القاعدة كاملة (لا من آخر 250 ثغرة في data.json)، لصفحة لوحة الإحصائيات."""
+    now = datetime.fromisoformat(gen)
+    pub = "status='published'"
+    def ts(s):
+        try: return datetime.fromisoformat((s or "").replace("Z", "+00:00"))
+        except ValueError: return None
+    vul = con.execute(f"SELECT uid, severity, score, kev, system, published, summary_src, pending FROM items WHERE {pub} AND kind='vuln'").fetchall()
+    news = con.execute(f"SELECT type, source, published, summary_src, pending FROM items WHERE {pub} AND kind='news'").fetchall()
+    def recent(rows, hours): return sum(1 for r in rows if (t := ts(r["published"])) and timedelta(0) <= now - t <= timedelta(hours=hours))
+    by_sev = {s: 0 for s in SEVS}
+    for r in vul: by_sev[r["severity"] if r["severity"] in by_sev else "unknown"] += 1
+    # التسلسل اليومي حسب تاريخ النشر، لآخر 14 يوماً بتوقيت السعودية
+    today = now.astimezone(RIYADH).date()
+    keys = [(today - timedelta(days=i)).isoformat() for i in range(days - 1, -1, -1)]
+    daily = {k: dict(day=k, total=0, kev=0, **{s: 0 for s in SEVS}) for k in keys}
+    for r in vul:
+        t = ts(r["published"])
+        if not t: continue
+        d = daily.get(t.astimezone(RIYADH).date().isoformat())
+        if d:
+            d["total"] += 1; d[r["severity"] if r["severity"] in SEVS else "unknown"] += 1; d["kev"] += bool(r["kev"])
+    # آخر 48 ساعة بالساعة: السجل ما زال قصيراً، والتوزيع بالساعة يُظهر إيقاع نشر NVD
+    h0 = now.astimezone(RIYADH).replace(minute=0, second=0, microsecond=0)
+    hkeys = [(h0 - timedelta(hours=i)) for i in range(47, -1, -1)]
+    hourly = {h.isoformat(): dict(hour=h.isoformat(), total=0, critical=0, kev=0) for h in hkeys}
+    for r in vul:
+        t = ts(r["published"])
+        if not t: continue
+        h = hourly.get(t.astimezone(RIYADH).replace(minute=0, second=0, microsecond=0).isoformat())
+        if h: h["total"] += 1; h["critical"] += r["severity"] == "critical"; h["kev"] += bool(r["kev"])
+    systems = {}
+    for r in vul:
+        n = clean_system(r["system"])
+        if n and n != "غير محدد": systems[n] = systems.get(n, 0) + 1
+    top = sorted(systems.items(), key=lambda x: (-x[1], x[0]))[:10]
+    def sumsrc(rows):
+        c = dict(llm=0, template=0, failed=0, pending=0)
+        for r in rows:
+            k = "pending" if r["pending"] else (r["summary_src"] or "")
+            if k in c: c[k] += 1
+        return c
+    by_type, by_src = {}, {}
+    for r in news:
+        by_type[r["type"]] = by_type.get(r["type"], 0) + 1
+        by_src[r["source"]] = by_src.get(r["source"], 0) + 1
+    first = con.execute("SELECT MIN(created) FROM items").fetchone()[0]
+    return dict(generated_at=gen, first_seen=first, days=days,
+                vulns=dict(total=len(vul), by_sev=by_sev, kev=sum(1 for r in vul if r["kev"]),
+                           kev_critical=sum(1 for r in vul if r["kev"] and r["severity"] == "critical"),
+                           last24=recent(vul, 24), last7=recent(vul, 24 * 7), with_system=sum(systems.values())),
+                daily=[daily[k] for k in keys], hourly=[hourly[h.isoformat()] for h in hkeys],
+                top_systems=[dict(name=n, n=c) for n, c in top],
+                news=dict(total=len(news), last24=recent(news, 24), last7=recent(news, 24 * 7),
+                          by_type=by_type, by_source=by_src),
+                summaries=dict(vuln=sumsrc(vul), news=sumsrc(news)))
 
 def telegram(text):
     if not (TG_TOKEN and TG_CHAT): return False
@@ -408,7 +488,7 @@ def run(a, fetchers=None, summarizer=None, notifier=None):
         kev_ids, kev_items = (fetchers or {}).get("kev", lambda: parse_kev(json.loads(http(KEV_URL))))(); raw += kev_items
         event(con, "fetch", "", "kev:ok")
     except Exception as e: ERR.append(("kev", str(e))); event(con, "fetch", "", f"kev:fail:{e}")
-    for name, fn in [("nvd", (fetchers or {}).get("nvd", lambda: fetch_nvd(a.hours))), ("rss", (fetchers or {}).get("rss", fetch_rss))]:
+    for name, fn in [("nvd", (fetchers or {}).get("nvd", lambda: fetch_nvd(nvd_window(con, a.hours)))), ("rss", (fetchers or {}).get("rss", fetch_rss))]:
         try: raw += fn(); event(con, "fetch", "", f"{name}:ok")
         except Exception as e: ERR.append((name, str(e))); event(con, "fetch", "", f"{name}:fail:{e}")
     kinfo = getattr(kev_ids, "info", {})

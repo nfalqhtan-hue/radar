@@ -229,6 +229,20 @@ oldk = dict(kind="vuln", source="CISA KEV", uid="CVE-2020-0001", title="CVE-2020
 rp.run(ak, dict(kev=lambda: ({"CVE-2020-0001"}, [oldk]), nvd=lambda: list(old_kev), rss=lambda: []), None, None)
 ek = json.load(open(ak.out, encoding="utf-8"))["items"]
 check("old exploited vuln is exported even when 250 newer vulns exist", any(i["id"] == "CVE-2020-0001" for i in ek) and len(ek) == 251)
+# [المرحلة 4] الإحصائيات تُحسب من القاعدة كاملة
+sj = json.load(open(os.path.join(os.path.dirname(ak.out), "stats.json"), encoding="utf-8"))
+check("stats.json counts the whole DB (261 vulns), severity split and KEV",
+      sj["vulns"]["total"] == 261 and sj["vulns"]["by_sev"]["medium"] == 260 and sj["vulns"]["kev"] == 1 and sum(sj["vulns"]["by_sev"].values()) == 261)
+check("stats.json daily series covers 14 days and sums only dated-in-window vulns",
+      len(sj["daily"]) == 14 and sj["daily"][-1]["day"] >= "2026-11-26" and sum(d["total"] for d in sj["daily"]) <= 261)
+check("product names de-duplicated for stats", rp.clean_system("WP User Manager WP User Manager") == "WP User Manager" and rp.clean_system("Apache Tomcat") == "Apache Tomcat")
+cw = sqlite3.connect(":memory:"); cw.executescript(rp.SCHEMA)
+w0 = rp.nvd_window(cw, 2)
+cw.execute("INSERT INTO events VALUES(?,?,?,?)", ((rp.datetime.now(rp.timezone.utc) - rp.timedelta(hours=9)).isoformat(timespec="seconds"), "", "fetch", "nvd:ok"))
+w9 = rp.nvd_window(cw, 2)
+cw.execute("INSERT INTO events VALUES(?,?,?,?)", ((rp.datetime.now(rp.timezone.utc) - rp.timedelta(minutes=50)).isoformat(timespec="seconds"), "", "fetch", "nvd:ok"))
+check("NVD window covers the time the machine was off (9h gap -> 10h), never below the default 2h",
+      w0 == 2 and w9 == 10 and rp.nvd_window(cw, 2) == 2)
 check("refreshed items are not re-checked every cycle", so2["refreshed"] == 0 and len(refreshed) == 2)
 check("severity scale: 9 critical, 7 high, 4 medium, 0.1 low, none unknown",
       [rp.severity_of(x) for x in (9.0, 7.0, 4.0, 0.1, None)] == ["critical", "high", "medium", "low", "unknown"])
