@@ -322,6 +322,11 @@ def telegram(text):
     return True
 
 # ---------------------------------------------------------------- التشغيل
+def summary_priority(it):
+    if it.get("kind") == "news": return 0
+    if it.get("kev") or (it.get("score") or 0) >= 9: return 1
+    return 2
+
 def run(a, fetchers=None, summarizer=None, notifier=None):
     ERR.clear()
     con = sqlite3.connect(a.db); con.row_factory = sqlite3.Row; con.executescript(SCHEMA)
@@ -334,6 +339,9 @@ def run(a, fetchers=None, summarizer=None, notifier=None):
     for name, fn in [("nvd", (fetchers or {}).get("nvd", lambda: fetch_nvd(a.hours))), ("rss", (fetchers or {}).get("rss", fetch_rss))]:
         try: raw += fn()
         except Exception as e: ERR.append((name, str(e)))
+    # [أسبوع 7] أولوية التلخيص: حد الدورة 30 ملخصاً، وكانت ثغرات NVD (تصل أولاً وبالعشرات) تستهلكه كله فتبقى الأخبار بلا ملخص.
+    # الترتيب الآن: الأخبار، ثم المستغلة فعلياً والحرجة، ثم الباقي (sorted مستقر فيحفظ الترتيب داخل كل مجموعة)
+    raw.sort(key=summary_priority)
     st = dict(fetched=len(raw), new=0, published=0, review=0, duplicates=0, invalid=0, pending=0, enriched=0, llm_calls=0)
     critical, seen, llm_down = [], set(), False
     enricher = (fetchers or {}).get("nvd_lookup", None if fetchers else nvd_lookup)   # الاختبارات بلا شبكة
@@ -383,8 +391,11 @@ def run(a, fetchers=None, summarizer=None, notifier=None):
             critical.append(dict(id=it["uid"], title=it["title"], link=it["link"], score=it["score"], kev=it["kev"]))
     # إعادة محاولة التلخيص للعناصر المعلّقة
     if summarizer and not llm_down:
-        budget = max(0, min(10, max_llm - st["llm_calls"]))      # إعادة المحاولة تخضع لنفس حد الدورة
-        for r in con.execute("SELECT uid,title,text FROM items WHERE pending=1 AND status='published' LIMIT ?", (budget,)).fetchall():
+        budget = max(0, max_llm - st["llm_calls"])               # إعادة المحاولة تأخذ ما بقي من حد الدورة نفسه
+        # الطابور المعلّق: الأخبار أولاً، ثم المستغلة فعلياً، ثم الأعلى درجة، والأحدث أولاً داخل كل مجموعة
+        q = ("SELECT uid,title,text FROM items WHERE pending=1 AND status='published' "
+             "ORDER BY (kind='news') DESC, kev DESC, COALESCE(score,0) DESC, published DESC LIMIT ?")
+        for r in con.execute(q, (budget,)).fetchall():
             st["llm_calls"] += 1
             try:
                 s = summarizer(dict(title=r["title"], text=r["text"]))

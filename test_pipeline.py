@@ -164,4 +164,20 @@ check("system: lowercase product + version (compose-farm)",
 check("system: 'Since Symfony 7.2'", rp.extract_system("Since Symfony 7.2, expressions can contain comments.") == "Symfony")
 check("system: 'Version 2.1' is not a product", rp.extract_system("Version 2.1 of the plugin allows XSS") != "Version")
 check("glossary has SSRF and deserialization terms", "تزوير الطلب" in rp.SUM_SYSTEM and "إلغاء التسلسل" in rp.SUM_SYSTEM)
+# [أسبوع 7] أولوية التلخيص: الأخبار لا تبقى بلا ملخص حين تستهلك ثغرات NVD حد الدورة
+from datetime import datetime as _dt, timezone as _tz
+_now = _dt.now(_tz.utc).isoformat()
+vul10 = [dict(kind="vuln", source="NVD", uid=f"CVE-2026-90{i:03d}", title=f"CVE-2026-90{i:03d}: Product{i} RCE", link=f"https://nvd.nist.gov/vuln/detail/CVE-2026-90{i:03d}",
+              text=f"Product{i} before 2.0 allows remote code execution.", date=_now, score=8.1, kev=0, system="") for i in range(10)]
+news3 = [dict(kind="news", source="ex.com", title=f"Tech news {i}", link=f"https://ex.com/n{i}", text="Some tech news text.", date=_now) for i in range(3)]
+asked = []
+def rec(it): asked.append(it["title"]); return "ملخص عربي تجريبي للخبر."
+a10 = argparse.Namespace(db=os.path.join(tempfile.mkdtemp(), "t.db"), out=os.path.join(d, "o10.json"), hours=2, no_llm=False, no_alert=True, max_llm=4)
+s10 = rp.run(a10, dict(kev=lambda: (set(), []), nvd=lambda: list(vul10), rss=lambda: list(news3), nvd_lookup=lambda u: None), rec, None)
+check("summary budget goes to news first (3 news + 1 vuln within a cap of 4)",
+      s10["llm_calls"] == 4 and all(t.startswith("Tech news") for t in asked[:3]))
+c10 = sqlite3.connect(a10.db)
+s10b = rp.run(a10, dict(kev=lambda: (set(), []), nvd=lambda: [], rss=lambda: [], nvd_lookup=lambda u: None), rec, None)
+check("pending queue uses the whole remaining budget on the next cycle",
+      s10b["llm_calls"] == 4 and c10.execute("select count(*) from items where pending=1").fetchone()[0] == 5)
 print(f"\n{ok} checks passed")
