@@ -6,223 +6,18 @@
 <title>رادار التقنية</title>
 <meta name="description" content="الثغرات الأمنية وأخبار التقنية من مصادرها الرسمية، ملخصة بالعربية وتتحدث كل ساعة.">
 <meta name="theme-color" content="#0A1428">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-hoi5ni4vu4NLlWr/4idxGltf51+wMxiLL21mF7iaOwo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%230A1428'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23C9A063' stroke-width='1.5' opacity='.6'/%3E%3Cpath d='M16 16 L16 3 A13 13 0 0 1 27.3 9.5 Z' fill='%23C9A063' opacity='.55'/%3E%3Ccircle cx='22' cy='9' r='2.4' fill='%23FF6B66'/%3E%3C/svg%3E">
+<script>try{var t=localStorage.getItem("radar-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;700;800&display=swap" rel="stylesheet">
-<style>
-/* ===== الرموز ===== */
-:root {
-  --ink: #0A1428;          /* خلفية شاشة الرادار (ثابتة في الوضعين) */
-  --ink-line: #1F3358;
-  --brass: #C9A063;        /* هوية المشروع: الذهبي */
-  --navy: #14213D;         /* هوية المشروع: الكحلي */
-
-  --bg: #EEF1F5;
-  --surface: #FFFFFF;
-  --text: #17213A;
-  --muted: #586379;
-  --line: #D8DEE8;
-  --accent: #7E5A22;       /* ذهبي داكن مقروء على الفاتح */
-  --focus: #2558C8;
-
-  /* سلّم الخطورة: كل لون ≥ 4.5:1 على الخلفية وداخل شارته الملونة (مراجعة ui-ux-pro-max) */
-  --s-critical: #B3261E;
-  --s-high: #974203;
-  --s-medium: #765A00;
-  --s-low: #276B43;
-  --s-unknown: #566074;
-  --s-news: #7E5A22;
-
-  --f-display: "Noto Kufi Arabic", "IBM Plex Sans Arabic", Tahoma, sans-serif;
-  --f-body: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0C1424; --surface: #121D33; --text: #E6EAF2; --muted: #9DA8BD; --line: #23314C;
-    --accent: #D7AE6E; --focus: #7FA8FF;
-    --s-critical: #FF6B66; --s-high: #FF9F4D; --s-medium: #E8C547; --s-low: #5FCB8D; --s-unknown: #A3ADBF; --s-news: #D7AE6E;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0C1424; --surface: #121D33; --text: #E6EAF2; --muted: #9DA8BD; --line: #23314C;
-  --accent: #D7AE6E; --focus: #7FA8FF;
-  --s-critical: #FF6B66; --s-high: #FF9F4D; --s-medium: #E8C547; --s-low: #5FCB8D; --s-unknown: #A3ADBF; --s-news: #D7AE6E;
-}
-
-* { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: 16px; }
-body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--f-body); font-size: 16px; line-height: 1.75; }
-a { color: inherit; }
-button { font: inherit; color: inherit; }
-:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
-.wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
-.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-
-/* ===== الرأس + شاشة الرادار ===== */
-.scope {
-  background: radial-gradient(1200px 500px at 15% 40%, rgba(201,160,99,.10), transparent 60%), var(--ink);
-  color: #E6EAF2;
-}
-.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 18px; }
-.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.brand b { font-family: var(--f-display); font-weight: 800; font-size: 20px; }
-.brand svg { width: 30px; height: 30px; }
-.top-actions { display: flex; align-items: center; gap: 14px; font-size: 14px; color: #AFBAD0; }
-.status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #5FCB8D; margin-inline-end: 6px; vertical-align: middle; box-shadow: 0 0 0 3px rgba(95,203,141,.18); }
-.status.stale .status-dot { background: #FF9F4D; box-shadow: 0 0 0 3px rgba(255,159,77,.2); }
-.theme-btn { background: transparent; border: 1px solid #2A4170; border-radius: 999px; width: 38px; height: 38px; display: grid; place-items: center; cursor: pointer; color: #D7DEEA; }
-.theme-btn:hover { border-color: var(--brass); }
-
-.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 470px); grid-template-areas: "head radar" "list radar"; column-gap: 40px; align-items: center; padding: 28px 0 40px; }
-.hero-head { grid-area: head; align-self: end; }
-.hero-list { grid-area: list; align-self: start; }
-.hero .radar { grid-area: radar; }
-.hero h1 { font-family: var(--f-display); font-weight: 800; font-size: clamp(30px, 4.2vw, 46px); line-height: 1.35; margin: 0 0 10px; }
-.hero .lede { margin: 0 0 22px; color: #B9C3D6; font-size: 17px; max-width: 46ch; }
-.hero .lede strong { color: #fff; font-weight: 600; }
-
-.now-list { list-style: none; margin: 0; padding: 0; }
-.now-list li { border-top: 1px solid #1C2D4E; }
-.now-list li:last-child { border-bottom: 1px solid #1C2D4E; }
-.now-item { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; align-items: start; padding: 10px 4px; text-decoration: none; }
-.now-item:hover .now-title { text-decoration: underline; text-decoration-color: var(--brass); text-underline-offset: 4px; }
-.score { font-family: var(--f-display); font-weight: 800; font-size: 21px; line-height: 1.2; font-variant-numeric: tabular-nums; text-align: center; border-radius: 8px; padding: 5px 0 3px; }
-.score small { display: block; font-family: var(--f-body); font-size: 11px; font-weight: 500; opacity: .9; }
-.now-item .score { background: rgba(255,107,102,.14); color: #FF8A85; }
-.now-item .score.kev { background: #FF6B66; color: #2A0A09; }
-.now-title { display: block; font-weight: 600; font-size: 15.5px; line-height: 1.55; overflow-wrap: anywhere; }
-.now-meta { display: block; color: #93A0B8; font-size: 13.5px; }
-.now-empty { color: #B9C3D6; padding: 12px 0; }
-.now-more { margin-top: 12px; background: none; border: 0; padding: 0; color: var(--brass); cursor: pointer; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
-
-/* الرادار */
-.radar { position: relative; width: 100%; max-width: 470px; justify-self: center; margin: 0; }
-.radar svg { width: 100%; aspect-ratio: 1; display: block; overflow: visible; }
-.radar .ring { fill: none; stroke: var(--ink-line); stroke-width: .6; }
-.radar .axis { stroke: var(--ink-line); stroke-width: .4; }
-.radar .ring-label { fill: #6F7FA0; font-size: 5.2px; font-family: var(--f-body); }
-.radar .sweep { transform-origin: 0 0; animation: sweep 7s linear infinite; }
-@keyframes sweep { to { transform: rotate(360deg); } }
-.radar .blip { cursor: pointer; }
-.radar .blip:hover circle.core, .radar .blip.on circle.core { stroke: #fff; stroke-width: .8; }
-.radar .kev-ring { fill: none; stroke-width: .7; }
-.radar .pulse { transform-box: fill-box; transform-origin: center; animation: pulse 2.4s ease-out infinite; }
-@keyframes pulse { from { opacity: .7; transform: scale(1); } to { opacity: 0; transform: scale(3.2); } }
-@media (prefers-reduced-motion: reduce) { .radar .sweep, .radar .pulse { animation: none; } .radar .pulse { display: none; } }
-.radar-tip { position: absolute; pointer-events: none; width: 260px; background: #0F1D38; border: 1px solid #2A4170; color: #C9D2E3; padding: 8px 10px; border-radius: 8px; font-size: 13px; line-height: 1.5; box-shadow: 0 8px 24px rgba(0,0,0,.35); opacity: 0; transition: opacity .12s; z-index: 2; }
-.radar-tip.show { opacity: 1; }
-.radar-tip b { display: block; font-weight: 600; color: #fff; overflow-wrap: anywhere; }
-.radar-key { display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center; margin-top: 10px; font-size: 12.5px; color: #93A0B8; }
-.radar-key .k::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-inline-end: 5px; background: var(--c); vertical-align: middle; }
-
-/* ===== الصفحة ===== */
-.page { display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 40px; padding-top: 30px; padding-bottom: 40px; align-items: start; }
-aside.side { position: sticky; top: 16px; display: grid; gap: 24px; }
-.side h2, .how h2 { font-family: var(--f-display); font-weight: 700; font-size: 16px; margin: 0 0 10px; }
-.search { width: 100%; font: inherit; font-size: 15px; color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; min-height: 44px; }
-.filters { display: grid; gap: 2px; }
-.filter { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: transparent; border: 0; border-radius: 8px; padding: 6px 10px; cursor: pointer; text-align: start; font-size: 15px; min-height: 40px; }
-.filter:hover { background: color-mix(in srgb, var(--text) 6%, transparent); }
-.filter[aria-pressed="true"] { background: var(--navy); color: #fff; }
-.filter .n { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 14px; }
-.filter[aria-pressed="true"] .n { color: #C9D2E3; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .filter[aria-pressed="true"] { background: var(--accent); color: #14213D; } :root:not([data-theme="light"]) .filter[aria-pressed="true"] .n { color: #14213D; } }
-:root[data-theme="dark"] .filter[aria-pressed="true"] { background: var(--accent); color: #14213D; }
-:root[data-theme="dark"] .filter[aria-pressed="true"] .n { color: #14213D; }
-
-.sevbar { display: flex; height: 12px; border-radius: 6px; overflow: hidden; background: var(--line); gap: 2px; }
-.sevbar span { background: var(--c); min-width: 6px; transition: opacity .15s; }
-.sevbar.picking span:not(.on) { opacity: .25; }
-.sevlegend { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 2px; }
-.sev-btn { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 8px; background: transparent; border: 0; border-radius: 8px; padding: 4px 10px; min-height: 36px; cursor: pointer; font-size: 14.5px; text-align: start; }
-.sev-btn:hover { background: color-mix(in srgb, var(--text) 6%, transparent); }
-.sev-btn[aria-pressed="true"] { background: color-mix(in srgb, var(--c) 16%, transparent); font-weight: 600; }
-.sev-btn span:first-child::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: var(--c); margin-inline-end: 8px; vertical-align: middle; }
-.sev-btn .n { color: var(--muted); font-variant-numeric: tabular-nums; }
-.sevlegend .kev-note { display: flex; justify-content: space-between; padding: 4px 10px; font-size: 14px; color: var(--muted); }
-
-/* مفتاح «الجديد فقط» */
-.newswitch { display: inline-flex; align-items: center; gap: 8px; background: none; border: 0; padding: 4px 6px; min-height: 40px; cursor: pointer; font-size: 14.5px; color: var(--text); border-radius: 8px; }
-.newswitch .track { position: relative; width: 36px; height: 20px; border-radius: 10px; background: var(--line); transition: background .15s; flex: none; }
-.newswitch .track::after { content: ""; position: absolute; top: 2px; inset-inline-start: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--surface); box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: inset-inline-start .15s; }
-.newswitch[aria-checked="true"] .track { background: var(--focus); }
-.newswitch[aria-checked="true"] .track::after { inset-inline-start: 18px; }
-.newswitch .c { color: var(--muted); font-variant-numeric: tabular-nums; }
-.newswitch:disabled { cursor: default; opacity: .6; }
-@media (prefers-reduced-motion: reduce) { .newswitch .track, .newswitch .track::after, .sevbar span { transition: none; } }
-.head-controls { display: flex; align-items: center; gap: 6px 14px; flex-wrap: wrap; }
-.side-note { margin: 0; }
-.clear { background: none; border: 0; padding: 0; color: var(--accent); cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
-
-/* الخلاصة */
-.feed-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; border-bottom: 2px solid var(--text); padding-bottom: 8px; }
-.feed-head h2 { font-family: var(--f-display); font-weight: 700; margin: 0; font-size: 22px; }
-.sort { display: flex; gap: 4px; font-size: 14px; }
-.sort button { background: none; border: 0; padding: 4px 12px; border-radius: 6px; cursor: pointer; color: var(--muted); min-height: 40px; }
-.sort button[aria-pressed="true"] { color: var(--text); font-weight: 600; background: color-mix(in srgb, var(--text) 8%, transparent); }
-.result-line { color: var(--muted); font-size: 14px; margin: 8px 0 0; }
-.result-line:empty { display: none; }
-
-.day { font-family: var(--f-display); font-weight: 700; font-size: 15px; color: var(--muted); margin: 26px 0 2px; }
-.item { display: grid; grid-template-columns: 4px minmax(0, 1fr); gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); }
-.item .rail { border-radius: 2px; background: var(--c); }
-.item.flash { animation: flash 1.8s ease-out; }
-@keyframes flash { from { background: color-mix(in srgb, var(--brass) 30%, transparent); } to { background: transparent; } }
-.item-top { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 13.5px; color: var(--muted); }
-.tag { font-weight: 600; color: var(--c); }
-.pill { font-weight: 600; font-size: 12.5px; border-radius: 5px; padding: 0 7px; line-height: 1.9; color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); white-space: nowrap; }
-.pill.kev { background: var(--s-critical); color: #fff; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pill.kev { color: #2A0A09; } }
-:root[data-theme="dark"] .pill.kev { color: #2A0A09; }
-.new { font-size: 12.5px; font-weight: 700; color: var(--focus); }
-.time { margin-inline-start: auto; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.item h3 { margin: 4px 0 0; font-size: 16.5px; font-weight: 600; line-height: 1.55; overflow-wrap: anywhere; }
-.item h3 a { text-decoration: none; }
-.item h3 a:hover { text-decoration: underline; text-underline-offset: 4px; }
-.item .sum { margin: 6px 0 0; max-width: 68ch; }
-.item .advice { margin: 8px 0 0; font-size: 14.5px; color: var(--muted); max-width: 68ch; }
-.item .advice b { color: var(--text); font-weight: 600; }
-.item-foot { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 8px; font-size: 13.5px; color: var(--muted); }
-.item-foot a { color: var(--accent); font-weight: 600; text-decoration: none; }
-.item-foot a:hover { text-decoration: underline; }
-.item.compact { padding: 11px 0; }
-.item.compact h3 { font-size: 15.5px; font-weight: 500; }
-.item.compact .item-foot { margin-top: 2px; }
-
-.more { display: block; margin: 22px auto 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 9px 22px; cursor: pointer; min-height: 44px; }
-.more[hidden], [hidden] { display: none !important; }
-.empty { padding: 36px 0; color: var(--muted); }
-.empty b { color: var(--text); }
-
-/* كيف يعمل */
-.how { border-top: 1px solid var(--line); padding: 34px 0 10px; }
-.how h2 { font-size: 20px; }
-.how p.intro { margin: 0 0 20px; color: var(--muted); max-width: 72ch; }
-.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); counter-reset: s; }
-.steps li { counter-increment: s; border-inline-start: 2px solid var(--line); padding-inline: 12px 8px; }
-.steps li::before { content: counter(s); display: block; font-family: var(--f-display); font-weight: 800; font-size: 26px; color: var(--accent); line-height: 1.3; }
-.steps b { display: block; font-weight: 600; }
-.steps span { color: var(--muted); font-size: 14px; }
-footer.foot { color: var(--muted); font-size: 14px; padding: 24px 0 36px; }
-footer.foot p { margin: 4px 0; max-width: 80ch; }
-
-/* ===== الجوال ===== */
-@media (max-width: 900px) {
-  .hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "radar" "list"; row-gap: 10px; padding: 14px 0 30px; }
-  .radar { max-width: 300px; }
-  .hero .lede { margin-bottom: 0; }
-  .sevlegend { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 8px; }
-  .page { grid-template-columns: minmax(0, 1fr); gap: 22px; padding-top: 22px; }
-  aside.side { position: static; gap: 18px; }
-  .filters { display: flex; flex-wrap: wrap; gap: 6px; }
-  .filter { border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; min-height: 36px; }
-  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 0; }
-}
-@media (max-width: 520px) { .status-text { display: none; } }
-</style>
+<link rel="stylesheet" href="assets/app.css">
+<link rel="stylesheet" href="assets/home.css">
 </head>
 <body>
+<a class="skip" href="#main">انتقل إلى الخلاصة</a>
 <header class="scope">
   <div class="wrap">
     <div class="topbar">
@@ -230,9 +25,13 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
         <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="none" stroke="#2A4170"/><circle cx="16" cy="16" r="9" fill="none" stroke="#2A4170"/><path d="M16 16 L16 1 A15 15 0 0 1 29 8.5 Z" fill="#C9A063" opacity=".5"/><circle cx="22" cy="9" r="2.2" fill="#FF6B66"/></svg>
         <b>رادار التقنية</b>
       </a>
+      <nav class="nav" aria-label="أقسام الموقع">
+        <a href="./" aria-current="page">الرئيسية</a>
+        <a href="#how-h">كيف يعمل</a>
+      </nav>
       <div class="top-actions">
-        <span class="status" id="status"><span class="status-dot" aria-hidden="true"></span><span class="status-text" id="status-text">جارٍ التحميل</span></span>
-        <button class="theme-btn" id="theme" type="button" aria-label="تبديل الوضع الليلي والفاتح">
+        <span class="status loading" id="status" role="status"><span class="status-dot" aria-hidden="true"></span><span class="status-text" id="status-text">جارٍ التحميل</span></span>
+        <button class="icon-btn" id="theme" type="button" aria-label="تبديل الوضع الليلي والفاتح">
           <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
         </button>
       </div>
@@ -244,24 +43,27 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
         <p class="lede" id="lede">نرصد الثغرات الأمنية وأخبار التقنية كل ساعة، ونرتبها حسب الخطورة.</p>
       </div>
       <div class="hero-list">
-        <ol class="now-list" id="now"></ol>
+        <ol class="now-list" id="now"><li class="now-skel" aria-hidden="true"><span class="skel"></span><span class="skel"></span><span class="skel"></span></li></ol>
         <button class="now-more" id="now-more" type="button" hidden></button>
       </div>
       <figure class="radar" id="radar">
         <svg viewBox="-112 -112 224 224" role="img" aria-labelledby="radar-cap">
           <defs>
+            <!-- الشعاع يدور مع عقارب الساعة: الخط الساطع في المقدمة والأثر يخبو خلفه -->
             <linearGradient id="sweep-g" x1="0" y1="0" x2="1" y2="0">
               <stop offset="0" stop-color="#C9A063" stop-opacity="0"/>
-              <stop offset="1" stop-color="#C9A063" stop-opacity=".38"/>
+              <stop offset="1" stop-color="#C9A063" stop-opacity=".42"/>
             </linearGradient>
           </defs>
           <g id="grid"></g>
-          <g class="sweep"><path d="M0 0 L0 -104 A104 104 0 0 1 60 -85 Z" fill="url(#sweep-g)"/><line x1="0" y1="0" x2="0" y2="-104" stroke="#C9A063" stroke-width=".9" opacity=".9"/></g>
+          <g class="sweep"><path d="M0 0 L-60 -85 A104 104 0 0 1 0 -104 Z" fill="url(#sweep-g)"/><line x1="0" y1="0" x2="0" y2="-104" stroke="#C9A063" stroke-width=".9" opacity=".95"/></g>
           <g id="blips"></g>
           <circle r="2.2" fill="#C9A063"/>
+          <text class="radar-load" id="radar-load" y="22">جارٍ المسح…</text>
         </svg>
         <figcaption class="radar-key"><span class="sr" id="radar-cap">خريطة رادار لعناصر آخر 24 ساعة</span>
-          <span class="k" style="--c:#FF6B66">حرجة</span><span class="k" style="--c:#FF9F4D">عالية</span><span class="k" style="--c:#E8C547">متوسطة</span><span class="k" style="--c:#D7AE6E">خبر</span><span>الأحدث في المركز</span>
+          <span class="radar-count" id="radar-count"></span>
+          <span class="k" style="--c:#FF6B66">حرجة</span><span class="k" style="--c:#FF9F4D">عالية</span><span class="k" style="--c:#E8C547">متوسطة</span><span class="k" style="--c:#D7AE6E">خبر</span><span class="k ring">ثبت استغلالها</span><span>الأحدث في المركز</span>
         </figcaption>
         <div class="radar-tip" id="tip" role="presentation"></div>
       </figure>
@@ -271,23 +73,30 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
 
 <div class="wrap page">
   <aside class="side" aria-label="البحث والتصفية">
-    <div>
+    <div class="search-box">
       <label class="sr" for="q">بحث</label>
-      <input class="search" id="q" type="search" placeholder="ابحث باسم منتج أو رقم CVE" autocomplete="off">
+      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input class="search" id="q" type="search" placeholder="ابحث باسم منتج أو رقم CVE" autocomplete="off" maxlength="80" enterkeyhint="search">
     </div>
-    <div>
-      <h2>النوع</h2>
-      <div class="filters" id="types" role="group" aria-label="النوع"></div>
+    <button class="filters-toggle" id="filters-toggle" type="button" aria-expanded="false" aria-controls="filter-panel">
+      <span>التصفية <span class="on" id="filters-on"></span></span>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="filter-panel closed" id="filter-panel">
+      <div>
+        <h2>النوع</h2>
+        <div class="filters" id="types" role="group" aria-label="النوع"></div>
+      </div>
+      <div id="sev-box">
+        <h2 id="sev-h">خطورة الثغرات</h2>
+        <div class="sevbar" id="sevbar" aria-hidden="true"></div>
+        <ul class="sevlegend" id="sevlegend" aria-labelledby="sev-h"></ul>
+      </div>
+      <p class="side-note" id="clear-wrap" hidden><button class="clear" id="clear" type="button">إلغاء التصفية</button></p>
     </div>
-    <div id="sev-box">
-      <h2 id="sev-h">خطورة الثغرات</h2>
-      <div class="sevbar" id="sevbar" aria-hidden="true"></div>
-      <ul class="sevlegend" id="sevlegend" aria-labelledby="sev-h"></ul>
-    </div>
-    <p class="side-note" id="clear-wrap" hidden><button class="clear" id="clear" type="button">إلغاء التصفية</button></p>
   </aside>
 
-  <main id="main">
+  <main id="main" tabindex="-1">
     <div class="feed-head">
       <h2>كل ما رصدناه</h2>
       <div class="head-controls">
@@ -301,7 +110,12 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
       </div>
     </div>
     <p class="result-line" id="result" aria-live="polite"></p>
-    <div id="feed"></div>
+    <div id="feed" aria-busy="true">
+      <div class="skel-row" aria-hidden="true"><span class="skel a"></span><span class="skel b"></span><span class="skel c"></span></div>
+      <div class="skel-row" aria-hidden="true"><span class="skel a"></span><span class="skel b"></span><span class="skel c"></span></div>
+      <div class="skel-row" aria-hidden="true"><span class="skel a"></span><span class="skel b"></span><span class="skel c"></span></div>
+      <div class="skel-row" aria-hidden="true"><span class="skel a"></span><span class="skel b"></span><span class="skel c"></span></div>
+    </div>
     <button class="more" id="more" type="button" hidden></button>
   </main>
 </div>
@@ -320,350 +134,12 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
     </ol>
   </section>
   <footer class="foot">
-    <p>مشروع تدريبي من إعداد عبدالله طلال القحطاني وعبدالله يعقوب الخليفة.</p>
+    <p>مشروع تخرج من إعداد عبدالله طلال القحطاني وعبدالله يعقوب الخليفة.</p>
     <p>الملخصات يكتبها نموذج آلي وقد يخطئ، فارجع إلى المصدر قبل أن تتصرف بناءً عليها.</p>
   </footer>
 </div>
 
-<script>
-(function () {
-  "use strict";
-  var TYPES = { vul: "ثغرة", gen: "أخبار تقنية وأمنية", ai: "ذكاء اصطناعي", fix: "مشكلة محلولة", os: "أنظمة التشغيل", dev: "أجهزة وجوالات" };
-  var TYPE_ORDER = ["vul", "gen", "ai", "fix", "os", "dev"];
-  var SEV = { critical: "حرجة", high: "عالية", medium: "متوسطة", low: "منخفضة", unknown: "غير مقيّمة بعد" };
-  var SEV_ORDER = ["critical", "high", "medium", "low", "unknown"];
-  var RADAR_SEV = { critical: "#FF6B66", high: "#FF9F4D", medium: "#E8C547", low: "#5FCB8D", unknown: "#A3ADBF" };
-  var SOURCES = { "feeds.feedburner.com": "The Hacker News", "feeds.arstechnica.com": "Ars Technica", "www.theverge.com": "The Verge",
-    "techcrunch.com": "TechCrunch", "www.bleepingcomputer.com": "BleepingComputer" };
-  var PAGE = 40, WINDOW_H = 24;
-
-  var all = [], byId = {}, genAt = null, lastVisit = null;
-  var st = { type: "", sev: "", q: "", sort: "new", newOnly: false, shown: PAGE };
-  var FIRST_VISIT_H = 6;   // في أول زيارة لا يوجد «منذ آخر زيارة»، فيُعد جديداً ما وصل في آخر 6 ساعات
-  function baseline() { return lastVisit || (genAt - FIRST_VISIT_H * 36e5); }
-  function isNew(it) { return it.t > baseline(); }
-  var $ = function (id) { return document.getElementById(id); };
-  var nf = new Intl.NumberFormat("ar-SA-u-nu-latn");
-  var dayF = new Intl.DateTimeFormat("ar-SA-u-nu-latn-ca-gregory", { weekday: "long", day: "numeric", month: "long" });
-  var timeF = new Intl.DateTimeFormat("ar-SA-u-nu-latn-ca-gregory", { hour: "numeric", minute: "2-digit" });
-  var reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
-  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
-  function svg(tag, attrs) { var e = document.createElementNS("http://www.w3.org/2000/svg", tag); for (var k in attrs) e.setAttribute(k, attrs[k]); return e; }
-  function safeUrl(u) { try { var x = new URL(u); return /^https?:$/.test(x.protocol) ? x.href : null; } catch (e) { return null; } }
-  function srcName(s) { return SOURCES[s] || String(s || "").replace(/^www\./, ""); }
-  function sevOf(it) { return it.type === "vul" ? (it.severity || "unknown") : null; }
-  function isCrit(it) { return it.type === "vul" && (it.severity === "critical" || it.kev); }
-  function ageH(it) { return (genAt - it.t) / 36e5; }
-  // الملخص القالبي («ثغرة أمنية خطورتها متوسطة...») يكرر الشارة والنظام، فلا نعرضه
-  function hasText(it) { return !!it.summary && !/^ثغرة أمنية خطورتها/.test(it.summary); }
-  var topIds = {};
-  function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967296; }
-  // العدد مع المعدود بالعربية: 1 دقيقة، 2 دقيقتين، 3-10 دقائق، 11+ دقيقة
-  function count(n, one, two, few, many) { return n === 1 ? one : n === 2 ? two : nf.format(n) + " " + (n <= 10 ? few : many); }
-  function ago(d) {
-    var m = Math.max(0, Math.round((Date.now() - d) / 6e4));
-    if (m < 1) return "الآن";
-    if (m < 60) return "قبل " + count(m, "دقيقة", "دقيقتين", "دقائق", "دقيقة");
-    var h = Math.round(m / 60); if (h < 24) return "قبل " + count(h, "ساعة", "ساعتين", "ساعات", "ساعة");
-    var dd = Math.round(h / 24); return "قبل " + count(dd, "يوم", "يومين", "أيام", "يوماً");
-  }
-  function dayLabel(t) {
-    var x = new Date(t); x.setHours(0, 0, 0, 0);
-    var today = new Date(); today.setHours(0, 0, 0, 0);
-    var diff = Math.round((today - x) / 864e5);
-    return diff === 0 ? "اليوم" : diff === 1 ? "أمس" : dayF.format(t);
-  }
-  function link(a, url) { a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer"; return a; }
-
-  // ---------- الحالة في الرابط (لمشاركة نتيجة تصفية)
-  function readHash() {
-    var p = new URLSearchParams(location.hash.slice(1));
-    st.type = TYPES[p.get("type")] ? p.get("type") : "";
-    st.sev = (SEV[p.get("sev")] || p.get("sev") === "kev") ? p.get("sev") : "";
-    st.q = (p.get("q") || "").slice(0, 80);
-    st.sort = p.get("sort") === "imp" ? "imp" : "new";
-    st.newOnly = p.get("new") === "1";
-    $("q").value = st.q;
-  }
-  function writeHash() {
-    var p = new URLSearchParams();
-    if (st.type) p.set("type", st.type);
-    if (st.sev) p.set("sev", st.sev);
-    if (st.q) p.set("q", st.q);
-    if (st.sort !== "new") p.set("sort", st.sort);
-    if (st.newOnly) p.set("new", "1");
-    var h = p.toString();
-    try { history.replaceState(null, "", h ? "#" + h : location.pathname + location.search); } catch (e) {}
-  }
-
-  // ---------- التصفية والترتيب
-  function match(it, skip) {
-    if (skip !== "new" && st.newOnly && !isNew(it)) return false;
-    if (skip !== "type" && st.type && it.type !== st.type) return false;
-    if (skip !== "sev" && st.sev) {
-      if (st.sev === "kev") { if (!it.kev) return false; }
-      else if (sevOf(it) !== st.sev) return false;
-    }
-    if (st.q) {
-      var hay = (it.title + " " + (it.summary || "") + " " + (it.system || "") + " " + srcName(it.source)).toLowerCase();
-      if (hay.indexOf(st.q.toLowerCase()) === -1) return false;
-    }
-    return true;
-  }
-  function rank(it) {
-    var s = sevOf(it);
-    return (it.kev ? 100 : 0) + (s ? (5 - SEV_ORDER.indexOf(s)) * 10 + (it.score || 0) : 0);
-  }
-  function sorted(list) {
-    return list.slice().sort(st.sort === "imp"
-      ? function (a, b) { return rank(b) - rank(a) || b.t - a.t; }
-      : function (a, b) { return b.t - a.t; });
-  }
-
-  // ---------- عنصر في الخلاصة
-  function item(it) {
-    var sv = sevOf(it);
-    var art = el("article", "item" + (hasText(it) ? "" : " compact"));
-    art.id = "i-" + it.id; art.style.setProperty("--c", sv ? "var(--s-" + sv + ")" : "var(--s-news)");
-    art.appendChild(el("div", "rail"));
-    var body = el("div");
-    var top = el("div", "item-top");
-    top.appendChild(el("span", "tag", TYPES[it.type] || "أخرى"));
-    if (sv) top.appendChild(el("span", "pill", SEV[sv] + (it.score != null ? " " + Number(it.score).toFixed(1) : "")));
-    if (it.kev) top.appendChild(el("span", "pill kev", "مستغلة فعلياً"));
-    if (lastVisit && it.t > lastVisit) top.appendChild(el("span", "new", "جديد منذ زيارتك"));
-    var tm = el("time", "time", timeF.format(it.t)); tm.dateTime = new Date(it.t).toISOString(); top.appendChild(tm);
-    body.appendChild(top);
-
-    var h = el("h3"); h.setAttribute("dir", "auto");
-    var url = safeUrl(it.link);
-    if (url) h.appendChild(link(el("a", null, it.title), url)); else h.textContent = it.title;
-    body.appendChild(h);
-    if (hasText(it)) body.appendChild(el("p", "sum", it.summary));
-    if (it.advice && isCrit(it)) {
-      var ad = el("p", "advice"); ad.appendChild(el("b", null, "ماذا تفعل: ")); ad.appendChild(document.createTextNode(it.advice)); body.appendChild(ad);
-    }
-    var foot = el("div", "item-foot");
-    if (it.system) { var s = el("span"); s.appendChild(document.createTextNode("النظام المتأثر: ")); s.appendChild(el("bdi", null, it.system)); foot.appendChild(s); }
-    var src = el("span"); src.appendChild(document.createTextNode("المصدر: ")); src.appendChild(el("bdi", null, srcName(it.source))); foot.appendChild(src);
-    if (url) foot.appendChild(link(el("a", null, it.type === "vul" ? "التفاصيل في NVD" : "اقرأ الخبر كاملاً"), url));
-    body.appendChild(foot);
-    art.appendChild(body);
-    return art;
-  }
-
-  // ---------- الشريط الجانبي
-  function renderSide() {
-    var box = $("types"); box.textContent = "";
-    var base = all.filter(function (it) { return match(it, "type"); }), cnt = {};
-    base.forEach(function (it) { cnt[it.type] = (cnt[it.type] || 0) + 1; });
-    [["", "الكل", base.length]].concat(TYPE_ORDER.filter(function (t) { return cnt[t]; }).map(function (t) { return [t, TYPES[t], cnt[t]]; }))
-      .forEach(function (o) {
-        var b = el("button", "filter"); b.type = "button"; b.setAttribute("aria-pressed", String(st.type === o[0]));
-        b.appendChild(el("span", null, o[1])); b.appendChild(el("span", "n", nf.format(o[2])));
-        b.onclick = function () { st.type = o[0]; if (o[0] && o[0] !== "vul") st.sev = ""; update(); };
-        box.appendChild(b);
-      });
-
-    var vul = all.filter(function (it) { return it.type === "vul" && match(it, "sev"); }), sc = {};
-    vul.forEach(function (it) { var s = sevOf(it); sc[s] = (sc[s] || 0) + 1; });
-    // الشريط للعرض فقط، والأزرار هي صفوف المفتاح (أهداف لمس أكبر من شريط ارتفاعه 12px)
-    var bar = $("sevbar"), lg = $("sevlegend"); bar.textContent = ""; lg.textContent = "";
-    bar.classList.toggle("picking", !!st.sev && st.sev !== "kev");
-    SEV_ORDER.forEach(function (s) {
-      if (!sc[s]) return;
-      var seg = el("span", st.sev === s ? "on" : null); seg.style.setProperty("--c", "var(--s-" + s + ")"); seg.style.flex = String(sc[s]); bar.appendChild(seg);
-      var li = el("li"), b = el("button", "sev-btn"); b.type = "button"; b.style.setProperty("--c", "var(--s-" + s + ")");
-      b.setAttribute("aria-pressed", String(st.sev === s));
-      b.appendChild(el("span", null, SEV[s])); b.appendChild(el("span", "n", nf.format(sc[s])));
-      b.onclick = function () { st.sev = st.sev === s ? "" : s; if (st.sev) st.type = "vul"; update(); };
-      li.appendChild(b); lg.appendChild(li);
-    });
-    var kev = vul.filter(function (it) { return it.kev; }).length;
-    if (kev) { var li = el("li", "kev-note"); li.appendChild(el("span", null, "منها مستغلة فعلياً")); li.appendChild(el("span", null, nf.format(kev))); lg.appendChild(li); }
-    $("sev-box").hidden = !vul.length;
-    $("clear-wrap").hidden = !(st.type || st.sev || st.q || st.newOnly);
-  }
-
-  // ---------- الخلاصة
-  function renderFeed() {
-    var list = sorted(all.filter(function (it) { return match(it); }));
-    var feed = $("feed"); feed.textContent = "";
-    $("result").textContent = (st.type || st.sev || st.q || st.newOnly) ? ("النتائج: " + nf.format(list.length) + " من " + nf.format(all.length)) : "";
-    if (!list.length) {
-      var e = el("div", "empty");
-      if (st.newOnly && !(st.type || st.sev || st.q)) {
-        e.appendChild(el("b", null, lastVisit ? "لا جديد منذ زيارتك الأخيرة. " : "لم يصل شيء في آخر " + count(FIRST_VISIT_H, "ساعة", "ساعتين", "ساعات", "ساعة") + ". "));
-        e.appendChild(document.createTextNode("الرادار يتحدث كل ساعة، أو أطفئ «الجديد فقط» لترى كل ما رصدناه."));
-      } else {
-        e.appendChild(el("b", null, "لا توجد نتائج مطابقة. "));
-        e.appendChild(document.createTextNode("جرّب كلمة أخرى، أو اضغط «إلغاء التصفية»."));
-      }
-      feed.appendChild(e);
-    }
-    renderNewSwitch();
-    var lastDay = null;
-    list.slice(0, st.shown).forEach(function (it) {
-      if (st.sort === "new") { var d = dayLabel(it.t); if (d !== lastDay) { feed.appendChild(el("h3", "day", d)); lastDay = d; } }
-      feed.appendChild(item(it));
-    });
-    var more = $("more"), rest = list.length - st.shown;
-    more.hidden = rest <= 0; more.textContent = "عرض المزيد (" + nf.format(rest) + " متبقية)";
-    document.querySelectorAll(".sort button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.sort === st.sort)); });
-  }
-
-  // ---------- مفتاح «الجديد فقط»
-  function renderNewSwitch() {
-    var n = all.filter(function (it) { return isNew(it) && match(it, "new"); }).length;
-    var b = $("newonly");
-    b.setAttribute("aria-checked", String(st.newOnly));
-    $("newonly-count").textContent = "(" + nf.format(n) + ")";
-    b.title = lastVisit
-      ? "ما وصل منذ زيارتك السابقة الساعة " + timeF.format(lastVisit) + " (" + dayLabel(lastVisit) + ")"
-      : "أول زيارة لك: نعرض ما وصل في آخر " + count(FIRST_VISIT_H, "ساعة", "ساعتين", "ساعات", "ساعة");
-    b.disabled = !st.newOnly && n === 0;
-  }
-
-  function update(keepShown) { if (!keepShown) st.shown = PAGE; renderSide(); renderFeed(); writeHash(); }
-
-  // ---------- الانتقال إلى عنصر (من الرادار أو قائمة «الآن»)
-  function focusItem(id) {
-    var it = byId[id]; if (!it) return;
-    if (!match(it)) { st.type = ""; st.sev = ""; st.q = ""; st.newOnly = false; $("q").value = ""; }
-    var idx = sorted(all.filter(function (x) { return match(x); })).indexOf(it);
-    if (idx >= st.shown) st.shown = Math.ceil((idx + 1) / PAGE) * PAGE;
-    update(true);
-    var node = $("i-" + id); if (!node) return;
-    node.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
-    node.classList.remove("flash"); void node.offsetWidth; node.classList.add("flash");
-    var a = node.querySelector("h3 a"); if (a) a.focus({ preventScroll: true });
-  }
-
-  // ---------- قائمة «ما يحتاج انتباهك الآن»
-  function renderNow() {
-    var c = all.filter(isCrit).sort(function (a, b) { return rank(b) - rank(a) || b.t - a.t; });
-    var kev = c.filter(function (it) { return it.kev; }).length;
-    var lede = $("lede"); lede.textContent = "";
-    if (c.length) {
-      lede.appendChild(el("strong", null, count(c.length, "ثغرة حرجة واحدة", "ثغرتان حرجتان", "ثغرات حرجة", "ثغرة حرجة")));
-      lede.appendChild(document.createTextNode(kev
-        ? " في آخر تحديث، وثبت أن المهاجمين استغلوا " + (kev === 1 ? "واحدة منها" : kev === 2 ? "اثنتين منها" : nf.format(kev) + " منها") + " بحسب وكالة CISA. ابدأ بهذه."
-        : " في آخر تحديث. ابدأ بالأعلى درجة."));
-    } else lede.textContent = "لا توجد ثغرات حرجة في آخر تحديث. آخر الأخبار في الأسفل.";
-    var ol = $("now"); ol.textContent = "";
-    c.slice(0, 4).forEach(function (it) {
-      topIds[it.id] = true;
-      var li = el("li"), a = el("a", "now-item"); a.href = "#i-" + it.id;
-      a.onclick = function (e) { e.preventDefault(); focusItem(it.id); };
-      var sc = el("span", "score" + (it.kev ? " kev" : ""), it.score != null ? Number(it.score).toFixed(1) : "؟");
-      sc.appendChild(el("small", null, it.kev ? "مستغلة" : "CVSS"));
-      a.appendChild(sc);
-      var tx = el("span"); var t = el("span", "now-title", it.title); t.setAttribute("dir", "auto"); tx.appendChild(t);
-      tx.appendChild(el("span", "now-meta", (it.system ? it.system + "، " : "") + ago(it.t)));
-      a.appendChild(tx); li.appendChild(a); ol.appendChild(li);
-    });
-    var more = $("now-more");
-    if (c.length > 4) {
-      more.hidden = false; more.textContent = "كل الثغرات الحرجة (" + nf.format(c.length) + ")";
-      more.onclick = function () { st.type = "vul"; st.sev = "critical"; st.sort = "imp"; st.q = ""; $("q").value = ""; update(); $("main").scrollIntoView({ behavior: reduced ? "auto" : "smooth" }); };
-    }
-  }
-
-  // ---------- شاشة الرادار
-  function renderRadar() {
-    var g = $("grid"), bl = $("blips");
-    [[3, "3 س"], [6, "6 س"], [12, "12 س"], [24, "24 س"]].forEach(function (r) {
-      var rr = 100 * Math.sqrt(r[0] / WINDOW_H);
-      g.appendChild(svg("circle", { r: rr, "class": "ring" }));
-      var t = svg("text", { x: 2, y: (-rr - 1.5).toFixed(1), "class": "ring-label" }); t.textContent = r[1]; g.appendChild(t);
-    });
-    g.appendChild(svg("line", { x1: -104, y1: 0, x2: 104, y2: 0, "class": "axis" }));
-    g.appendChild(svg("line", { x1: 0, y1: -104, x2: 0, y2: 104, "class": "axis" }));
-
-    var pts = all.filter(function (it) { var a = ageH(it); return a >= -0.5 && a <= WINDOW_H; });
-    pts.sort(function (a, b) { return rank(a) - rank(b); });   // الأخطر يُرسم أخيراً فيظهر فوق غيره
-    var tip = $("tip"), box = $("radar");
-    pts.forEach(function (it) {
-      var sv = sevOf(it), r = 100 * Math.sqrt(Math.min(Math.max(ageH(it), 0.05), WINDOW_H) / WINDOW_H), ang = hash(it.id) * Math.PI * 2;
-      var x = r * Math.sin(ang), y = -r * Math.cos(ang);
-      var col = sv ? RADAR_SEV[sv] : "#D7AE6E";
-      var size = !sv ? 1.7 : sv === "critical" ? 3.6 : sv === "high" ? 2.7 : 2.1;
-      var grp = svg("g", { "class": "blip", transform: "translate(" + x.toFixed(2) + " " + y.toFixed(2) + ")" });
-      if (topIds[it.id]) grp.appendChild(svg("circle", { r: size, fill: col, "class": "pulse" }));   // النبض فقط لما في قائمة «الآن»
-      grp.appendChild(svg("circle", { r: size, fill: col, "class": "core", opacity: sv && sv !== "critical" ? .85 : 1 }));
-      if (it.kev) grp.appendChild(svg("circle", { r: size + 2, stroke: col, "class": "kev-ring" }));
-      grp.appendChild(svg("circle", { r: Math.max(size + 3, 6), fill: "transparent" }));   // مساحة لمس أكبر للجوال
-      function show() {
-        tip.textContent = "";
-        var b = el("b", null, it.title); b.setAttribute("dir", "auto"); tip.appendChild(b);
-        tip.appendChild(document.createTextNode((sv ? SEV[sv] + (it.score != null ? " " + Number(it.score).toFixed(1) : "") : TYPES[it.type]) + "، " + ago(it.t)));
-        var bb = box.getBoundingClientRect(), pb = grp.getBoundingClientRect();
-        var cx = pb.left - bb.left + pb.width / 2, cy = pb.top - bb.top;
-        tip.style.left = Math.min(Math.max(cx - 130, 0), Math.max(bb.width - 260, 0)) + "px";
-        tip.classList.add("show"); grp.classList.add("on");
-        tip.style.top = Math.max(cy - tip.offsetHeight - 10, 0) + "px";
-      }
-      function hide() { tip.classList.remove("show"); grp.classList.remove("on"); }
-      grp.addEventListener("mouseenter", show); grp.addEventListener("mouseleave", hide);
-      grp.addEventListener("click", function () { hide(); focusItem(it.id); });
-      bl.appendChild(grp);
-    });
-    $("radar-cap").textContent = "خريطة رادار فيها " + nf.format(pts.length) + " عنصراً من آخر 24 ساعة، الأحدث في المركز. القائمة المجاورة تعرض الأخطر منها.";
-  }
-
-  // ---------- حالة التحديث
-  function renderStatus() {
-    var s = $("status"), t = $("status-text"), h = (Date.now() - genAt) / 36e5;
-    t.textContent = "آخر تحديث " + ago(genAt);
-    s.title = "يتحدث كل ساعة. آخر تحديث الساعة " + timeF.format(genAt);
-    if (h > 2) { s.classList.add("stale"); t.textContent += " (متأخر عن موعده)"; s.title = "يتحدث عادةً كل ساعة، وآخر تحديث وصل الساعة " + timeF.format(genAt) + ". قد يكون جهاز الرادار مطفأً."; }
-  }
-
-  // ---------- الوضع الليلي/الفاتح
-  var saved = store("radar-theme");
-  if (saved === "dark" || saved === "light") document.documentElement.dataset.theme = saved;
-  $("theme").onclick = function () {
-    var cur = document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-    var next = cur === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = next; store("radar-theme", next);
-  };
-
-  // ---------- الأحداث
-  var deb;
-  $("q").addEventListener("input", function (e) { clearTimeout(deb); deb = setTimeout(function () { st.q = e.target.value.trim(); update(); }, 160); });
-  $("clear").onclick = function () { st.type = ""; st.sev = ""; st.q = ""; st.newOnly = false; $("q").value = ""; update(); };
-  $("newonly").onclick = function () { st.newOnly = !st.newOnly; update(); };
-  $("more").onclick = function () { st.shown += PAGE; update(true); };
-  document.querySelectorAll(".sort button").forEach(function (b) { b.onclick = function () { st.sort = b.dataset.sort; update(); }; });
-  window.addEventListener("hashchange", function () { if (!all.length || location.hash.indexOf("#i-") === 0) return; readHash(); update(); });
-
-  // ---------- التحميل
-  fetch("data.json?t=" + Date.now(), { cache: "no-store" })
-    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-    .then(function (d) {
-      genAt = Date.parse(d.generated_at) || Date.now();
-      all = (d.items || []).filter(function (it) { return it && it.title && it.id; });
-      all.forEach(function (it) { it.t = Date.parse(it.date) || genAt; byId[it.id] = it; });
-      // «آخر زيارة» تُثبَّت طوال الجلسة: إعادة تحميل الصفحة لا تمسح علامات «جديد»
-      var base = null;
-      try { base = sessionStorage.getItem("radar-visit-base"); } catch (e) {}
-      if (base === null) {
-        base = store("radar-last-visit") || "0";
-        try { sessionStorage.setItem("radar-visit-base", base); } catch (e) {}
-      }
-      lastVisit = Number(base) > 0 ? Number(base) : null;
-      store("radar-last-visit", String(Date.now()));
-      readHash(); renderStatus(); renderNow(); renderRadar(); update(true);
-    })
-    .catch(function () {
-      $("status-text").textContent = "تعذّر التحميل";
-      var f = $("feed"); f.textContent = "";
-      var e = el("div", "empty"); e.appendChild(el("b", null, "تعذّر تحميل البيانات. "));
-      e.appendChild(document.createTextNode("أعد تحميل الصفحة بعد قليل. إذا كنت فتحتها كملف من جهازك، فشغّلها عبر خادم محلي لأن المتصفح يمنع قراءة البيانات من ملف.")); f.appendChild(e);
-    });
-})();
-</script>
+<script src="assets/core.js"></script>
+<script src="assets/home.js"></script>
 </body>
 </html>
