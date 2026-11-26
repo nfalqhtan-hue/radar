@@ -1,6 +1,34 @@
 {
- "generated_at": "2026-11-26T06:05:41+00:00",
+ "generated_at": "2026-11-26T07:05:11+00:00",
  "items": [
+  {
+   "id": "CVE-2026-137311",
+   "type": "vul",
+   "title": "CVE-2026-137311: A vulnerability was identified in SourceCodester Online Food Ordering System 1.0. Affected",
+   "summary": "ثغرة أمنية خطورتها متوسطة (CVSS 5.3) تؤثر على SourceCodester Online Food Ordering System. التفاصيل الكاملة في رابط المصدر.",
+   "severity": "medium",
+   "score": 5.3,
+   "kev": false,
+   "system": "SourceCodester Online Food Ordering System",
+   "source": "NVD",
+   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-137311",
+   "date": "2026-11-26T06:17:03+00:00",
+   "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
+  },
+  {
+   "id": "CVE-2026-129838",
+   "type": "vul",
+   "title": "CVE-2026-129838: A flaw was found in rsyslog. This vulnerability allows a local user to spoof sender identi",
+   "summary": "ثغرة أمنية خطورتها منخفضة (CVSS 3.3). التفاصيل الكاملة في رابط المصدر.",
+   "severity": "low",
+   "score": 3.3,
+   "kev": false,
+   "system": "غير محدد",
+   "source": "NVD",
+   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-129838",
+   "date": "2026-11-26T06:17:02+00:00",
+   "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
+  },
   {
    "id": "420627cd7e6f59c1",
    "type": "gen",
@@ -3849,34 +3877,6 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-129968",
    "date": "2026-11-25T13:17:26+00:00",
-   "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
-  },
-  {
-   "id": "CVE-2026-125634",
-   "type": "vul",
-   "title": "CVE-2026-125634: A NULL pointer dereference has been found in the acl_check_dns_host_name() and acl_validat",
-   "summary": "ثغرة أمنية خطورتها متوسطة (CVSS 6.5) تؤثر على Active. التفاصيل الكاملة في رابط المصدر.",
-   "severity": "medium",
-   "score": 6.5,
-   "kev": false,
-   "system": "Active",
-   "source": "NVD",
-   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-125634",
-   "date": "2026-11-25T13:17:25+00:00",
-   "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
-  },
-  {
-   "id": "CVE-2024-7430",
-   "type": "vul",
-   "title": "CVE-2024-7430: Application Performance Management 9.60 patch versions before IP4 are affected. This issue",
-   "summary": "تحتوي إصدارات التحديث الخاصة بتطبيق إدارة أداء التطبيق 9.60 قبل IP4 على ثغرة تسمح للمستخدمين غير المصادقين بالوصول إلى وظائف مخصصة لمستخدمي الإدارة.",
-   "severity": "high",
-   "score": 8.4,
-   "kev": false,
-   "system": "Application Performance Management",
-   "source": "NVD",
-   "link": "https://nvd.nist.gov/vuln/detail/CVE-2024-7430",
-   "date": "2026-11-25T13:17:23+00:00",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
