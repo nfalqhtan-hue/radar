@@ -284,7 +284,9 @@ SUM_SYSTEM = ("You are a tech news editor. Write the summary in Modern Standard 
               # [إصلاح أسبوع 7 - جولة 4] مصطلحات أخطأ فيها النموذج في الجولة الرابعة
               "server-side request forgery (SSRF) = تزوير الطلب من جانب الخادم, deserialization = إلغاء التسلسل (not الترميز), "
               "regular expression = تعبير نمطي, board (of directors) = مجلس الإدارة, European Commission = المفوضية الأوروبية, "
-              "bootkit = برمجية إقلاع خبيثة.")
+              "bootkit = برمجية إقلاع خبيثة. "
+              # [المرحلة 7] النموذج كان يُقحم مصطلحات المسرد (مثل «المفوضية الأوروبية») في ملخصات لا علاقة لها بها
+              "Use a glossary term ONLY when its English word appears in the source text; the glossary is not information about the item.")
 SUM_USER = "Title: {t}\nText: {x}\n\nArabic summary:"
 
 FOREIGN_RE = re.compile(r"[぀-ヿ㐀-鿿豈-﫿가-힯Ѐ-ӿ֐-׿]")   # صيني/ياباني/كوري/روسي/عبري
@@ -316,6 +318,8 @@ def summary_problem(summary, source):
     if len(words) >= 6 and max(words.count(w) for w in set(words)) >= 5 and len(set(words)) < len(words) / 2:
         return "ملخص مكرر الكلمات (نص متعطل)"
     if len(s.strip()) < 25: return "ملخص قصير جداً"
+    # [المرحلة 7] حرف لاتيني شارد بين كلمتين لاتينيتين («Joomla J ChronoForms»)
+    if re.search(r"[A-Za-z]{2,} [A-Za-z](?= [A-Za-z]{2,})", s): return "حرف لاتيني شارد داخل اسم"
     if not re.search(r"[.!؟?…»\")”]\s*$", s.strip()): return "ملخص مقطوع (لا ينتهي بجملة مكتملة)"
     return None
 
@@ -328,6 +332,15 @@ CLAIMS = [
     (r"تنفيذ (?:شيفرة|أوامر|تعليمات|أكواد|كود)", r"execut|command|code", "«تنفيذ شيفرة»"),
     (r"صلاحيات (?:المسؤول|الجذر|المدير|عليا)", r"root|admin|privileg|elevat|escalat|system|superuser", "«صلاحيات عليا»"),
     (r"مستغلة فعلي|استُغلت|استغلت فعلي|تُستغل حالي|يستغلها المهاجمون حالي", r"exploited|in the wild|actively|campaign|attack", "«مستغلة فعلياً»"),
+    # [المرحلة 7] مصطلحات المسرد: النموذج أحياناً يُقحمها دون أن تكون في المصدر («تصنف المفوضية الأوروبية خطورة هذا العيب» في ثغرة ESX)
+    (r"المفوضية الأوروبية", r"european commission", "«المفوضية الأوروبية»"),
+    (r"مجلس الإدارة", r"\bboard\b", "«مجلس الإدارة»"),
+    (r"برامج الفدية|برمجيات الفدية", r"ransom", "«برامج الفدية»"),
+    (r"التصيد", r"phish|vish|smish|lure", "«التصيد»"),
+    (r"الابتزاز", r"extort|blackmail|ransom", "«الابتزاز»"),
+    (r"برمجية إقلاع", r"bootkit", "«برمجية إقلاع خبيثة»"),
+    (r"تزوير الطلب", r"ssrf|request forgery", "«تزوير الطلب»"),
+    (r"إلغاء التسلسل", r"deserializ", "«إلغاء التسلسل»"),
 ]
 
 def _chat(system, user, temperature):
@@ -369,7 +382,7 @@ CREATE TABLE IF NOT EXISTS errors(ts, stage, msg);
 CREATE TABLE IF NOT EXISTS events(ts TEXT, uid TEXT, kind TEXT, detail TEXT);"""
 # [المرحلة 3] أعمدة أُضيفت بعد إنشاء القاعدة: تُضاف تلقائياً للقواعد القديمة (لا نفقد شيئاً من البيانات المخزنة)
 EXTRA_COLS = ["modified", "vector", "cvss_ver", "kev_added", "kev_action", "kev_due", "kev_ransom", "summary_src", "checked", "nvd_published"]
-QUALITY_VERSION = 7   # [المرحلة 6] رفعه يعيد فحص البيانات المخزنة بقواعد الجودة الحالية مرة واحدة
+QUALITY_VERSION = 8   # [المرحلة 6] رفعه يعيد فحص البيانات المخزنة بقواعد الجودة الحالية مرة واحدة
 ITEM_COLS = ["uid", "kind", "type", "title", "link", "text", "summary", "pending", "source", "published", "severity", "score", "kev",
              "system", "status", "reason", "created"] + EXTRA_COLS
 TEMPLATE_PREFIX = "ثغرة أمنية خطورتها"

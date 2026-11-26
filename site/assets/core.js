@@ -55,7 +55,10 @@
   // العنوان يصل بصيغة «CVE-2026-1234: وصف»، فنفصل الرقم عن الوصف للعرض
   R.splitCve = function (it) {
     var m = /^(CVE-\d{4}-\d{4,})\s*:\s*(.*)$/.exec(it.title || "");
-    return m ? { id: m[1], rest: m[2] } : { id: null, rest: it.title };
+    if (!m) return { id: null, rest: it.title, raw: it.title };
+    // عنوان ثغرات NVD هو أول 90 حرفاً من الوصف، فنُظهر أنه مقطوع بدل أن ينتهي وسط كلمة
+    var rest = m[2], cut = it.source === "NVD" && rest.length >= 85 && !/[.!?)]$/.test(rest);
+    return { id: m[1], rest: cut ? rest.replace(/\s+\S{0,12}$/, "") + "…" : rest, raw: rest };
   };
   // العدد مع المعدود. العربية: 1 دقيقة، 2 دقيقتين، 3-10 دقائق، 11+ دقيقة. الإنجليزية: 1 minute، 2 minutes
   R.count = function (n, one, two, few, many) { return n === 1 ? one : n === 2 ? two : R.nf.format(n) + " " + (n <= 10 ? few : many); };
@@ -316,7 +319,7 @@
       orig.textContent = "";
       if (x.text) {
         // عنوان ثغرات NVD هو أول 90 حرفاً من الوصف نفسه، فلا نكرره
-        if (cv.rest && x.text.indexOf(cv.rest.replace(/\s+$/, "")) === 0) title.hidden = true;
+        if (cv.raw && x.text.indexOf(cv.raw.replace(/\s+$/, "")) === 0) title.hidden = true;
         orig.appendChild(R.el("span", "d-label", kevSrc ? L("الوصف الأصلي من CISA", "Original description from CISA") : L("الوصف الأصلي من NVD", "Original description from NVD")));
         var t = R.el("p", "d-en", x.text); t.setAttribute("dir", "ltr"); t.setAttribute("lang", "en"); orig.appendChild(t);
       } else orig.appendChild(R.el("p", "d-note", L("الوصف الأصلي غير متوفر في بياناتنا. افتح المصدر للاطلاع عليه.", "The original description is not in our data. Open the source to read it.")));
@@ -350,6 +353,82 @@
     var v = R.hashParams().get("v");
     if (v && byId[v] && byId[v].type === "vul") { R.openDetail(byId[v]); return true; }
     return false;
+  };
+
+  // ---------- تقرير للطباعة أو الحفظ PDF
+  // نبني نسخة مطبوعة من النتائج المعروضة ثم نفتح نافذة الطباعة: «حفظ كـ PDF» فيها يحفظ الخط العربي كما هو
+  // (مكتبات PDF في JavaScript تفكك الحروف العربية، والمتصفح يرسمها صحيحة)
+  R.printReport = function (list, meta) {
+    meta = meta || {};
+    var MAX = 500, now = Date.now(), rows = list.slice(0, MAX);
+    var old = R.$("print-report"); if (old) old.remove();
+    var rep = R.el("div"); rep.id = "print-report"; rep.setAttribute("aria-hidden", "true");
+    var head = R.el("header", "pr-head");
+    var brand = R.el("div", "pr-brand");
+    var logo = R.svg("svg", { viewBox: "0 0 32 32", width: 34, height: 34 });
+    logo.appendChild(R.svg("circle", { cx: 16, cy: 16, r: 15, fill: "#0A1428" }));
+    logo.appendChild(R.svg("circle", { cx: 16, cy: 16, r: 9, fill: "none", stroke: "#C9A063", "stroke-width": 1.2 }));
+    logo.appendChild(R.svg("path", { d: "M16 16 L16 1 A15 15 0 0 1 29 8.5 Z", fill: "#C9A063", opacity: ".6" }));
+    brand.appendChild(logo);
+    var bt = R.el("div"); bt.appendChild(R.el("b", null, L("رادار التقنية", "Tech Radar"))); bt.appendChild(R.el("span", null, meta.title || L("تقرير الثغرات الأمنية", "Security vulnerability report")));
+    brand.appendChild(bt); head.appendChild(brand);
+    var info = R.el("dl", "pr-info");
+    function row(k, v) { var d = R.el("div"); d.appendChild(R.el("dt", null, k)); d.appendChild(R.el("dd", null, v)); info.appendChild(d); }
+    row(L("تاريخ إنشاء التقرير", "Report generated"), R.dateF.format(now) + L("، الساعة ", ", ") + R.timeF.format(now));
+    if (meta.genAt) row(L("آخر تحديث للبيانات", "Data last updated"), R.dateF.format(meta.genAt) + L("، الساعة ", ", ") + R.timeF.format(meta.genAt));
+    row(L("نطاق التقرير", "Scope"), meta.scope || L("كل ما في الموقع", "Everything on the site"));
+    row(L("عدد العناصر", "Items"), R.nf.format(list.length) + (list.length > MAX ? L(" (أول ", " (first ") + MAX + L(" في هذا التقرير)", " in this report)") : ""));
+    head.appendChild(info); rep.appendChild(head);
+
+    // ملخص المستويات: الخطورة والاستغلال منفصلان
+    var vul = rows.filter(function (it) { return it.type === "vul"; });
+    if (vul.length) {
+      var sum = R.el("ul", "pr-sum");
+      R.SEV_ORDER.forEach(function (s) {
+        var n = vul.filter(function (it) { return R.sevOf(it) === s; }).length;
+        if (!n) return;
+        var li = R.el("li"); li.style.setProperty("--c", "var(--p-" + s + ")");
+        li.appendChild(R.el("b", null, R.nf.format(n))); li.appendChild(R.el("span", null, R.SEV[s])); sum.appendChild(li);
+      });
+      var k = vul.filter(function (it) { return it.kev; }).length;
+      var lk = R.el("li", "kev"); lk.appendChild(R.el("b", null, R.nf.format(k))); lk.appendChild(R.el("span", null, L("ثبت استغلالها (CISA)", "Known exploited (CISA)"))); sum.appendChild(lk);
+      rep.appendChild(sum);
+    }
+
+    var tb = R.el("table", "pr-table"), th = R.el("thead"), tr = R.el("tr");
+    [L("#", "#"), L("العنصر", "Item"), L("المنتج المتأثر", "Affected product"), "CVSS", L("الخطورة", "Severity"), L("الاستغلال", "Exploitation"), L("التاريخ", "Date"), L("رابط المصدر", "Source link")]
+      .forEach(function (h) { tr.appendChild(R.el("th", null, h)); });
+    th.appendChild(tr); tb.appendChild(th);
+    var body = R.el("tbody");
+    rows.forEach(function (it, i) {
+      var sv = R.sevOf(it), cv = R.splitCve(it), r = R.el("tr");
+      r.appendChild(R.el("td", "n", R.nf.format(i + 1)));
+      var c = R.el("td", "it");
+      if (cv.id) c.appendChild(R.el("b", "cve", cv.id)); else c.appendChild(R.el("b", null, R.TYPES[it.type]));
+      var t = R.el("span", "t", cv.rest || it.title); t.setAttribute("dir", "auto"); c.appendChild(t);
+      if (!R.en && it.summary && it.sumSrc === "llm") { var s2 = R.el("span", "s", "ملخص آلي: " + it.summary); c.appendChild(s2); }
+      r.appendChild(c);
+      r.appendChild(R.el("td", null, it.type === "vul" ? R.sysName(it.system) : "—"));
+      r.appendChild(R.el("td", "num", it.score != null ? Number(it.score).toFixed(1) : "—"));
+      var sc = R.el("td"); if (sv) { var p = R.el("span", "pill", R.SEV[sv]); p.style.setProperty("--c", "var(--p-" + sv + ")"); sc.appendChild(p); } else sc.textContent = "—";
+      r.appendChild(sc);
+      r.appendChild(R.el("td", it.kev ? "kev" : "muted", it.type !== "vul" ? "—" : it.kev ? L("ثبت استغلالها", "Known exploited") : L("لا دليل منشور", "No evidence")));
+      r.appendChild(R.el("td", "num", R.fmtDate(it.date) || "—"));
+      var u = it.type === "vul" ? "https://nvd.nist.gov/vuln/detail/" + encodeURIComponent(cv.id || it.id) : R.safeUrl(it.link);
+      var lc = R.el("td", "url"); if (u) { var a = R.el("a", null, u.replace(/^https?:\/\//, "")); a.href = u; lc.appendChild(a); } r.appendChild(lc);
+      body.appendChild(r);
+    });
+    tb.appendChild(body); rep.appendChild(tb);
+    rep.appendChild(R.el("p", "pr-note", L("درجات CVSS منقولة من قاعدة NVD الأمريكية، وحالة الاستغلال من قائمة وكالة CISA. الخطورة والاستغلال أمران منفصلان. الملخصات العربية يكتبها نموذج آلي وقد تخطئ، والمرجع هو رابط المصدر.",
+      "CVSS scores come from the US NVD database and exploitation status from CISA's list; severity and exploitation are separate facts. Arabic summaries are machine-written and can be wrong; the source link is the reference.")));
+    rep.appendChild(R.el("p", "pr-note", "nfalqhtan-hue.github.io/radar"));
+    document.body.appendChild(rep);
+    R.closeDetail();
+    var t0 = document.title;
+    document.title = (R.en ? "tech-radar-report-" : "تقرير-رادار-التقنية-") + new Date(now).toISOString().slice(0, 10);
+    var restore = function () { document.title = t0; window.removeEventListener("afterprint", restore); };
+    window.addEventListener("afterprint", restore);
+    setTimeout(function () { window.print(); }, 50);
   };
 
   // ---------- رسالة خطأ موحدة مع زر إعادة المحاولة

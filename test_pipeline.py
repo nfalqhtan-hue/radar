@@ -279,4 +279,11 @@ r6 = cq.execute("select summary, pending, summary_src, system from items where u
 check("stored summary with an unsupported claim is pulled and queued again; product and news type corrected; runs once",
       r6 == ("", 1, "", "Keycloak") and cq.execute("select type from items where uid='n1'").fetchone()[0] == "gen"
       and rq["summaries_pulled"] == 1 and rq2 == {})
+# [المرحلة 7] ما كشفه تقرير PDF: مصطلح من المسرد مُقحم، وحرف لاتيني شارد
+esx = "ESX contains a heap out-of-bounds write vulnerability in the I/O filter service. Broadcom has evaluated the severity as Critical, CVSSv3 9.8."
+check("glossary term not in the source is rejected («المفوضية الأوروبية» in a VMware CVE)",
+      "المفوضية" in (rp.summary_problem("تحتوي ESX على ثغرة كتابة خارج الحدود. تُصنف المفوضية الأوروبية خطورتها 9.8.", esx) or "")
+      and rp.summary_problem("تحتوي ESX على ثغرة كتابة خارج الحدود، وتصنف Broadcom خطورتها 9.8.", esx) is None)
+check("stray Latin letter inside a name is rejected",
+      bool(rp.summary_problem("ثغرة في توسعة Joomla J ChronoForms تسمح برفع ملفات.", "Joomla Extension ChronoForms extension upload")))
 print(f"\n{ok} checks passed")

@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-en="About | Tech Radar">عن المشروع | رادار التقنية</title>
+<meta name="description" content="رادار التقنية: وكيل ذكاء اصطناعي يجمع الثغرات الأمنية وأخبار التقنية من مصادرها الرسمية ويصنفها ويلخصها بالعربية وينبه بالخطير منها." data-en-content="Tech Radar: an AI agent that collects security vulnerabilities and tech news from official sources, classifies them, summarizes them in Arabic and alerts on the serious ones.">
+<meta name="theme-color" content="#0A1428">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-LLm5XCccwQJVd/6axRIc9eVFKHLYmMjx4m9vl7w5tl8='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%230A1428'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23C9A063' stroke-width='1.5' opacity='.6'/%3E%3Cpath d='M16 16 L16 3 A13 13 0 0 1 27.3 9.5 Z' fill='%23C9A063' opacity='.55'/%3E%3Ccircle cx='22' cy='9' r='2.4' fill='%23FF6B66'/%3E%3C/svg%3E">
+<script>try{var d=document.documentElement,t=localStorage.getItem("radar-theme");if(t==="dark"||t==="light")d.dataset.theme=t;var l=new URLSearchParams(location.search).get("lang")||localStorage.getItem("radar-lang");if(l==="en"){d.lang="en";d.dir="ltr"}}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=p7b">
+<link rel="stylesheet" href="assets/about.css?v=p7b">
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to the content">انتقل إلى المحتوى</a>
+<header class="scope">
+  <div class="wrap">
+    <div class="topbar">
+      <a class="brand" href="./" aria-label="رادار التقنية، الصفحة الرئيسية" data-en-aria-label="Tech Radar, home">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="none" stroke="#2A4170"/><circle cx="16" cy="16" r="9" fill="none" stroke="#2A4170"/><path d="M16 16 L16 1 A15 15 0 0 1 29 8.5 Z" fill="#C9A063" opacity=".5"/><circle cx="22" cy="9" r="2.2" fill="#FF6B66"/></svg>
+        <b data-en="Tech Radar">رادار التقنية</b>
+      </a>
+      <nav class="nav" aria-label="أقسام الموقع" data-en-aria-label="Site sections">
+        <a href="./" data-en="Home">الرئيسية</a>
+        <a href="alerts.html" data-en="Alerts">التنبيهات</a>
+        <a href="dashboard.html" data-en="Statistics">الإحصائيات</a>
+        <a href="about.html" aria-current="page" data-en="About">عن المشروع</a>
+      </nav>
+      <div class="top-actions">
+        <span class="status loading" id="status" role="status"><span class="status-dot" aria-hidden="true"></span><span class="status-text" id="status-text" data-en="Loading">جارٍ التحميل</span></span>
+        <button class="icon-btn lang-btn" id="lang" type="button" lang="en" aria-label="Switch to English">EN</button>
+        <button class="icon-btn" id="theme" type="button" aria-label="تبديل الوضع الليلي والفاتح" data-en-aria-label="Toggle dark and light mode">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="page-head ab-head">
+      <h1 data-en="About Tech Radar">عن رادار التقنية</h1>
+      <p class="ab-lead" data-en="An AI agent that watches official security and tech sources every hour, classifies what it finds, summarizes it in Arabic, and alerts on the vulnerabilities that need action first.">وكيل ذكاء اصطناعي يراقب المصادر الأمنية والتقنية الرسمية كل ساعة، يصنف ما يجده ويلخصه بالعربية، وينبه بالثغرات التي تحتاج تصرفاً قبل غيرها.</p>
+      <dl class="ab-live" id="live" aria-live="polite">
+        <div><dt data-en="Vulnerabilities tracked">ثغرة رصدها</dt><dd class="num" id="l-v">…</dd></div>
+        <div><dt data-en="Tech news stories">خبراً تقنياً</dt><dd class="num" id="l-n">…</dd></div>
+        <div><dt data-en="Known exploited">ثبت استغلالها</dt><dd class="num" id="l-k">…</dd></div>
+        <div><dt data-en="Tracking since">يرصد منذ</dt><dd id="l-s">…</dd></div>
+      </dl>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="wrap ab" tabindex="-1">
+
+  <section class="ab-row" aria-labelledby="h-problem">
+    <div>
+      <h2 id="h-problem" data-en="The problem">المشكلة</h2>
+      <p data-en="News, updates and vulnerabilities are spread across dozens of official sources in different languages. Following them by hand takes a lot of time, and a user can easily miss an important security update. Most of these sources are in English, and few of them say which vulnerability to fix first.">الأخبار والتحديثات والثغرات موزعة على عشرات المصادر الرسمية بلغات مختلفة، ومتابعتها يدوياً تستهلك وقتاً كبيراً، وقد يفوت المستخدم تحديثاً أمنياً مهماً. أغلب هذه المصادر بالإنجليزية، وقليل منها يقول أي ثغرة تُصلَح أولاً.</p>
+    </div>
+    <div>
+      <h2 id="h-idea" data-en="The idea">الفكرة</h2>
+      <p data-en="An agent that works around the clock: it gathers the latest vulnerabilities and tech news, classifies each item and its affected system, rates vulnerabilities from their official CVSS score and CISA's exploited list, summarizes in Arabic with the source link, and publishes everything on one site with an instant alert for the serious ones.">وكيل يعمل على مدار الساعة: يجمع آخر الثغرات وأخبار التقنية، يصنف كل عنصر والنظام المتأثر به، يقيّم الثغرات من درجة CVSS الرسمية وقائمة CISA للثغرات المستغلة، يلخص بالعربية مع رابط المصدر، وينشر كل ذلك في موقع واحد مع تنبيه فوري بالخطير.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-goals">
+    <h2 id="h-goals" data-en="Goals">الأهداف</h2>
+    <ul class="ab-goals">
+      <li data-en="One Arabic place for the security news that matters, updated every hour without manual work.">مكان عربي واحد للأخبار الأمنية المهمة، يتحدث كل ساعة دون عمل يدوي.</li>
+      <li data-en="Rank vulnerabilities by real risk: official severity and confirmed exploitation, kept as two separate facts.">ترتيب الثغرات حسب خطرها الحقيقي: الخطورة الرسمية وثبوت الاستغلال، كأمرين منفصلين.</li>
+      <li data-en="Alert immediately on critical or exploited vulnerabilities, without flooding the reader.">تنبيه فوري بالثغرات الحرجة أو المستغلة، دون إغراق المتابع بالرسائل.</li>
+      <li data-en="Accuracy before speed: every summary is checked, and anything doubtful is withheld and labeled.">الدقة قبل السرعة: كل ملخص يُفحص، وما فيه شك يُحجب ويُوضَّح ذلك للقارئ.</li>
+      <li data-en="Zero cost: free and open-source tools only.">تكلفة صفر: أدوات مجانية ومفتوحة المصدر فقط.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="h-how">
+    <h2 id="h-how" data-en="How the platform works">آلية عمل المنصة</h2>
+    <p class="ab-note" data-en="Task Scheduler starts one full cycle every hour on our computer. Each step's output is the next step's input.">يبدأ «مُجدول المهام» في ويندوز دورة كاملة كل ساعة على جهازنا، ومخرجات كل خطوة مدخلات التي تليها.</p>
+    <ol class="ab-steps">
+      <li><b data-en="Fetch">الجلب</b><span data-en="NVD vulnerabilities published since the last successful fetch, CISA's full exploited catalog, and five tech news RSS feeds.">ثغرات NVD المنشورة منذ آخر جلب ناجح، وقائمة CISA الكاملة للثغرات المستغلة، وخمس خلاصات أخبار تقنية.</span></li>
+      <li><b data-en="Clean">التنظيف</b><span data-en="Strip HTML, unify dates and format, drop rejected CVEs and duplicates.">إزالة HTML، وتوحيد التواريخ والصيغة، واستبعاد أرقام CVE المرفوضة والمكرر.</span></li>
+      <li><b data-en="Classify">التصنيف</b><span data-en="News type by keyword rules, the affected product extracted from the description, and severity from the official CVSS score.">نوع الخبر بقواعد كلمات، والمنتج المتأثر مستخرج من الوصف، والخطورة من درجة CVSS الرسمية.</span></li>
+      <li><b data-en="Summarize">التلخيص</b><span data-en="Qwen3 (8B) running locally writes one or two Arabic sentences from the source text only. Medium and low vulnerabilities get a factual template instead.">نموذج Qwen3 بحجم 8B يعمل محلياً يكتب جملة أو جملتين بالعربية من نص المصدر فقط، والثغرات المتوسطة والمنخفضة تأخذ ملخصاً من بياناتها.</span></li>
+      <li><b data-en="Verify">التحقق</b><span data-en="CVE number and score checked; the summary is rejected if it has foreign script, numbers or claims not in the source, or is cut off.">مطابقة رقم CVE والدرجة، ورفض أي ملخص فيه حروف أجنبية أو أرقام أو ادعاءات غير موجودة في المصدر، أو مقطوع.</span></li>
+      <li><b data-en="Publish and alert">النشر والتنبيه</b><span data-en="Export the data files, push them to GitHub (the site updates in about a minute), and send a Telegram message for critical or exploited vulnerabilities.">تصدير ملفات البيانات ورفعها إلى GitHub فيتحدث الموقع خلال دقيقة تقريباً، ورسالة تيليجرام للثغرات الحرجة أو المستغلة.</span></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="h-src">
+    <h2 id="h-src" data-en="Data sources">مصادر البيانات</h2>
+    <div class="ab-table-wrap">
+      <table class="ab-table">
+        <thead><tr><th scope="col" data-en="Source">المصدر</th><th scope="col" data-en="What we take from it">ماذا نأخذ منه</th><th scope="col" data-en="How">الطريقة</th></tr></thead>
+        <tbody>
+          <tr><th scope="row"><bdi>NVD</bdi><small data-en="US National Vulnerability Database (NIST)">قاعدة الثغرات الوطنية الأمريكية (NIST)</small></th><td data-en="Every new CVE: description, CVSS score and vector, publish and last-modified dates. Stored CVEs are re-checked for score changes.">كل ثغرة CVE جديدة: الوصف، ودرجة CVSS ومتجهها، وتاريخا النشر وآخر تعديل. والثغرات المخزنة يُعاد فحصها لرصد تغير الدرجة.</td><td>REST API 2.0</td></tr>
+          <tr><th scope="row"><bdi>CISA KEV</bdi><small data-en="US Cybersecurity and Infrastructure Security Agency">وكالة الأمن السيبراني وأمن البنية التحتية الأمريكية</small></th><td data-en="Which vulnerabilities attackers have actually exploited, when they were added, the required action and ransomware use.">الثغرات التي ثبت أن المهاجمين استغلوها، وتاريخ إدراجها، والإجراء المطلوب، واستخدامها في حملات الفدية.</td><td>JSON</td></tr>
+          <tr><th scope="row"><bdi>RSS</bdi><small data-en="Tech and security news">أخبار التقنية والأمن</small></th><td><bdi data-en="The Hacker News, BleepingComputer, Ars Technica, The Verge, TechCrunch">The Hacker News، BleepingComputer، Ars Technica، The Verge، TechCrunch</bdi></td><td>RSS / Atom</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-tech">
+    <h2 id="h-tech" data-en="Technologies">التقنيات المستخدمة</h2>
+    <div class="ab-tech">
+      <div><b>Python 3</b><span data-en="The whole agent, standard library only (no external packages).">الوكيل كاملاً، بالمكتبة القياسية فقط ودون حزم خارجية.</span></div>
+      <div><b>Ollama + Qwen3 8B</b><span data-en="A local open-source language model for Arabic summaries: free, no API key, data stays on our machine.">نموذج لغوي مفتوح المصدر يعمل محلياً للملخصات العربية: مجاني، بلا مفتاح API، والبيانات لا تغادر جهازنا.</span></div>
+      <div><b>SQLite</b><span data-en="The database: items, events log and errors.">قاعدة البيانات: العناصر وسجل الأحداث والأخطاء.</span></div>
+      <div><b data-en="Windows Task Scheduler">مُجدول مهام ويندوز</b><span data-en="Runs the cycle every hour, hidden, and retries a failed upload on the next cycle.">يشغّل الدورة كل ساعة في الخلفية، ويعيد رفع ما فشل في الدورة التالية.</span></div>
+      <div><b>GitHub Pages + Actions</b><span data-en="Free hosting at github.io; every data push republishes the site automatically.">استضافة مجانية على github.io، وكل رفع للبيانات يعيد نشر الموقع تلقائياً.</span></div>
+      <div><b>Telegram Bot API</b><span data-en="Instant alerts, capped at five messages plus one digest per cycle.">التنبيه الفوري، بحد خمس رسائل ورسالة جامعة لكل دورة.</span></div>
+      <div><b>HTML, CSS, JavaScript</b><span data-en="The site itself, with no framework or library: Arabic and English, light and dark, mobile first.">الموقع نفسه دون أي إطار أو مكتبة: عربي وإنجليزي، فاتح وداكن، ويعمل على الجوال أولاً.</span></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-quality">
+    <h2 id="h-quality" data-en="Quality, measured">الجودة بالأرقام</h2>
+    <p class="ab-note" data-en="From our fourth test round (25 November 2026): a fresh live sample of 20 items, each reviewed by hand against its source, and every CVE matched against NVD.">من جولة الاختبار الرابعة (25 نوفمبر 2026): عينة حية جديدة من 20 عنصراً، كل عنصر روجع يدوياً مقابل مصدره، وكل ثغرة طوبقت مع NVD.</p>
+    <dl class="ab-metrics">
+      <div><dt data-en="Classification accuracy">دقة التصنيف</dt><dd><span class="num">95%</span><small data-en="Target 90%">الهدف 90%</small></dd></div>
+      <div><dt data-en="Severity accuracy">دقة الخطورة</dt><dd><span class="num">100%</span><small data-en="8 of 8 vulnerabilities">8 من 8 ثغرات</small></dd></div>
+      <div><dt data-en="CVSS matches NVD">مطابقة CVSS مع NVD</dt><dd><span class="num">100%</span><small data-en="8 of 8">8 من 8</small></dd></div>
+      <div><dt data-en="Known critical alerts delivered">تنبيه الثغرات الحرجة المعروفة</dt><dd><span class="num">3/3</span><small data-en="No duplicates">دون تكرار</small></dd></div>
+      <div><dt data-en="Correct published summaries">ملخصات منشورة سليمة</dt><dd><span class="num">65%</span><small data-en="11 of 17; the weakest part, see below">11 من 17، وهو أضعف جزء، انظر أدناه</small></dd></div>
+      <div><dt data-en="Automated tests">اختبارات آلية</dt><dd><span class="num">77</span><small data-en="Run without internet on every change">تعمل دون إنترنت مع كل تعديل</small></dd></div>
+    </dl>
+  </section>
+
+  <section class="ab-row" aria-labelledby="h-who">
+    <div>
+      <h2 id="h-who" data-en="Who it is for">الفئة المستفيدة</h2>
+      <ul class="ab-list">
+        <li data-en="Students and specialists in IT and technical support.">طلاب ومتخصصو الدعم الفني وتقنية المعلومات.</li>
+        <li data-en="Computer and phone users who want to know about updates and fixed problems.">مستخدمو الحاسب والجوال الراغبون بمعرفة التحديثات والمشاكل المحلولة.</li>
+        <li data-en="People interested in cybersecurity, and small companies that need simple alerts about serious vulnerabilities.">المهتمون بالأمن السيبراني، والشركات الصغيرة التي تحتاج تنبيهات بسيطة بالثغرات الخطيرة.</li>
+      </ul>
+    </div>
+    <div>
+      <h2 id="h-limits" data-en="Known limits">حدود معروفة</h2>
+      <ul class="ab-list">
+        <li data-en="Summaries come from a small local model and can be wrong; each one is labeled and links to its source.">الملخصات من نموذج محلي صغير وقد تخطئ، لذا يُعلَّم كل ملخص ويرتبط بمصدره.</li>
+        <li data-en="There is no server: the agent runs on our computer, so the site does not update while it is off. Missed hours are fetched on the next run.">لا يوجد خادم: الوكيل يعمل على جهازنا، فلا يتحدث الموقع وهو مطفأ، وما فات يُجلب في الدورة التالية.</li>
+        <li data-en="The affected product is extracted by rules from the description and is not always found.">المنتج المتأثر يُستخرج بقواعد من نص الوصف، ولا يُعرف دائماً.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="ab-team" aria-labelledby="h-team">
+    <h2 id="h-team" data-en="The team">الفريق</h2>
+    <ul>
+      <li><b data-en="Abdullah Talal Alqahtani">عبدالله طلال القحطاني</b></li>
+      <li><b data-en="Abdullah Yaqoub Alkhalifa">عبدالله يعقوب الخليفة</b></li>
+    </ul>
+    <p class="ab-note" data-en="Total cost of building and running the project: 0 riyals, with no subscription of any kind.">التكلفة الكلية لبناء المشروع وتشغيله: 0 ريال، ودون أي اشتراك.</p>
+  </section>
+</main>
+
+<div class="wrap">
+  <footer class="foot">
+    <p data-en="A graduation project by Abdullah Talal Alqahtani and Abdullah Yaqoub Alkhalifa.">مشروع تخرج من إعداد عبدالله طلال القحطاني وعبدالله يعقوب الخليفة.</p>
+  </footer>
+</div>
+
+<script src="assets/core.js?v=p7b"></script>
+<script src="assets/about.js?v=p7b"></script>
+</body>
+</html>

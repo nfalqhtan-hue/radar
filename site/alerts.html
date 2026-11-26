@@ -13,8 +13,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/app.css?v=p6">
-<link rel="stylesheet" href="assets/alerts.css?v=p6">
+<link rel="stylesheet" href="assets/app.css?v=p7b">
+<link rel="stylesheet" href="assets/alerts.css?v=p7b">
 </head>
 <body>
 <a class="skip" href="#main" data-en="Skip to the alerts">انتقل إلى التنبيهات</a>
@@ -29,7 +29,7 @@
         <a href="./" data-en="Home">الرئيسية</a>
         <a href="alerts.html" aria-current="page" data-en="Alerts">التنبيهات</a>
         <a href="dashboard.html" data-en="Statistics">الإحصائيات</a>
-        <a href="./#how-h" data-en="How it works">كيف يعمل</a>
+        <a href="about.html" data-en="About">عن المشروع</a>
       </nav>
       <div class="top-actions">
         <span class="status loading" id="status" role="status"><span class="status-dot" aria-hidden="true"></span><span class="status-text" id="status-text" data-en="Loading">جارٍ التحميل</span></span>
@@ -51,9 +51,12 @@
 
   <div class="a-bar">
     <p class="a-explain" id="explain"></p>
+    <div class="a-actions">
+    <button class="export-btn" id="export" type="button" title="يفتح نافذة الطباعة: اختر «حفظ كـ PDF»" data-en-title="Opens the print dialog: choose “Save as PDF”"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-en="Export PDF">تصدير PDF</span></button>
     <div class="sort" role="group" aria-label="الترتيب" data-en-aria-label="Sort">
       <button type="button" data-sort="new" aria-pressed="true" data-en="Newest">الأحدث</button>
       <button type="button" data-sort="imp" aria-pressed="false" data-en="Most severe">الأخطر</button>
+    </div>
     </div>
   </div>
 
@@ -86,7 +89,7 @@
   </footer>
 </div>
 
-<script src="assets/core.js?v=p6"></script>
-<script src="assets/alerts.js?v=p6"></script>
+<script src="assets/core.js?v=p7b"></script>
+<script src="assets/alerts.js?v=p7b"></script>
 </body>
 </html>

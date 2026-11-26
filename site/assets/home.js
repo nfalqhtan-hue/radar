@@ -21,7 +21,7 @@
     var cv = R.splitCve(it), title = cv.rest || it.title;
     if (!R.en) return { title: title, body: it.summary && !/^ثغرة أمنية خطورتها/.test(it.summary) ? it.summary : "" };
     var x = det && det[it.id], t = x && x.text ? x.text.trim() : "";
-    var lead = title.replace(/\s+$/, "");
+    var lead = (cv.raw || "").replace(/\s+$/, "");
     if (t && lead && t.indexOf(lead) === 0) {
       var i = t.indexOf(". ", Math.min(lead.length, 40));
       if (i > 0 && i < 260) { title = t.slice(0, i + 1); t = t.slice(i + 2); } else { title = t.length > 200 ? t.slice(0, 190).replace(/\s+\S*$/, "") + "…" : t; t = ""; }
@@ -372,6 +372,23 @@
   $("newonly").onclick = function () { st.newOnly = !st.newOnly; update(); };
   $("more").onclick = function () { st.shown += PAGE; update(true); };
   document.querySelectorAll(".sort button").forEach(function (b) { b.onclick = function () { st.sort = b.dataset.sort; update(); }; });
+  // تصدير النتائج المعروضة حالياً (بكل فلاترها وترتيبها) إلى تقرير PDF
+  function scopeText() {
+    var p = [];
+    if (st.type) p.push(TYPES[st.type]);
+    if (st.sev) p.push(st.sev === "kev" ? L("ثبت استغلالها", "Known exploited") : L("الخطورة: ", "Severity: ") + SEV[st.sev]);
+    if (st.since) p.push(RANGES.filter(function (r) { return r[0] === st.since; })[0][1]);
+    if (st.q) p.push(L("بحث: «", "Search: “") + st.q + L("»", "”"));
+    if (st.newOnly) p.push(L("الجديد فقط", "New only"));
+    p.push(st.sort === "imp" ? L("مرتبة حسب الخطورة", "sorted by severity") : st.sort === "old" ? L("الأقدم أولاً", "oldest first") : L("الأحدث أولاً", "newest first"));
+    return (filtering() ? "" : L("كل ما في الموقع، ", "Everything on the site, ")) + p.join(R.comma);
+  }
+  $("export").onclick = function () {
+    var list = sorted(filtered());
+    if (!list.length) { $("result").textContent = L("لا توجد نتائج لتصديرها.", "There are no results to export."); return; }
+    R.printReport(list, { genAt: genAt, scope: scopeText(),
+      title: list.every(function (it) { return it.type === "vul"; }) ? L("تقرير الثغرات الأمنية", "Security vulnerability report") : L("تقرير نتائج البحث", "Search results report") });
+  };
   var ft = $("filters-toggle"), fp = $("filter-panel");
   ft.onclick = function () { var open = ft.getAttribute("aria-expanded") !== "true"; ft.setAttribute("aria-expanded", String(open)); fp.classList.toggle("closed", !open); };
   window.addEventListener("hashchange", function () {

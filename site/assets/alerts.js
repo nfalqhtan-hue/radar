@@ -133,9 +133,17 @@
   }
 
   document.querySelectorAll(".sort button").forEach(function (b) { b.onclick = function () { st.sort = b.dataset.sort; update(); }; });
+  var genAt = null;
+  $("export").onclick = function () {
+    var t = tabOf(st.tab), list = all.filter(t.test).sort(st.sort === "imp"
+      ? function (a, b) { return R.rank(b) - R.rank(a) || b.t - a.t; } : function (a, b) { return b.t - a.t; });
+    R.printReport(list, { genAt: genAt, title: L("تقرير التنبيهات الأمنية", "Security alerts report"),
+      scope: t.label + R.comma + (st.sort === "imp" ? L("مرتبة حسب الخطورة", "sorted by severity") : L("الأحدث أولاً", "newest first")) });
+  };
   window.addEventListener("hashchange", function () { if (!all.length) return; if (!R.openFromHash(byId)) R.closeDetail(); readHash(); update(); });
 
   R.load().then(function (d) {
+    genAt = d.genAt;
     all = d.items.filter(function (it) { return it.type === "vul"; });
     all.forEach(function (it) { byId[it.id] = it; });
     readHash(); update(); R.openFromHash(byId); renderSent();

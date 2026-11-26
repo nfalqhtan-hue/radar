@@ -1,0 +1,64 @@
+/* رادار التقنية: صفحة عن المشروع */
+.ab-head { padding-bottom: 34px; }
+.ab-lead { font-size: 18px; color: #C9D2E3; max-width: 60ch; }
+.ab-live { display: flex; flex-wrap: wrap; gap: 10px 36px; margin: 22px 0 0; }
+.ab-live div { display: flex; flex-direction: column-reverse; }
+.ab-live dt { color: var(--ink-muted); font-size: 13.5px; }
+.ab-live dd { margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 28px; color: var(--brass); line-height: 1.3; }
+.ab-live #l-s { font-size: 18px; padding-top: 8px; }
+
+.ab { padding-top: 34px; padding-bottom: 20px; display: grid; gap: 40px; }
+.ab section { min-width: 0; }
+.ab h2 { font-family: var(--f-display); font-weight: 700; font-size: 21px; margin: 0 0 10px; }
+.ab p { margin: 0; max-width: 72ch; }
+.ab-note { color: var(--muted); font-size: 14.5px; margin-bottom: 14px !important; }
+.ab-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; }
+
+.ab-goals { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.ab-goals li { border-inline-start: 3px solid var(--brass); background: var(--surface); padding: 12px 14px; border-radius: 0 var(--r-md) var(--r-md) 0; }
+:root[dir="rtl"] .ab-goals li { border-radius: var(--r-md) 0 0 var(--r-md); }
+
+/* الخطوات تسلسل فعلي، فالترقيم هنا معلومة لا زينة */
+.ab-steps { list-style: none; margin: 0; padding: 0; counter-reset: s; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); overflow: hidden; }
+.ab-steps li { counter-increment: s; padding: 16px 18px; border-bottom: 1px solid var(--line); border-inline-end: 1px solid var(--line); position: relative; }
+.ab-steps li:nth-child(3n) { border-inline-end: 0; }
+.ab-steps li:nth-last-child(-n+3) { border-bottom: 0; }
+.ab-steps li::before { content: counter(s); display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--navy); color: var(--brass); font-family: var(--f-display); font-weight: 800; font-size: 15px; margin-bottom: 6px; }
+.ab-steps b { display: block; font-weight: 700; font-size: 16px; }
+.ab-steps span { display: block; color: var(--muted); font-size: 14.5px; line-height: 1.65; margin-top: 2px; }
+
+.ab-table-wrap { border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); overflow-x: auto; }
+.ab-table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+.ab-table th, .ab-table td { text-align: start; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.ab-table thead th { font-size: 13px; color: var(--muted); font-weight: 600; background: color-mix(in srgb, var(--text) 3%, var(--surface)); }
+.ab-table tbody tr:last-child > * { border-bottom: 0; }
+.ab-table tbody th { font-weight: 700; min-width: 170px; }
+.ab-table tbody th small { display: block; font-weight: 400; color: var(--muted); font-size: 12.5px; }
+.ab-table td:last-child { white-space: nowrap; color: var(--muted); }
+
+.ab-tech { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.ab-tech div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 14px; }
+.ab-tech b { display: block; font-weight: 700; }
+.ab-tech span { color: var(--muted); font-size: 14px; }
+
+.ab-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 0; }
+.ab-metrics div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 14px; display: flex; flex-direction: column; }
+/* الرقم ثم اسم المقياس ثم الملاحظة */
+.ab-metrics dd { display: contents; margin: 0; }
+.ab-metrics dd .num { order: 1; display: block; font-family: var(--f-display); font-weight: 800; font-size: 30px; line-height: 1.25; color: var(--accent); }
+.ab-metrics dt { order: 2; font-size: 14px; color: var(--text); font-weight: 600; }
+.ab-metrics dd small { order: 3; display: block; color: var(--muted); font-size: 12.5px; }
+
+.ab-list { margin: 0; padding-inline-start: 20px; display: grid; gap: 6px; }
+.ab-team ul { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.ab-team li { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 10px 16px; font-size: 16px; }
+
+@media (max-width: 900px) {
+  .ab-row { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .ab-steps { grid-template-columns: minmax(0, 1fr); }
+  .ab-steps li { border-inline-end: 0; border-bottom: 1px solid var(--line) !important; }
+  .ab-steps li:last-child { border-bottom: 0 !important; }
+}
+@media print {
+  .ab-live { display: none; }
+}
