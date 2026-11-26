@@ -21,7 +21,9 @@ python radar_pipeline.py                     # التشغيل الكامل
 الناتج: قاعدة `radar.db` وملف `site/data.json` (يُقرأ منه الموقع).
 
 ## الموقع
-- `site/index.html` صفحة واحدة تقرأ `site/data.json`: تنبيه بالثغرات الحرجة، وبحث، وتصفية حسب النوع والخطورة، وتعمل على الجوال وبالوضع الليلي.
+- أربع صفحات في `site/`: الرئيسية (`index.html`)، مركز التنبيهات (`alerts.html`)، الإحصائيات (`dashboard.html`)، عن المشروع (`about.html`)، بالعربية والإنجليزية. التصميم والكود المشترك في `site/assets/`.
+- ملفات البيانات يكتبها الوكيل: `data.json` (العناصر)، `details.json` (الوصف الأصلي وبيانات CISA، يُحمَّل عند الحاجة)، `stats.json` (الإحصائيات)، `events.json` (سجل الأحداث).
+- تقرير الاختبار النهائي: [TEST_REPORT_FINAL.md](TEST_REPORT_FINAL.md).
 - تجربة محلية: `python -m http.server 8765 --directory site` ثم افتح `http://127.0.0.1:8765` (فتح الملف مباشرة لا يحمّل البيانات).
 - النشر: `.github/workflows/pages.yml` ينشر مجلد `site` على GitHub Pages مع كل رفع إلى `main`. في إعدادات المستودع: Settings → Pages → Source: **GitHub Actions**.
 - التحديث التلقائي: `update_site.bat` يشغّل الوكيل ثم يرفع `data.json` الجديد. اجعله يعمل كل ساعة من Task Scheduler.
