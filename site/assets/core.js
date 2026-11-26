@@ -199,14 +199,20 @@
     row.appendChild(dd); dl.appendChild(row);
     return dd;
   }
+  function afterClose() {
+    var p = R.hashParams();
+    if (p.has("v")) { p.delete("v"); R.setHash(p); }
+    dlgItem = null;
+  }
+  function closeDlg() { if (dlg && dlg.open) dlg.close(); afterClose(); }
   function ensureDialog() {
     if (dlg) return dlg;
     dlg = R.el("dialog", "detail"); dlg.setAttribute("aria-labelledby", "d-title");
-    dlg.addEventListener("close", function () {
-      var p = R.hashParams(); p.delete("v"); R.setHash(p); dlgItem = null;
-    });
+    // تنظيف الرابط عند الإغلاق: حدث close لا يصل دائماً (في بعض المتصفحات والتبويبات الخلفية)، فننظفه أيضاً في كل طريق إغلاق نتحكم به
+    dlg.addEventListener("close", afterClose);
+    dlg.addEventListener("cancel", function () { setTimeout(afterClose, 0); });   // زر Esc
     // الضغط خارج الصندوق يغلق النافذة
-    dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
+    dlg.addEventListener("click", function (e) { if (e.target === dlg) closeDlg(); });
     document.body.appendChild(dlg);
     return dlg;
   }
@@ -217,7 +223,7 @@
     var head = R.el("header", "d-head");
     var close = R.el("button", "icon-btn d-close"); close.type = "button"; close.setAttribute("aria-label", L("إغلاق", "Close"));
     close.appendChild(R.svg("svg", { width: 18, height: 18, viewBox: "0 0 24 24", "aria-hidden": "true" })).appendChild(R.svg("path", { d: "M6 6l12 12M18 6 6 18", stroke: "currentColor", "stroke-width": 2, "stroke-linecap": "round" }));
-    close.onclick = function () { d.close(); };
+    close.onclick = closeDlg;
     var h = R.el("h2", "d-id"); h.id = "d-title"; h.appendChild(R.el("bdi", null, id)); head.appendChild(h);
     var tags = R.el("div", "d-tags");
     tags.appendChild(R.el("span", "pill", L("الخطورة: ", "Severity: ") + R.SEV[sv]));
@@ -347,7 +353,7 @@
       if (pubN) pubN.textContent = L("غير متوفر", "Not available");
     });
   };
-  R.closeDetail = function () { if (dlg && dlg.open) dlg.close(); };
+  R.closeDetail = function () { if (dlg && dlg.open) closeDlg(); };
   // فتح التفاصيل من رابط مشارَك (#v=CVE-...)
   R.openFromHash = function (byId) {
     var v = R.hashParams().get("v");
@@ -428,7 +434,8 @@
     document.title = (R.en ? "tech-radar-report-" : "تقرير-رادار-التقنية-") + new Date(now).toISOString().slice(0, 10);
     var restore = function () { document.title = t0; window.removeEventListener("afterprint", restore); };
     window.addEventListener("afterprint", restore);
-    setTimeout(function () { window.print(); }, 50);
+    // print() ينتظر حتى تُغلق نافذة الطباعة في المتصفحات الحديثة، فنعيد العنوان بعدها (و afterprint احتياط)
+    setTimeout(function () { window.print(); restore(); }, 50);
   };
 
   // ---------- رسالة خطأ موحدة مع زر إعادة المحاولة
