@@ -13,8 +13,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/app.css?v=p8">
-<link rel="stylesheet" href="assets/dashboard.css?v=p8">
+<link rel="stylesheet" href="assets/app.css?v=p8b">
+<link rel="stylesheet" href="assets/dashboard.css?v=p8b">
 </head>
 <body>
 <a class="skip" href="#main" data-en="Skip to the statistics">انتقل إلى الإحصائيات</a>
@@ -57,12 +57,6 @@
     </section>
 
     <div class="s-grid">
-      <section class="card" aria-labelledby="h-sev">
-        <h2 id="h-sev" data-en="Vulnerabilities by severity">الثغرات حسب الخطورة</h2>
-        <p class="s-note" data-en="CVSS score from NVD. Click a level to see its vulnerabilities.">درجة CVSS من قاعدة NVD. اضغط أي مستوى لعرض ثغراته.</p>
-        <ul class="hbars" id="sev"></ul>
-      </section>
-
       <section class="card wide" aria-labelledby="h-hour">
         <div class="card-head">
           <h2 id="h-hour" data-en="Vulnerabilities published over time">الثغرات المنشورة حسب الوقت</h2>
@@ -76,6 +70,12 @@
         <div class="cols-axis" id="cols-axis" aria-hidden="true"></div>
         <div class="tip" id="tip" role="status" aria-live="polite"></div>
         <details class="as-table"><summary data-en="Show as a table">عرض كجدول</summary><div id="t-time"></div></details>
+      </section>
+
+      <section class="card" aria-labelledby="h-sev">
+        <h2 id="h-sev" data-en="Vulnerabilities by severity">الثغرات حسب الخطورة</h2>
+        <p class="s-note" data-en="CVSS score from NVD. Click a level to see its vulnerabilities.">درجة CVSS من قاعدة NVD. اضغط أي مستوى لعرض ثغراته.</p>
+        <ul class="hbars" id="sev"></ul>
       </section>
 
       <section class="card" aria-labelledby="h-sys">
@@ -112,7 +112,7 @@
   </footer>
 </div>
 
-<script src="assets/core.js?v=p8"></script>
-<script src="assets/dashboard.js?v=p8"></script>
+<script src="assets/core.js?v=p8b"></script>
+<script src="assets/dashboard.js?v=p8b"></script>
 </body>
 </html>
