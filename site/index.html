@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>رادار التقنية</title>
-<meta name="description" content="رادار يرصد الثغرات الأمنية وأخبار التقنية كل ساعة، ويصنفها ويلخصها بالعربية.">
+<meta name="description" content="الثغرات الأمنية وأخبار التقنية من مصادرها الرسمية، ملخصة بالعربية وتتحدث كل ساعة.">
 <meta name="theme-color" content="#0A1428">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%230A1428'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23C9A063' stroke-width='1.5' opacity='.6'/%3E%3Cpath d='M16 16 L16 3 A13 13 0 0 1 27.3 9.5 Z' fill='%23C9A063' opacity='.55'/%3E%3Ccircle cx='22' cy='9' r='2.4' fill='%23FF6B66'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -290,19 +290,19 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
 <div class="wrap">
   <section class="how" aria-labelledby="how-h">
     <h2 id="how-h">كيف يعمل الرادار</h2>
-    <p class="intro">وكيل ذكاء اصطناعي يعمل على جهازنا كل ساعة بأدوات مجانية بالكامل. الملخصات يكتبها نموذج لغوي محلي (Qwen3)، ودرجات الخطورة تأتي من NVD الرسمية، لا من تخمين النموذج.</p>
+    <p class="intro">يعمل الرادار على جهاز أحدنا ويتحدث كل ساعة. الملخصات يكتبها نموذج لغوي يعمل على الجهاز نفسه (Qwen3)، ودرجة خطورة كل ثغرة منقولة كما هي من قاعدة NVD الأمريكية.</p>
     <ol class="steps">
       <li><b>الجلب</b><span>من NVD وقائمة CISA للثغرات المستغلة وخلاصات أخبار تقنية</span></li>
       <li><b>التنظيف</b><span>إزالة التكرار وتوحيد الصيغة</span></li>
       <li><b>التصنيف</b><span>النوع والنظام المتأثر ودرجة الخطورة</span></li>
       <li><b>التلخيص</b><span>سطر أو سطران بالعربية من نص المصدر فقط</span></li>
       <li><b>التحقق</b><span>مطابقة رقم CVE والتاريخ، وفحص جودة الملخص</span></li>
-      <li><b>النشر والتنبيه</b><span>الموقع، وتنبيه تيليجرام فوري للثغرات الحرجة</span></li>
+      <li><b>النشر والتنبيه</b><span>تحديث هذه الصفحة، ورسالة تيليجرام عند ظهور ثغرة حرجة</span></li>
     </ol>
   </section>
   <footer class="foot">
     <p>مشروع تدريبي من إعداد عبدالله طلال القحطاني وعبدالله يعقوب الخليفة.</p>
-    <p>الملخصات آلية وقد تحتوي أخطاء. ارجع دائماً لرابط المصدر قبل أي إجراء.</p>
+    <p>الملخصات يكتبها نموذج آلي وقد يخطئ، فارجع إلى المصدر قبل أن تتصرف بناءً عليها.</p>
   </footer>
 </div>
 
@@ -468,7 +468,7 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
     $("result").textContent = (st.type || st.sev || st.q) ? ("النتائج: " + nf.format(list.length) + " من " + nf.format(all.length)) : "";
     if (!list.length) {
       var e = el("div", "empty"); e.appendChild(el("b", null, "لا توجد نتائج مطابقة. "));
-      e.appendChild(document.createTextNode("جرّب كلمة أخرى، أو ألغِ التصفية من القائمة الجانبية.")); feed.appendChild(e);
+      e.appendChild(document.createTextNode("جرّب كلمة أخرى، أو اضغط «إلغاء التصفية».")); feed.appendChild(e);
     }
     var lastDay = null;
     list.slice(0, st.shown).forEach(function (it) {
@@ -501,10 +501,11 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
     var kev = c.filter(function (it) { return it.kev; }).length;
     var lede = $("lede"); lede.textContent = "";
     if (c.length) {
-      lede.appendChild(document.createTextNode("في آخر تحديث: "));
       lede.appendChild(el("strong", null, count(c.length, "ثغرة حرجة واحدة", "ثغرتان حرجتان", "ثغرات حرجة", "ثغرة حرجة")));
-      lede.appendChild(document.createTextNode(kev ? "، منها " + nf.format(kev) + " مستغلة فعلياً حسب CISA. ابدأ بالمستغلة." : ". ابدأ بالأعلى درجة."));
-    } else lede.textContent = "لا توجد ثغرات حرجة في آخر تحديث. تابع بقية الأخبار في الأسفل.";
+      lede.appendChild(document.createTextNode(kev
+        ? " في آخر تحديث، وثبت أن المهاجمين استغلوا " + (kev === 1 ? "واحدة منها" : kev === 2 ? "اثنتين منها" : nf.format(kev) + " منها") + " بحسب وكالة CISA. ابدأ بهذه."
+        : " في آخر تحديث. ابدأ بالأعلى درجة."));
+    } else lede.textContent = "لا توجد ثغرات حرجة في آخر تحديث. آخر الأخبار في الأسفل.";
     var ol = $("now"); ol.textContent = "";
     c.slice(0, 4).forEach(function (it) {
       topIds[it.id] = true;
@@ -517,7 +518,6 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
       tx.appendChild(el("span", "now-meta", (it.system ? it.system + "، " : "") + ago(it.t)));
       a.appendChild(tx); li.appendChild(a); ol.appendChild(li);
     });
-    if (!c.length) ol.appendChild(el("li", "now-empty", "كل شيء هادئ حالياً."));
     var more = $("now-more");
     if (c.length > 4) {
       more.hidden = false; more.textContent = "كل الثغرات الحرجة (" + nf.format(c.length) + ")";
@@ -572,7 +572,7 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
     var s = $("status"), t = $("status-text"), h = (Date.now() - genAt) / 36e5;
     t.textContent = "آخر تحديث " + ago(genAt);
     s.title = "يتحدث كل ساعة. آخر تحديث الساعة " + timeF.format(genAt);
-    if (h > 2) { s.classList.add("stale"); t.textContent += "، والتحديث متأخر"; }
+    if (h > 2) { s.classList.add("stale"); t.textContent += " (متأخر عن موعده)"; s.title = "يتحدث عادةً كل ساعة، وآخر تحديث وصل الساعة " + timeF.format(genAt) + ". قد يكون جهاز الرادار مطفأً."; }
   }
 
   // ---------- الوضع الليلي/الفاتح
@@ -607,7 +607,7 @@ footer.foot p { margin: 4px 0; max-width: 80ch; }
       $("status-text").textContent = "تعذّر التحميل";
       var f = $("feed"); f.textContent = "";
       var e = el("div", "empty"); e.appendChild(el("b", null, "تعذّر تحميل البيانات. "));
-      e.appendChild(document.createTextNode("أعد تحميل الصفحة. وإذا فتحتها من ملف على جهازك، شغّلها عبر خادم محلي.")); f.appendChild(e);
+      e.appendChild(document.createTextNode("أعد تحميل الصفحة بعد قليل. إذا كنت فتحتها كملف من جهازك، فشغّلها عبر خادم محلي لأن المتصفح يمنع قراءة البيانات من ملف.")); f.appendChild(e);
     });
 })();
 </script>
