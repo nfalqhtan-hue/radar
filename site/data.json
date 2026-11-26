@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-26T14:18:04+00:00",
+ "generated_at": "2026-11-26T14:18:36+00:00",
  "items": [
   {
    "id": "CVE-2026-86470",
@@ -1730,7 +1730,7 @@
    "id": "CVE-2026-123910",
    "type": "vul",
    "title": "CVE-2026-123910: ESX contains a heap out-of-bounds write vulnerability in the I/O filter service. Broadcom",
-   "summary": "تحتوي ESX على ثغرة كتابة خارج الحدود في خدمة فلتر الإدخال والإخراج. تُصنف المفوضية الأوروبية خطورة هذا العيب في نطاق الخطورة العالية مع درجة CVSSv3 القصوى 9.8.",
+   "summary": "",
    "severity": "critical",
    "score": 9.8,
    "kev": false,
@@ -1738,7 +1738,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-123910",
    "date": "2026-11-26T11:17:01+00:00",
-   "sum_src": "llm",
+   "sum_src": "pending",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -1820,7 +1820,7 @@
    "id": "CVE-2026-123913",
    "type": "vul",
    "title": "CVE-2026-123913: VMware ESX contains a stack-based buffer-overflow vulnerability in the VMkernel. Broadcom",
-   "summary": "تحتوي وحدة VMkernel في VMware ESX على ثغرة تتعلق بفرط تخزين الذاكرة، وتُصنف المفوضية الأوروبية خطورة هذا العيب ضمن مستوى الأهمية مع درجة CVSSv3 تصل إلى 8.2.",
+   "summary": "",
    "severity": "high",
    "score": 8.2,
    "kev": false,
@@ -1828,7 +1828,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-123913",
    "date": "2026-11-26T11:17:01+00:00",
-   "sum_src": "llm",
+   "sum_src": "pending",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -4310,7 +4310,7 @@
    "id": "d52cc031d711c026",
    "type": "fix",
    "title": "Drupal Fail2Install Exploit Details Emerge as Critical RCE Flaw Faces Active Exploitation",
-   "summary": "أصدرت المفوضية الأوروبية تحذيرًا بشأن ثغرة تُعرف باسم Fail2Install تؤثر على منصة Drupal وتسمح للمهاجمين بالاستغلال عن بُعد.",
+   "summary": "",
    "severity": null,
    "score": null,
    "kev": false,
@@ -4318,7 +4318,7 @@
    "source": "feeds.feedburner.com",
    "link": "https://thehackernews.com/2026/11/drupal-fail2install-exploit-details.html",
    "date": "2026-11-25T11:23:26+00:00",
-   "sum_src": "llm",
+   "sum_src": "pending",
    "advice": null
   },
   {
@@ -5270,7 +5270,7 @@
    "id": "9436fc5b47f7d00e",
    "type": "fix",
    "title": "Microsoft Fixes Azure API Management Classic Flaw as Actor Targets Customer Secrets",
-   "summary": "Microsoft تُصلح ثغرة في Azure API Management الكلاسيكية بعد أن استهدف المهاجم بيانات عملاء. تقول المفوضية الأوروبية إن المهاجم كان يحاول الوصول إلى أسرار العملاء عبر ثغرة في النظام.",
+   "summary": "",
    "severity": null,
    "score": null,
    "kev": false,
@@ -5278,7 +5278,7 @@
    "source": "feeds.feedburner.com",
    "link": "https://thehackernews.com/2026/11/microsoft-fixes-azure-api-management.html",
    "date": "2026-11-24T10:44:49+00:00",
-   "sum_src": "llm",
+   "sum_src": "pending",
    "advice": null
   },
   {
