@@ -1,6 +1,20 @@
 {
- "generated_at": "2026-11-26T05:05:48+00:00",
+ "generated_at": "2026-11-26T06:05:41+00:00",
  "items": [
+  {
+   "id": "420627cd7e6f59c1",
+   "type": "gen",
+   "title": "1Password Hacked, Customer Data and Source Code Stolen in GitHub Account Breach",
+   "summary": "",
+   "severity": null,
+   "score": null,
+   "kev": false,
+   "system": "",
+   "source": "feeds.feedburner.com",
+   "link": "https://thehackernews.com/2026/11/1password-hacked-customer-data-and.html",
+   "date": "2026-11-26T04:20:22+00:00",
+   "advice": null
+  },
   {
    "id": "CVE-2026-133206",
    "type": "vul",
@@ -5165,20 +5179,6 @@
    "source": "feeds.feedburner.com",
    "link": "https://thehackernews.com/2026/11/the-path-to-ai-autonomy-in-soc.html",
    "date": "2026-11-20T12:00:00+00:00",
-   "advice": null
-  },
-  {
-   "id": "b6dced9e8be0bdef",
-   "type": "ai",
-   "title": "SonicWall Warns Gen 6 Firewalls Won't Get Security Patches, Even for Critical Flaws",
-   "summary": "تحذير سونيك وول من أن الجيل 6 من الجدران الحماية لن يتلقى تحديثات أمنية حتى لو كانت ثغراتها حرجة، ويدعو العملاء إلى استبدال هذه الأجهزة فورًا لتجنب المخاطر الأمنية.",
-   "severity": null,
-   "score": null,
-   "kev": false,
-   "system": "",
-   "source": "feeds.feedburner.com",
-   "link": "https://thehackernews.com/2026/11/sonicwall-warns-gen-6-firewalls-wont.html",
-   "date": "2026-11-20T10:38:22+00:00",
    "advice": null
   }
  ]
