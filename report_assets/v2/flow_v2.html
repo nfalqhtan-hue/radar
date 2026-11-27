@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>مخطط سير العمل</title>
+<style>
+  :root { --navy: #14213D; --brass: #C9A063; --ink: #1B2233; --muted: #586379; --line: #D8DEE8; --paper: #F3F5F9; --red: #B3261E; --blue: #2F5DA8; }
+  * { box-sizing: border-box; }
+  body { margin: 0; width: 1600px; height: 620px; background: #fff; font-family: Dubai, "Segoe UI", sans-serif; color: var(--ink); }
+  .wrap { display: grid; grid-template-columns: 330px 70px 1fr 70px 360px; align-items: stretch; height: 100%; padding: 34px 36px; }
+  h2 { font-size: 22px; margin: 0 0 12px; color: var(--navy); }
+  .col { display: flex; flex-direction: column; gap: 10px; }
+  .card { border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 14px; background: #fff; }
+  .card b { display: block; font-size: 18px; color: var(--navy); }
+  .card span { font-size: 14.5px; color: var(--muted); line-height: 1.45; display: block; }
+  .card.new { border-color: var(--brass); background: #FBF7EF; }
+  .card.new b::after { content: "  جديد"; font-size: 12px; color: #7E5A22; font-weight: 700; }
+  .arrow { display: flex; align-items: center; justify-content: center; }
+  .arrow svg { width: 60px; height: 60px; }
+  .steps { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; align-content: start; }
+  .step { border-radius: 12px; padding: 10px 14px; background: var(--navy); color: #fff; }
+  .step b { display: block; font-size: 18px; color: var(--brass); }
+  .step span { font-size: 14.5px; color: #DCE2EC; line-height: 1.45; display: block; }
+  .step.new { outline: 2.5px solid var(--brass); outline-offset: -2.5px; }
+  .step.new b::after { content: "  جديد"; font-size: 12px; color: #fff; background: #7E5A22; padding: 0 6px; border-radius: 4px; margin-inline-start: 6px; }
+  .note { grid-column: 1 / -1; margin-top: 6px; font-size: 15px; color: var(--muted); text-align: center; }
+  .hub { grid-column: 1 / -1; border: 1.5px dashed var(--brass); border-radius: 12px; padding: 8px 14px; text-align: center; font-size: 15.5px; color: var(--navy); background: #FBF7EF; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="col">
+    <h2>المصادر</h2>
+    <div class="card"><b>NVD</b><span>كل ثغرة CVE جديدة: الوصف، ودرجة CVSS، ونوع الضعف، وروابط Exploit وPatch</span></div>
+    <div class="card"><b>CISA KEV</b><span>الثغرات المستغلة فعلياً وتواريخ إدراجها</span></div>
+    <div class="card"><b>خمس خلاصات أخبار</b><span>The Hacker News وBleepingComputer وArs Technica وThe Verge وTechCrunch</span></div>
+    <div class="card new"><b>ست نشرات رسمية</b><span>Chrome وUbuntu وDebian وCisco وFortinet وOracle</span></div>
+  </div>
+  <div class="arrow"><svg viewBox="0 0 60 60"><path d="M50 30H12m12-12L12 30l12 12" fill="none" stroke="#C9A063" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <div class="col">
+    <h2>الوكيل: دورة كل ساعة على جهازنا</h2>
+    <div class="steps">
+      <div class="step"><b>1. الجلب</b><span>منذ آخر جلب ناجح، وإعادة فحص الثغرات المخزنة</span></div>
+      <div class="step"><b>2. التنظيف والتصنيف</b><span>النوع، والمنتج المتأثر، والخطورة من CVSS، والاستغلال من CISA</span></div>
+      <div class="step"><b>3. التلخيص</b><span>ملخص عربي بنموذج Qwen3 المحلي للأخبار والثغرات المهمة</span></div>
+      <div class="step"><b>4. التحقق</b><span>رفض أي ملخص فيه لغة أجنبية أو رقم أو ادعاء ليس في المصدر</span></div>
+      <div class="step new"><b>5. درجة الخطر</b><span>من 0 إلى 100: CVSS والاستغلال والعمر والإصلاح</span></div>
+      <div class="step new"><b>6. التحليل</b><span>الاتجاهات لـ90 يوماً، والتقرير اليومي، والمواقع المذكورة صراحة</span></div>
+      <div class="hub">قاعدة بيانات SQLite: العناصر، وسجل الأحداث، وتاريخ 90 يوماً، والتقارير</div>
+    </div>
+  </div>
+  <div class="arrow"><svg viewBox="0 0 60 60"><path d="M50 30H12m12-12L12 30l12 12" fill="none" stroke="#C9A063" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <div class="col">
+    <h2>المخرجات</h2>
+    <div class="card"><b>الموقع على GitHub Pages</b><span>ثماني صفحات بالعربية والإنجليزية، تتحدث بعد كل دورة خلال دقيقة</span></div>
+    <div class="card new"><b>ملفات البيانات</b><span>data وdetails وevents وstats، ومعها trends وmap والتقارير اليومية</span></div>
+    <div class="card"><b>تنبيه تيليجرام</b><span>للثغرات الحرجة أو المستغلة، بحد خمس رسائل ورسالة جامعة لكل دورة</span></div>
+    <div class="card new"><b>تقرير يومي وPDF</b><span>يُبنى بعد منتصف الليل لليوم السابق، ويُصدَّر للطباعة</span></div>
+  </div>
+</div>
+</body>
+</html>
