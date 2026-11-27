@@ -1,6 +1,21 @@
 {
- "generated_at": "2026-11-27T01:20:33+00:00",
+ "generated_at": "2026-11-27T02:17:41+00:00",
  "items": [
+  {
+   "id": "CVE-2026-137677",
+   "type": "vul",
+   "title": "CVE-2026-137677: A vulnerability has been found in code-projects Simple Laundry System 1.0. This affects an",
+   "summary": "",
+   "severity": "high",
+   "score": 7.3,
+   "kev": false,
+   "system": "غير محدد",
+   "source": "NVD",
+   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-137677",
+   "date": "2026-11-27T01:16:40+00:00",
+   "sum_src": "failed",
+   "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
+  },
   {
    "id": "CVE-2026-137668",
    "type": "vul",
@@ -2810,7 +2825,7 @@
    "id": "CVE-2026-137478",
    "type": "vul",
    "title": "CVE-2026-137478: Traefik before 2.11.62, 3.x before 3.7.18, and 3.8.0-rc.1 contain an authentication bypass",
-   "summary": "",
+   "summary": "تحتوي إصدارات Traefik قبل 2.11.62 و3.x قبل 3.7.18 و3.8.0-rc.1 على ثغرة تمكن المهاجم دون مصادقة من تجاوز التحقق من خلال إرسال بيانات الاعتماد في رأس الطلب Proxy-Authorization.",
    "severity": "high",
    "score": 8.7,
    "kev": false,
@@ -2818,7 +2833,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-137478",
    "date": "2026-11-26T16:17:57+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -2840,7 +2855,7 @@
    "id": "CVE-2026-137480",
    "type": "vul",
    "title": "CVE-2026-137480: Traefik 3.7.15 before 3.7.18 and 3.8.0-rc.1 before 3.8.0-rc.2 contains a client certificat",
-   "summary": "",
+   "summary": "تحتوي إصدارات Traefik 3.7.15 قبل 3.7.18 و 3.8.0-rc.1 قبل 3.8.0-rc.2 على ثغرة في تحقق شهادة العميل في مزود Kubernetes Ingress NGINX بسبب استخدام إعدادات أول Ingress في عملية الاتصال التشفيري بينما يتم بناء رؤوس Ssl-Client-* لكل Ingress بشكل منفصل.",
    "severity": "high",
    "score": 8.7,
    "kev": false,
@@ -2848,7 +2863,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-137480",
    "date": "2026-11-26T16:17:57+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -3043,7 +3058,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-137471",
    "date": "2026-11-26T16:17:55+00:00",
-   "sum_src": "pending",
+   "sum_src": "failed",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -3170,7 +3185,7 @@
    "id": "CVE-2026-137456",
    "type": "vul",
    "title": "CVE-2026-137456: FreeRDP before 3.33.0 contains an integer overflow in the client GDI handling of accumulat",
-   "summary": "",
+   "summary": "تحتوي إصدارات FreeRDP قبل 3.33.0 على ثغرة في معالجة إحداثيات التراكم في GDI على جانب العميل، حيث يؤدي تجاوز INT32 إلى إنشاء منطقة قطع بعرض صفر مما يؤدي إلى تجاوز ذاكرة التخزين المؤقت في gdi_FillRect.",
    "severity": "high",
    "score": 8.2,
    "kev": false,
@@ -3178,7 +3193,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-137456",
    "date": "2026-11-26T16:17:53+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -3628,7 +3643,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-93087",
    "date": "2026-11-26T15:17:42+00:00",
-   "sum_src": "pending",
+   "sum_src": "failed",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -3867,21 +3882,6 @@
    "system": "غير محدد",
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-133951",
-   "date": "2026-11-26T15:17:25+00:00",
-   "sum_src": "llm",
-   "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
-  },
-  {
-   "id": "CVE-2026-134173",
-   "type": "vul",
-   "title": "CVE-2026-134173: The WordPress File Upload plugin for WordPress is vulnerable to Arbitrary File Deletion in",
-   "summary": "كشفت ثغرة في إصدار WordPress File Upload حتى الإصدار 5.3.1 تسمح للمهاجمين دون مصادقة بحذف ملفات عشوائية على خادم الموقع.",
-   "severity": "critical",
-   "score": 9.1,
-   "kev": false,
-   "system": "غير محدد",
-   "source": "NVD",
-   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-134173",
    "date": "2026-11-26T15:17:25+00:00",
    "sum_src": "llm",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
