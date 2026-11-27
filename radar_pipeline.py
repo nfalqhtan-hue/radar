@@ -702,6 +702,8 @@ def export(con, out):
         json.dump(stats(con, gen), f, ensure_ascii=False, separators=(",", ":"))
     with open(os.path.join(os.path.dirname(out) or ".", "trends.json"), "w", encoding="utf-8") as f:   # [CTI] trends page
         json.dump(trends(con, gen), f, ensure_ascii=False, separators=(",", ":"))
+    make_reports(con, gen); con.commit()                           # [CTI] daily report(s) for finished days
+    export_reports(con, os.path.dirname(out) or ".")
 
 RIYADH = timezone(timedelta(hours=3))     # الأيام في الإحصائيات بتوقيت السعودية
 SEVS = ("critical", "high", "medium", "low", "unknown")
@@ -820,6 +822,100 @@ def trends(con, gen):
         if i is not None: HS["u_all"][i] += 1
     return dict(generated_at=gen, days=keys, coverage=cover, series=out_s, ranges=ranks,
                 hours=[h.isoformat() for h in hkeys], hourly=HS, note="historical counts only; no forecasting")
+
+# ---------------------------------------------------------------- [CTI] Daily intelligence report
+# One report per complete Riyadh day, built once at the first cycle after midnight (missed days are filled, up to
+# REPORT_CATCHUP days back). It stores facts only (counts, records, links, source health); the site writes the Arabic
+# and English sentences from these facts with fixed rules, so nothing in a report is invented by a model.
+REPORT_CATCHUP = 7
+REPORT_KEEP = 90
+
+def build_report(con, day, gen):
+    """Facts for one Riyadh calendar day `day` (YYYY-MM-DD)."""
+    d0 = datetime.fromisoformat(day + "T00:00:00+03:00"); d1 = d0 + timedelta(days=1)
+    lo, hi = d0.astimezone(timezone.utc).isoformat(timespec="seconds"), d1.astimezone(timezone.utc).isoformat(timespec="seconds")
+    gnow = datetime.fromisoformat(gen)
+    q = lambda sql, *a: con.execute(sql, a).fetchall()
+    vul = [dict(r) for r in q("SELECT * FROM items WHERE kind='vuln' AND status='published' AND source='NVD' AND "
+                              "COALESCE(nvd_published, published) >= ? AND COALESCE(nvd_published, published) < ?", lo, hi)]
+    for v in vul: v["_risk"] = risk_score(v, gnow)
+    ranked = sorted((v for v in vul if v["_risk"]), key=lambda v: (-v["_risk"]["score"], -(v["score"] or 0), v["uid"]))
+    def vrow(v):
+        x = v.get("_risk") or risk_score(v, gnow)
+        return dict(id=v["uid"], title=v["title"], score=v["score"], severity=v["severity"], risk=x["score"] if x else None,
+                    risk_level=x["level"] if x else "unknown", system=v["system"], kev=bool(v["kev"]), link=v["link"],
+                    exploit=(x or {}).get("evidence", {}).get("exploit"), summary=v["summary"] if v["summary_src"] == "llm" else "")
+    kev = [dict(r) for r in q("SELECT * FROM items WHERE kind='vuln' AND status='published' AND kev=1 AND kev_added=?", day)]
+    upd = [dict(r) for r in q("SELECT * FROM items WHERE kind='update' AND status='published' AND published >= ? AND published < ?", lo, hi)]
+    upd.sort(key=lambda u: (-(bool(u["kev"]) or u["vendor_flag"] == "exploited"), {"patch": 0, "advisory": 1}.get(u["utype"], 2), u["published"]))
+    news = [dict(r) for r in q("SELECT * FROM items WHERE kind='news' AND status='published' AND published >= ? AND published < ? "
+                               "ORDER BY published DESC", lo, hi)]
+    def nrow(n): return dict(title=n["title"], source=n["source"], link=n["link"], date=n["published"], type=n["type"],
+                             summary=n["summary"] if n["summary_src"] == "llm" else "")
+    fetch = q("SELECT detail FROM events WHERE kind='fetch' AND ts >= ? AND ts < ?", lo, hi)
+    src = {}
+    for (d,) in fetch:
+        name, _, rest = d.partition(":")
+        s = src.setdefault(name, dict(ok=0, fail=0, errors=[]))
+        if rest.startswith("ok"): s["ok"] += 1
+        else:
+            s["fail"] += 1
+            e = rest.split(":", 1)[1][:120] if ":" in rest else rest
+            if e not in s["errors"] and len(s["errors"]) < 3: s["errors"].append(e)
+    first = q("SELECT MIN(ts), MAX(ts) FROM events WHERE kind='fetch' AND ts >= ? AND ts < ?", lo, hi)[0]
+    created = {k: n for k, n in q("SELECT kind, COUNT(*) FROM items WHERE created >= ? AND created < ? GROUP BY kind", lo, hi)}
+    score_changes = q("SELECT COUNT(*) FROM events WHERE kind='score' AND ts >= ? AND ts < ?", lo, hi)[0][0]
+    action_upd = [u for u in upd if u["kev"] or u["vendor_flag"] == "exploited"]
+    return dict(
+        day=day, generated_at=gen, period=dict(start=d0.isoformat(), end=d1.isoformat()),
+        counts=dict(vulns=len(vul), critical=sum(v["severity"] == "critical" for v in vul), high=sum(v["severity"] == "high" for v in vul),
+                    risk_high=sum(1 for v in vul if v["_risk"] and v["_risk"]["score"] >= 70), kev_added=len(kev),
+                    public_exploit=sum(1 for v in vul if v["_risk"] and v["_risk"]["evidence"].get("exploit")),
+                    updates=len(upd), updates_action=len(action_upd), news=len(news), news_sec=sum(n["type"] == "sec" for n in news),
+                    score_changes=score_changes),
+        top_vulns=[vrow(v) for v in ranked[:5]],
+        kev=[dict(vrow(k), added=k["kev_added"], due=k["kev_due"], action=k["kev_action"], ransom=k["kev_ransom"]) for k in kev[:10]],
+        updates=[dict(title=u["title"], vendor=u["system"], product=u["product"], utype=u["utype"], fixed=u["fixed_ver"], link=u["link"],
+                      cves=len([c for c in (u["cves"] or "").split(",") if c]), action=bool(u["kev"]) or u["vendor_flag"] == "exploited",
+                      kev=bool(u["kev"]), vendor_exploited=u["vendor_flag"] == "exploited") for u in upd[:8]],
+        news_security=[nrow(n) for n in news if n["type"] == "sec"][:5],
+        news_tech=[nrow(n) for n in news if n["type"] != "sec"][:5],
+        collection=dict(cycles=max((s["ok"] + s["fail"]) for s in src.values()) if src else 0, first_cycle=first[0], last_cycle=first[1],
+                        sources=src, collected=dict(vuln=created.get("vuln", 0), news=created.get("news", 0), update=created.get("update", 0))))
+
+def make_reports(con, gen):
+    """Build reports for complete days not yet reported (only days on which the radar actually ran)."""
+    con.execute("CREATE TABLE IF NOT EXISTS reports(day TEXT PRIMARY KEY, generated_at TEXT, body TEXT)")
+    today = datetime.fromisoformat(gen).astimezone(RIYADH).date()
+    made = []
+    for i in range(REPORT_CATCHUP, 0, -1):
+        day = (today - timedelta(days=i)).isoformat()
+        if con.execute("SELECT 1 FROM reports WHERE day=?", (day,)).fetchone(): continue
+        d0 = datetime.fromisoformat(day + "T00:00:00+03:00")
+        lo, hi = d0.astimezone(timezone.utc).isoformat(timespec="seconds"), (d0 + timedelta(days=1)).astimezone(timezone.utc).isoformat(timespec="seconds")
+        if not con.execute("SELECT 1 FROM events WHERE kind='fetch' AND ts >= ? AND ts < ?", (lo, hi)).fetchone(): continue
+        r = build_report(con, day, gen)
+        con.execute("INSERT INTO reports VALUES(?,?,?)", (day, gen, json.dumps(r, ensure_ascii=False, separators=(",", ":"))))
+        made.append(day)
+    cut = (today - timedelta(days=REPORT_KEEP)).isoformat()
+    con.execute("DELETE FROM reports WHERE day < ?", (cut,))
+    return made
+
+def export_reports(con, outdir):
+    """site/reports/index.json (list of days) + one file per day. Files of days no longer kept are removed."""
+    con.execute("CREATE TABLE IF NOT EXISTS reports(day TEXT PRIMARY KEY, generated_at TEXT, body TEXT)")
+    rd = os.path.join(outdir, "reports"); os.makedirs(rd, exist_ok=True)
+    rows = con.execute("SELECT day, generated_at, body FROM reports ORDER BY day DESC").fetchall()
+    keep = set()
+    for day, g, body in rows:
+        fn = os.path.join(rd, day + ".json"); keep.add(day + ".json")
+        if not os.path.exists(fn) or open(fn, encoding="utf-8").read() != body:
+            with open(fn, "w", encoding="utf-8") as f: f.write(body)
+    idx = [dict(day=d, generated_at=g, counts=json.loads(b)["counts"]) for d, g, b in rows]
+    with open(os.path.join(rd, "index.json"), "w", encoding="utf-8") as f:
+        json.dump(dict(reports=idx), f, ensure_ascii=False, separators=(",", ":"))
+    for fn in os.listdir(rd):
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}\.json", fn) and fn not in keep: os.remove(os.path.join(rd, fn))
 
 def _count(values):
     c = {}

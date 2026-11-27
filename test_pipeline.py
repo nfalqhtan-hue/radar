@@ -415,4 +415,40 @@ r7 = T["ranges"]["7"]
 check("trends: 7-day ranking of weakness types and products", r7["total"] == 3 and r7["cwe"][0] == ["CWE-89", 2] and r7["with_cwe"] == 2
       and T["ranges"]["90"]["cwe"][0] == ["CWE-79", 2] and T["ranges"]["90"]["products"][0][0] == "WordPress")
 check("trends: labelled as history, no forecasting", "no forecasting" in T["note"])
+# ---------------------------------------------------------------- [CTI] daily intelligence report
+dr_ = tempfile.mkdtemp(); cr = sqlite3.connect(os.path.join(dr_, "r.db")); cr.row_factory = sqlite3.Row; cr.executescript(rp.SCHEMA); rp.migrate(cr)
+def VI(uid, pub, score, kev=0, kev_added=None, text="RCE.", sev=None):
+    cr.execute("INSERT INTO items(uid,kind,type,title,link,text,status,published,nvd_published,created,severity,score,kev,kev_added,source,system,summary_src,vector)"
+               " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (uid, "vuln", "vul", uid + ": x", "https://nvd.nist.gov/vuln/detail/" + uid, text, "published",
+               pub, pub, pub, sev or rp.severity_of(score), score, kev, kev_added, "NVD", "Foo", "template", "CVSS:3.1/AV:N/PR:N/UI:N"))
+# Riyadh day 2026-11-26 = 2026-11-25T21:00Z .. 2026-11-26T21:00Z
+VI("CVE-2026-7001", "2026-11-26T10:00:00+00:00", 9.8, kev=1, kev_added="2026-11-26")
+VI("CVE-2026-7002", "2026-11-26T11:00:00+00:00", 9.1, text="The exploit has been disclosed to the public.")
+VI("CVE-2026-7003", "2026-11-26T12:00:00+00:00", 5.0)
+VI("CVE-2026-7004", "2026-11-25T20:00:00+00:00", 9.9)              # 23:00 Riyadh on the 25th: not in the report
+VI("CVE-2026-7005", "2026-11-26T22:00:00+00:00", 9.9)              # 01:00 Riyadh on the 27th: not in the report
+cr.execute("INSERT INTO items(uid,kind,type,title,link,status,published,created,system,utype,fixed_ver,cves,kev,vendor_flag) VALUES"
+           "('u1','update','upd','Stable Channel Update','https://chromereleases.googleblog.com/x','published','2026-11-26T09:00:00+00:00','2026-11-26T09:30:00+00:00','Google Chrome','patch','1.2.3.4','CVE-2026-9001',0,'exploited')")
+cr.execute("INSERT INTO items(uid,kind,type,title,link,status,published,created,source,summary,summary_src) VALUES"
+           "('n1','news','sec','Ransomware hits X','https://ex.com/n1','published','2026-11-26T08:00:00+00:00','2026-11-26T08:10:00+00:00','ex.com','ملخص','llm')")
+for ts_, d_ in [("2026-11-26T05:05:00+00:00", "nvd:ok"), ("2026-11-26T05:05:00+00:00", "kev:ok"), ("2026-11-26T06:05:00+00:00", "nvd:fail:HTTP Error 503: Service Unavailable"),
+                ("2026-11-26T06:05:00+00:00", "kev:ok"), ("2026-11-27T05:05:00+00:00", "nvd:ok")]:
+    cr.execute("INSERT INTO events VALUES(?,?,?,?)", (ts_, "", "fetch", d_))
+made = rp.make_reports(cr, "2026-11-27T09:00:00+00:00")
+rep = json.loads(cr.execute("SELECT body FROM reports WHERE day='2026-11-26'").fetchone()[0])
+check("daily report: built only for finished days on which the radar ran, once", made == ["2026-11-26"]
+      and rp.make_reports(cr, "2026-11-27T10:00:00+00:00") == [])
+check("daily report: counts use the Riyadh day boundaries", rep["counts"]["vulns"] == 3 and rep["counts"]["critical"] == 2 and rep["counts"]["kev_added"] == 1)
+check("daily report: top vulnerabilities ranked by risk score (KEV first), with risk and exploit evidence",
+      [v["id"] for v in rep["top_vulns"]] == ["CVE-2026-7001", "CVE-2026-7002", "CVE-2026-7003"] and rep["top_vulns"][0]["risk_level"] == "critical"
+      and rep["top_vulns"][1]["exploit"] == "cna" and rep["counts"]["public_exploit"] == 1)
+check("daily report: KEV list, updates needing action, security news", rep["kev"][0]["id"] == "CVE-2026-7001" and rep["kev"][0]["added"] == "2026-11-26"
+      and rep["updates"][0]["action"] is True and rep["updates"][0]["fixed"] == "1.2.3.4" and rep["counts"]["updates_action"] == 1
+      and rep["news_security"][0]["title"] == "Ransomware hits X" and rep["news_tech"] == [])
+check("daily report: collection failures disclosed with the error", rep["collection"]["sources"]["nvd"] == {"ok": 1, "fail": 1, "errors": ["HTTP Error 503: Service Unavailable"]}
+      and rep["collection"]["cycles"] == 2 and rep["collection"]["collected"]["vuln"] == 3)
+export_dir = os.path.join(dr_, "site"); rp.export_reports(cr, export_dir)
+check("daily report: archive exported (index + one file per day)",
+      json.load(open(os.path.join(export_dir, "reports", "index.json"), encoding="utf-8"))["reports"][0]["day"] == "2026-11-26"
+      and os.path.exists(os.path.join(export_dir, "reports", "2026-11-26.json")))
 print(f"\n{ok} checks passed")
