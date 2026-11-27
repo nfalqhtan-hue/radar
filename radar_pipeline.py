@@ -475,14 +475,19 @@ def template_summary(it):
 # Each factor is a value in [0, 1] or None (unknown). Unknown factors are left out of BOTH the sum and the
 # total weight, so missing data never counts against (or for) a vulnerability.
 #   cvss      CVSS base score / 10 (NVD primary metric when present)
-#   kev       1 if listed in CISA KEV (confirmed exploitation), else 0. Always known: the full catalog is checked every cycle.
-#   exploit   1 if public exploit information exists: an NVD reference tagged "Exploit", or the CNA's own description says
-#             the exploit is public. Absence is NOT evidence of absence -> None.
+#   exploitation  one dimension holding the brief's KEV (35) + public-exploit (15) weights = 50, always known:
+#             1.0  listed in CISA KEV (the only source accepted as proof of exploitation; the catalog is checked every cycle)
+#             0.7  not in KEV, but public exploit information exists: an NVD reference tagged "Exploit", or the CNA's own
+#                  description says the exploit is public
+#             0.0  neither (no confirmed exploitation and no public exploit known, which is not the same as "safe")
+#             Chosen 2026-11-27 after checking the data: with KEV and exploit as separate factors (35/35/15/10/5) only KEV
+#             items could ever reach high, so a CVSS 9.8 with a public exploit stayed medium.
 #   exposure  mean of recency (<=7d 1.0, <=30d 0.8, <=90d 0.6, older 0.4) and attack surface from the CVSS vector
 #             (AV:N with PR:N and UI:N 1.0, other AV:N 0.7, AV:A 0.5, AV:L 0.3, AV:P 0.1). Recency only if no vector.
 #   patch     0 if an official fix is referenced (NVD "Patch" tag), else None (we cannot prove that no fix exists).
 # score = round(100 * sum(w*f) / sum(w for known f)). Unknown level when there is neither a CVSS score nor a KEV listing.
-RISK_WEIGHTS = dict(cvss=35, kev=35, exploit=15, exposure=10, patch=5)
+RISK_WEIGHTS = dict(cvss=35, exploitation=50, exposure=10, patch=5)
+PUBLIC_EXPLOIT_VALUE = 0.7
 RISK_LEVELS = ((90, "critical"), (70, "high"), (40, "medium"), (0, "low"))
 _PUBLIC_EXPLOIT = re.compile(r"exploit (?:has been|was|is) (?:disclosed|released|made available|published|made public)"
                              r"|exploit is publicly available|publicly available exploit|public(?:ly)? (?:available )?(?:proof[- ]of[- ]concept|exploit code)", re.I)
@@ -503,10 +508,11 @@ def risk_score(r, now):
     score, kev = r.get("score"), bool(r.get("kev"))
     if score is None and not kev: return None
     ev = {}
-    f = dict(cvss=None if score is None else max(0.0, min(1.0, float(score) / 10)), kev=1.0 if kev else 0.0)
-    if "Exploit" in tags: f["exploit"] = 1.0; ev["exploit"] = "nvd"
-    elif _PUBLIC_EXPLOIT.search(r.get("text") or ""): f["exploit"] = 1.0; ev["exploit"] = "cna"
-    else: f["exploit"] = None
+    f = dict(cvss=None if score is None else max(0.0, min(1.0, float(score) / 10)))
+    if "Exploit" in tags: ev["exploit"] = "nvd"
+    elif _PUBLIC_EXPLOIT.search(r.get("text") or ""): ev["exploit"] = "cna"
+    if kev: ev["kev"] = 1
+    f["exploitation"] = 1.0 if kev else PUBLIC_EXPLOIT_VALUE if ev.get("exploit") else 0.0
     pub = r.get("nvd_published") or r.get("published") or ""
     try: t = datetime.fromisoformat(pub.replace("Z", "+00:00")) if pub else None
     except ValueError: t = None

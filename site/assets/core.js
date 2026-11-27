@@ -412,16 +412,16 @@
     }
     function val(k) { var v = f[k]; return Array.isArray(v) && typeof v[0] === "number" ? v[0] : null; }
     function w(k) { var v = f[k]; return Array.isArray(v) && typeof v[1] === "number" ? v[1] : 0; }
-    var keys = ["cvss", "kev", "exploit", "exposure", "patch"], total = 0;
+    var keys = ["cvss", "exploitation", "exposure", "patch"], total = 0;
     keys.forEach(function (k) { if (val(k) != null) total += w(k); });
     var age = typeof ev.age_days === "number" ? ev.age_days : null;
     var rows = {
       cvss: [L("درجة CVSS", "CVSS score"), val("cvss") != null ? Number(it.score).toFixed(1) + L(" من 10", " of 10") : L("لم تُقيَّم بعد", "Not scored yet")],
-      kev: [L("استغلال مؤكد (قائمة CISA)", "Confirmed exploitation (CISA KEV)"), val("kev") ? L("مدرجة في القائمة", "Listed") : L("غير مدرجة", "Not listed")],
-      exploit: [L("معلومات استغلال منشورة", "Public exploit information"),
-        ev.exploit === "nvd" ? L("نعم: رابط موسوم «Exploit» في NVD", "Yes: a reference tagged “Exploit” in NVD")
-          : ev.exploit === "cna" ? L("نعم: بحسب وصف الجهة المبلّغة عن الثغرة", "Yes: per the reporting organisation's description")
-          : L("لا معلومات (لا يعني أنه غير موجود)", "No information (does not mean none exists)")],
+      exploitation: [L("الاستغلال", "Exploitation"),
+        ev.kev ? L("مؤكد: مدرجة في قائمة CISA", "Confirmed: listed by CISA")
+          : ev.exploit === "nvd" ? L("غير مؤكد، لكن يوجد استغلال منشور: رابط موسوم «Exploit» في NVD", "Not confirmed, but a public exploit exists: a reference tagged “Exploit” in NVD")
+          : ev.exploit === "cna" ? L("غير مؤكد، لكن يوجد استغلال منشور بحسب وصف الجهة المبلّغة", "Not confirmed, but a public exploit exists per the reporting organisation's description")
+          : L("لا استغلال مؤكد ولا استغلال منشور معروف (لا يعني أنها آمنة)", "No confirmed exploitation and no known public exploit (does not make it safe)")],
       exposure: [L("العمر ونطاق التعرض", "Age and exposure"),
         [age != null ? (R.en ? "Published " + R.countL(age, null, ["day", "days"]) + " ago" : age === 0 ? "نُشرت اليوم" : "نُشرت قبل " + R.count(age, "يوم", "يومين", "أيام", "يوماً")) : "", vecText(x.vector)]
           .filter(Boolean).join(R.comma) || L("غير معروف", "Unknown")],

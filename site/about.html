@@ -13,8 +13,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/app.css?v=r1">
-<link rel="stylesheet" href="assets/about.css?v=r1">
+<link rel="stylesheet" href="assets/app.css?v=r2">
+<link rel="stylesheet" href="assets/about.css?v=r2">
 </head>
 <body>
 <a class="skip" href="#main" data-en="Skip to the content">انتقل إلى المحتوى</a>
@@ -111,15 +111,14 @@
         <thead><tr><th scope="col" data-en="Factor">العامل</th><th scope="col" data-en="Weight">الوزن</th><th scope="col" data-en="Value (0 to 1)">القيمة (من 0 إلى 1)</th></tr></thead>
         <tbody>
           <tr><th scope="row" data-en="CVSS score">درجة CVSS</th><td>35%</td><td data-en="The NVD score divided by 10.">درجة NVD مقسومة على 10.</td></tr>
-          <tr><th scope="row" data-en="Confirmed exploitation">الاستغلال المؤكد</th><td>35%</td><td data-en="1 if listed in CISA's Known Exploited Vulnerabilities catalog, otherwise 0. This is the only source we accept as proof of exploitation.">1 إن كانت مدرجة في قائمة CISA للثغرات المستغلة، وإلا 0. هذا المصدر الوحيد الذي نقبله دليلاً على الاستغلال.</td></tr>
-          <tr><th scope="row" data-en="Public exploit information">معلومات استغلال منشورة</th><td>15%</td><td data-en="1 if NVD tags a reference as “Exploit”, or the reporting organisation's description says the exploit is public. Otherwise unknown, not 0: no tag does not mean no exploit.">1 إن وسمت NVD رابطاً بـ«Exploit»، أو ذكر وصف الجهة المبلّغة أن الاستغلال منشور. وإلا فغير معروف، لا صفر: غياب الوسم لا يعني غياب الاستغلال.</td></tr>
+          <tr><th scope="row" data-en="Exploitation">الاستغلال</th><td>50%</td><td data-en="1 if listed in CISA's Known Exploited Vulnerabilities catalog (the only source we accept as proof of exploitation). 0.7 if not listed but exploit details are public: NVD tags a reference as “Exploit”, or the reporting organisation's description says the exploit is public. 0 if neither.">1 إن كانت مدرجة في قائمة CISA للثغرات المستغلة (المصدر الوحيد الذي نقبله دليلاً على الاستغلال). و0.7 إن لم تكن مدرجة لكن تفاصيل استغلالها منشورة: وسمت NVD رابطاً بـ«Exploit»، أو ذكر وصف الجهة المبلّغة أن الاستغلال منشور. و0 إن لم يتحقق أي منهما.</td></tr>
           <tr><th scope="row" data-en="Age and exposure">العمر ونطاق التعرض</th><td>10%</td><td data-en="Average of recency (7 days or less 1, 30 days 0.8, 90 days 0.6, older 0.4) and attack surface from the CVSS vector (over the network with no privileges or user action 1, other network 0.7, adjacent 0.5, local 0.3, physical 0.1).">متوسط الحداثة (7 أيام فأقل 1، و30 يوماً 0.8، و90 يوماً 0.6، وأقدم 0.4) ونطاق الهجوم من متجه CVSS (عبر الشبكة بلا صلاحيات ولا تفاعل 1، وشبكة بغير ذلك 0.7، وشبكة مجاورة 0.5، ومحلي 0.3، ومادي 0.1).</td></tr>
           <tr><th scope="row" data-en="Official fix">الإصلاح الرسمي</th><td>5%</td><td data-en="0 if NVD tags a reference as “Patch” (a fix exists, which lowers priority). Otherwise unknown: we cannot prove no fix exists.">0 إن وسمت NVD رابطاً بـ«Patch» (يوجد إصلاح، فتنخفض الأولوية). وإلا فغير معروف: لا نستطيع إثبات عدم وجود إصلاح.</td></tr>
         </tbody>
       </table>
     </div>
     <p class="ab-note ab-formula" data-en="Score = 100 × (sum of weight × value for the known factors) ÷ (sum of the weights of the known factors). Unknown factors are left out of both sums, so missing data counts neither for nor against a vulnerability. Levels: 90 to 100 critical, 70 to 89 high, 40 to 69 medium, below 40 low. With no CVSS score and no CISA listing we show “Not enough data” instead of a number.">الدرجة = 100 × (مجموع الوزن × القيمة للعوامل المعروفة) ÷ (مجموع أوزان العوامل المعروفة). العوامل غير المعروفة تُستبعد من المجموعين، فلا يُحسب نقص البيانات ضد الثغرة ولا لها. المستويات: من 90 إلى 100 حرج، ومن 70 إلى 89 عالٍ، ومن 40 إلى 69 متوسط، وأقل من 40 منخفض. وإن لم تكن للثغرة درجة CVSS ولا إدراج في قائمة CISA نعرض «بيانات غير كافية» بدل الرقم.</p>
-    <p class="ab-note" data-en="What we found when we checked these weights against our data (27 November 2026, 1,190 vulnerabilities): only vulnerabilities confirmed as exploited reach high or critical risk, so a CVSS 9.8 that nobody is known to exploit lands at medium. That matches CISA's advice to patch exploited flaws first. Public exploit information was available for 52 vulnerabilities, a fix link for 4: most new CVEs have not been analysed by NVD yet.">ما وجدناه حين طبّقنا هذه الأوزان على بياناتنا (27 نوفمبر 2026، 1,190 ثغرة): لا يصل إلى خطر عالٍ أو حرج إلا ما ثبت استغلاله، فثغرة درجتها 9.8 بلا استغلال معروف تقع في «متوسط». وهذا يوافق توصية CISA بإصلاح المستغل أولاً. معلومات الاستغلال المنشورة توفرت لـ52 ثغرة، ورابط الإصلاح لـ4 فقط، لأن أغلب الثغرات الجديدة لم تحللها NVD بعد.</p>
+    <p class="ab-note" data-en="Why these weights (checked against our data on 27 November 2026, 1,190 vulnerabilities): we first tried confirmed exploitation (35%) and public exploit (15%) as two separate factors. Then only vulnerabilities in CISA's list could ever reach high risk, so a CVSS 9.8 with a published exploit stayed medium. Merging them into one exploitation factor (50%) where a public exploit counts 0.7 fixes that: such a vulnerability now scores 83 (high), CISA-listed ones stay critical, and a 9.8 with no exploit known stays medium (about 47). Result: 15 critical, 26 high, 190 medium, 865 low, 97 not enough data.">لماذا هذه الأوزان (فحصناها على بياناتنا في 27 نوفمبر 2026، 1,190 ثغرة): جربنا أولاً الاستغلال المؤكد (35%) والاستغلال المنشور (15%) عاملين منفصلين، فلم تصل إلى خطر عالٍ إلا الثغرات المدرجة في قائمة CISA، وبقيت ثغرة درجتها 9.8 واستغلالها منشور في «متوسط». دمجناهما في عامل استغلال واحد (50%) يُحسب فيه الاستغلال المنشور 0.7، فصارت مثل هذه الثغرة 83 (خطر عالٍ)، وبقيت المدرجة في قائمة CISA حرجة، وبقيت ثغرة 9.8 بلا استغلال معروف في «متوسط» (نحو 47). النتيجة: 15 حرجة، و26 عالية، و190 متوسطة، و865 منخفضة، و97 بيانات غير كافية.</p>
   </section>
 
   <section aria-labelledby="h-tech">
@@ -183,7 +182,7 @@
   </footer>
 </div>
 
-<script src="assets/core.js?v=r1"></script>
-<script src="assets/about.js?v=r1"></script>
+<script src="assets/core.js?v=r2"></script>
+<script src="assets/about.js?v=r2"></script>
 </body>
 </html>

@@ -300,19 +300,21 @@ check("NVD refs: only Exploit/Patch/Advisory tags kept, non-http links dropped; 
 base = dict(score=9.8, kev=0, refs="[]", text="RCE.", vector="CVSS:3.1/AV:N/AC:L/PR:N/UI:N", published="2026-11-26T07:00:00+00:00")
 r0 = rp.risk_score(base, NOW)
 check("risk is reproducible: same inputs and time give the same score", r0 == rp.risk_score(dict(base), NOW))
-# known: cvss .98*35 + kev 0*35 + exposure 1*10 = 44.3 / 80 -> 55
-check("unknown factors are excluded from the weight (no exploit info, no patch info): 9.8 not exploited = 55 medium",
-      r0["score"] == 55 and r0["level"] == "medium" and r0["factors"]["exploit"][0] is None and r0["factors"]["patch"][0] is None)
+# known: cvss .98*35 + exploitation 0*50 + exposure 1*10 = 44.3 / 95 -> 47 (patch unknown -> left out of the weight)
+check("unknown patch info is excluded from the weight: 9.8, no exploitation evidence = 47 medium",
+      r0["score"] == 47 and r0["level"] == "medium" and r0["factors"]["exploitation"][0] == 0.0 and r0["factors"]["patch"][0] is None)
 rk = rp.risk_score(dict(base, kev=1), NOW)
 check("KEV raises the score to critical (99), severity field itself is not touched", rk["score"] == 99 and rk["level"] == "critical")
 rp_ = rp.risk_score(dict(base, kev=1, refs=cv["refs"]), NOW)
-check("public exploit + patch reference both counted with their evidence", rp_["evidence"].get("exploit") == "nvd" and rp_["evidence"].get("patch") == 1
-      and rp_["factors"]["patch"][0] == 0.0 and rp_["score"] == round(100 * (34.3 + 35 + 15 + 10) / 100))
+check("KEV + exploit tag + patch reference: exploitation stays 1 (KEV), patch lowers, evidence recorded", rp_["evidence"].get("exploit") == "nvd"
+      and rp_["evidence"].get("patch") == 1 and rp_["evidence"].get("kev") == 1 and rp_["factors"]["patch"][0] == 0.0
+      and rp_["score"] == round(100 * (34.3 + 50 + 10) / 100))
 rc = rp.risk_score(dict(base, text="The exploit has been released to the public and may be used."), NOW)
-check("CNA description stating a public exploit counts as exploit evidence, not as exploitation",
-      rc["evidence"]["exploit"] == "cna" and rc["factors"]["kev"][0] == 0.0)
+check("public exploit (CNA description) = exploitation 0.7, not confirmed: 9.8 becomes high (83)",
+      rc["evidence"]["exploit"] == "cna" and "kev" not in rc["evidence"] and rc["factors"]["exploitation"][0] == 0.7
+      and rc["score"] == 83 and rc["level"] == "high")
 check("'exploited in the wild' text alone does NOT count (only CISA KEV confirms exploitation)",
-      rp.risk_score(dict(base, text="This flaw is exploited in the wild."), NOW)["factors"]["exploit"][0] is None)
+      rp.risk_score(dict(base, text="This flaw is exploited in the wild."), NOW)["factors"]["exploitation"][0] == 0.0)
 check("no CVSS and not in KEV -> not enough data (None)", rp.risk_score(dict(base, score=None), NOW) is None)
 rn = rp.risk_score(dict(base, score=None, kev=1), NOW)
 check("KEV without CVSS still scored from known factors", rn is not None and rn["factors"]["cvss"][0] is None and rn["level"] == "critical")
@@ -329,7 +331,7 @@ dj = json.load(open(ar.out, encoding="utf-8")); de = json.load(open(os.path.join
 st = json.load(open(os.path.join(dr, "stats.json"), encoding="utf-8"))
 it = next(i for i in dj["items"] if i["id"] == "CVE-2026-2001")
 check("export: risk + level in data.json, factors/evidence/refs in details.json, by_risk in stats.json",
-      it["risk_level"] == "critical" and isinstance(it["risk"], int) and dj["risk_model"]["weights"]["kev"] == 35
-      and de["items"]["CVE-2026-2001"]["risk_f"]["kev"] == [1.0, 35] and de["items"]["CVE-2026-2001"]["refs"][0]["t"] == ["Exploit"]
+      it["risk_level"] == "critical" and isinstance(it["risk"], int) and dj["risk_model"]["weights"]["exploitation"] == 50
+      and de["items"]["CVE-2026-2001"]["risk_f"]["exploitation"] == [1.0, 50] and de["items"]["CVE-2026-2001"]["refs"][0]["t"] == ["Exploit"]
       and st["vulns"]["by_risk"]["critical"] == 1 and st["vulns"]["public_exploit"] == 1)
 print(f"\n{ok} checks passed")
