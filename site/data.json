@@ -1,6 +1,66 @@
 {
- "generated_at": "2026-11-27T08:19:52+00:00",
+ "generated_at": "2026-11-27T09:19:42+00:00",
  "items": [
+  {
+   "id": "CVE-2026-80243",
+   "type": "vul",
+   "title": "CVE-2026-80243: Dell Secure Connect Gateway - Virtual Edition, versions prior to 5.36.00.16, contains a Bu",
+   "summary": "ثغرة أمنية خطورتها متوسطة (CVSS 6.3) تؤثر على Dell Secure Connect Gateway. التفاصيل الكاملة في رابط المصدر.",
+   "severity": "medium",
+   "score": 6.3,
+   "kev": false,
+   "system": "Dell Secure Connect Gateway",
+   "source": "NVD",
+   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-80243",
+   "date": "2026-11-27T08:16:39+00:00",
+   "sum_src": "template",
+   "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
+  },
+  {
+   "id": "CVE-2026-95622",
+   "type": "vul",
+   "title": "CVE-2026-95622: A flaw was found in ModemManager. When parsing a Cell Broadcast Message, some 3GPP data-co",
+   "summary": "ثغرة أمنية خطورتها متوسطة (CVSS 6.5) تؤثر على ModemManager. التفاصيل الكاملة في رابط المصدر.",
+   "severity": "medium",
+   "score": 6.5,
+   "kev": false,
+   "system": "ModemManager",
+   "source": "NVD",
+   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-95622",
+   "date": "2026-11-27T08:16:39+00:00",
+   "sum_src": "template",
+   "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
+  },
+  {
+   "id": "CVE-2026-115834",
+   "type": "vul",
+   "title": "CVE-2026-115834: A flaw was found in sequoia-openpgp. The Display and Debug implementations for UserID and",
+   "summary": "ثغرة أمنية خطورتها منخفضة (CVSS 3.1). التفاصيل الكاملة في رابط المصدر.",
+   "severity": "low",
+   "score": 3.1,
+   "kev": false,
+   "system": "غير محدد",
+   "source": "NVD",
+   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-115834",
+   "date": "2026-11-27T08:16:38+00:00",
+   "sum_src": "template",
+   "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
+  },
+  {
+   "id": "15e93fc59e91b640",
+   "type": "gen",
+   "title": "New NFS2ROOT Linux flaw can let attackers gain root privileges",
+   "summary": "تم الكشف عن ثغرة خطيرة في نظام Linux تسمح للمهاجمين بالحصول على صلاحيات الجذر عن بُعد.",
+   "severity": null,
+   "score": null,
+   "kev": false,
+   "system": "",
+   "source": "www.bleepingcomputer.com",
+   "link": "https://www.bleepingcomputer.com/news/security/new-nfs2root-linux-flaw-can-let-attackers-gain-root-privileges/",
+   "date": "2026-11-27T08:06:58+00:00",
+   "sum_src": "llm",
+   "advice": null
+  },
   {
    "id": "CVE-2026-77679",
    "type": "vul",
@@ -1903,7 +1963,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-134991",
    "date": "2026-11-26T20:17:22+00:00",
-   "sum_src": "pending",
+   "sum_src": "failed",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -1963,7 +2023,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-135037",
    "date": "2026-11-26T19:17:10+00:00",
-   "sum_src": "pending",
+   "sum_src": "failed",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -1985,7 +2045,7 @@
    "id": "CVE-2026-135039",
    "type": "vul",
    "title": "CVE-2026-135039: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting') vulne",
-   "summary": "",
+   "summary": "تم اكتشاف ثغرة في Liquid Web / StellarWP GiveWP give تسمح بتسريب XSS المرجعي، وتؤثر على إصدارات GiveWP من ن / أ إلى 4.19.2.1.",
    "severity": "high",
    "score": 7.1,
    "kev": false,
@@ -1993,7 +2053,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-135039",
    "date": "2026-11-26T19:17:10+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -2068,7 +2128,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-134470",
    "date": "2026-11-26T19:17:09+00:00",
-   "sum_src": "pending",
+   "sum_src": "failed",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -2098,7 +2158,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-134712",
    "date": "2026-11-26T19:17:09+00:00",
-   "sum_src": "pending",
+   "sum_src": "failed",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -2113,7 +2173,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-134713",
    "date": "2026-11-26T19:17:09+00:00",
-   "sum_src": "pending",
+   "sum_src": "failed",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -2143,7 +2203,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-134955",
    "date": "2026-11-26T19:17:09+00:00",
-   "sum_src": "pending",
+   "sum_src": "failed",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -2990,7 +3050,7 @@
    "id": "CVE-2026-137537",
    "type": "vul",
    "title": "CVE-2026-137537: ToolJet before 3.21.96-LTS contains a missing authorization vulnerability that allows auth",
-   "summary": "",
+   "summary": "تحتوي أداة ToolJet قبل الإصدار 3.21.96-LTS على ثغرة في التحقق من الهوية تسمح للمستخدمين المصادقين بتنفيذ استعلامات بيانات تطبيقات من منظمات أخرى عبر طلب POST /api/data-queries/:id/run.",
    "severity": "high",
    "score": 7.1,
    "kev": false,
@@ -2998,7 +3058,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-137537",
    "date": "2026-11-26T16:18:06+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -3485,7 +3545,7 @@
    "id": "CVE-2026-137495",
    "type": "vul",
    "title": "CVE-2026-137495: Budibase before 4.0.0 contains an insecure direct object reference vulnerability in the bu",
-   "summary": "",
+   "summary": "تحتوي Budibase قبل الإصدار 4.0.0 على ثغرة في مرجع الكائن المباشر غير الآمن في وظيفة bulkDestroy تسمح للمستخدمين المصادقين بحذف الصفوف من أي جدول في مساحة العمل عن طريق توفير أسماء الصفوف الخارجية.",
    "severity": "high",
    "score": 7.1,
    "kev": false,
@@ -3493,7 +3553,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-137495",
    "date": "2026-11-26T16:18:00+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -3815,7 +3875,7 @@
    "id": "CVE-2026-137474",
    "type": "vul",
    "title": "CVE-2026-137474: SiYuan 3.8.8 before 3.8.10 contains an incorrect permission assignment vulnerability that",
-   "summary": "",
+   "summary": "تحتوي إصدارات SiYuan 3.8.8 قبل 3.8.10 على ثغرة في تعيين الصلاحيات غير الصحيحة تؤدي إلى إنشاء دليل العمل بوضع 0755 وملف conf.json بوضع 0644، مما يعرض رمز المصادقة AccessAuthCode للإدارة بشكل نصي. يمكن للمستخدمين المحليين الذين يستطيعون تجاوز مسار المستخدم الخاص بـ SiYuan قراءة الملف وتسجيل الدخول كمسؤول عبر مصادقة أساسية.",
    "severity": "high",
    "score": 7.1,
    "kev": false,
@@ -3823,7 +3883,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-137474",
    "date": "2026-11-26T16:17:56+00:00",
-   "sum_src": "pending",
+   "sum_src": "llm",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -3838,51 +3898,6 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-137475",
    "date": "2026-11-26T16:17:56+00:00",
-   "sum_src": "template",
-   "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
-  },
-  {
-   "id": "CVE-2026-137476",
-   "type": "vul",
-   "title": "CVE-2026-137476: vLLM 0.3.0 before 0.30.0 contains a response amplification vulnerability in the OpenAI-com",
-   "summary": "ثغرة أمنية خطورتها متوسطة (CVSS 5.3) تؤثر على vLLM. التفاصيل الكاملة في رابط المصدر.",
-   "severity": "medium",
-   "score": 5.3,
-   "kev": false,
-   "system": "vLLM",
-   "source": "NVD",
-   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-137476",
-   "date": "2026-11-26T16:17:56+00:00",
-   "sum_src": "template",
-   "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
-  },
-  {
-   "id": "CVE-2026-137477",
-   "type": "vul",
-   "title": "CVE-2026-137477: vLLM 0.16.0 before 0.21.0 leaks token data between users when the V1 model runner uses asy",
-   "summary": "ثغرة أمنية خطورتها متوسطة (CVSS 4.8) تؤثر على vLLM. التفاصيل الكاملة في رابط المصدر.",
-   "severity": "medium",
-   "score": 4.8,
-   "kev": false,
-   "system": "vLLM",
-   "source": "NVD",
-   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-137477",
-   "date": "2026-11-26T16:17:56+00:00",
-   "sum_src": "template",
-   "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
-  },
-  {
-   "id": "CVE-2026-137466",
-   "type": "vul",
-   "title": "CVE-2026-137466: Parse Server before 9.12.0-alpha.2 matches $in, $nin, $all and $containedBy constraints in",
-   "summary": "ثغرة أمنية خطورتها متوسطة (CVSS 5.9) تؤثر على Parse Server. التفاصيل الكاملة في رابط المصدر.",
-   "severity": "medium",
-   "score": 5.9,
-   "kev": false,
-   "system": "Parse Server",
-   "source": "NVD",
-   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-137466",
-   "date": "2026-11-26T16:17:55+00:00",
    "sum_src": "template",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
@@ -5728,21 +5743,6 @@
    "source": "feeds.feedburner.com",
    "link": "https://thehackernews.com/2026/11/webworm-suspected-of-modifying.html",
    "date": "2026-11-23T17:45:15+00:00",
-   "sum_src": "failed",
-   "advice": null
-  },
-  {
-   "id": "ca0d1bdeb307b963",
-   "type": "gen",
-   "title": "⚡ Weekly Recap: VMware 0-Day, Java4Shell, NGINX2Root, Ruby2Shell, and a Whole Lot of Shell Trouble",
-   "summary": "",
-   "severity": null,
-   "score": null,
-   "kev": false,
-   "system": "",
-   "source": "feeds.feedburner.com",
-   "link": "https://thehackernews.com/2026/11/weekly-recap-vmware-0-day-java4shell.html",
-   "date": "2026-11-23T15:10:48+00:00",
    "sum_src": "failed",
    "advice": null
   },
