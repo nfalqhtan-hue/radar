@@ -18,7 +18,8 @@
     var li = el("li"), row = el(opts.href ? "a" : "div", "hbar");
     if (opts.href) row.href = opts.href;
     if (opts.color) row.style.setProperty("--c", opts.color);
-    var lab = el("span", "lab"); lab.appendChild(el("bdi", null, label)); lab.title = label; row.appendChild(lab);
+    // dir=auto: الاسم الإنجليزي يُقص من نهايته («Ruckus Smart Gate…») لا من بدايته
+    var lab = el("span", "lab", label); lab.setAttribute("dir", "auto"); lab.title = label; row.appendChild(lab);
     var tr = el("span", "track"), fill = el("span", "fill");
     fill.style.width = (total ? Math.max(n / total * 100, n ? 1.5 : 0) : 0) + "%"; tr.appendChild(fill); row.appendChild(tr);
     var v = el("span", "val"); v.appendChild(el("b", null, nf.format(n)));

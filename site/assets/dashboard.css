@@ -22,7 +22,8 @@
 .hbars { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .hbar { display: grid; grid-template-columns: minmax(110px, 44%) minmax(0, 1fr) auto; align-items: center; gap: 10px; min-height: 32px; font-size: 14px; border-radius: var(--r-sm); padding: 0 4px; text-decoration: none; color: inherit; }
 a.hbar:hover { background: var(--hover); }
-.hbar .lab { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hbar .lab { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
+:root[dir="ltr"] .hbar .lab { text-align: left; }
 .hbar .track { height: 12px; border-radius: 4px; background: color-mix(in srgb, var(--line) 55%, transparent); overflow: hidden; }
 .hbar .fill { display: block; height: 100%; background: var(--c, var(--chart)); border-radius: 0 4px 4px 0; transform-origin: right; animation: grow .6s var(--ease) both; }
 :root[dir="ltr"] .hbar .fill { border-radius: 4px 0 0 4px; transform-origin: left; }
