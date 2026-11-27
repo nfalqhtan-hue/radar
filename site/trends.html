@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-en="Trends | Tech Radar">الاتجاهات | رادار التقنية</title>
+<meta name="description" content="اتجاهات الثغرات والأخبار والتحديثات الأمنية عبر الزمن، من بيانات الرادار الفعلية: مقارنة الفترات، وأنواع الضعف، والمنتجات الأكثر تأثراً.">
+<meta name="theme-color" content="#0A1428">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-LLm5XCccwQJVd/6axRIc9eVFKHLYmMjx4m9vl7w5tl8='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%230A1428'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23C9A063' stroke-width='1.5' opacity='.6'/%3E%3Cpath d='M16 16 L16 3 A13 13 0 0 1 27.3 9.5 Z' fill='%23C9A063' opacity='.55'/%3E%3Ccircle cx='22' cy='9' r='2.4' fill='%23FF6B66'/%3E%3C/svg%3E">
+<script>try{var d=document.documentElement,t=localStorage.getItem("radar-theme");if(t==="dark"||t==="light")d.dataset.theme=t;var l=new URLSearchParams(location.search).get("lang")||localStorage.getItem("radar-lang");if(l==="en"){d.lang="en";d.dir="ltr"}}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=r4">
+<link rel="stylesheet" href="assets/dashboard.css?v=r4">
+<link rel="stylesheet" href="assets/trends.css?v=r4">
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to the trends">انتقل إلى الاتجاهات</a>
+<header class="scope">
+  <div class="wrap">
+    <div class="topbar">
+      <a class="brand" href="./" aria-label="رادار التقنية، الصفحة الرئيسية" data-en-aria-label="Tech Radar, home">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="none" stroke="#2A4170"/><circle cx="16" cy="16" r="9" fill="none" stroke="#2A4170"/><path d="M16 16 L16 1 A15 15 0 0 1 29 8.5 Z" fill="#C9A063" opacity=".5"/><circle cx="22" cy="9" r="2.2" fill="#FF6B66"/></svg>
+        <b data-en="Tech Radar">رادار التقنية</b>
+      </a>
+      <nav class="nav" aria-label="أقسام الموقع" data-en-aria-label="Site sections">
+        <a href="./" data-en="Home">الرئيسية</a>
+        <a href="alerts.html" data-en="Alerts">التنبيهات</a>
+        <a href="updates.html" data-en="Updates">التحديثات</a>
+        <a href="dashboard.html" data-en="Statistics">الإحصائيات</a>
+        <a href="trends.html" aria-current="page" data-en="Trends">الاتجاهات</a>
+        <a href="about.html" data-en="About">عن المشروع</a>
+      </nav>
+      <div class="top-actions">
+        <span class="status loading" id="status" role="status"><span class="status-dot" aria-hidden="true"></span><span class="status-text" id="status-text" data-en="Loading">جارٍ التحميل</span></span>
+        <button class="icon-btn lang-btn" id="lang" type="button" lang="en" aria-label="Switch to English">EN</button>
+        <button class="icon-btn" id="theme" type="button" aria-label="تبديل الوضع الليلي والفاتح" data-en-aria-label="Toggle dark and light mode">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="page-head">
+      <h1 data-en="Trends">الاتجاهات</h1>
+      <p id="intro" data-en="How vulnerabilities, security updates and tech news changed over time, counted from the radar's own records. This is history, not a forecast.">كيف تغيّرت الثغرات والتحديثات الأمنية والأخبار التقنية عبر الزمن، محسوبة من سجلات الرادار نفسها. هذا تحليل لما حدث، وليس توقعاً.</p>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="wrap t-page" tabindex="-1">
+  <div class="t-bar">
+    <div class="seg t-range" id="range" role="group" aria-label="الفترة" data-en-aria-label="Period">
+      <button type="button" data-r="1" data-en="Last 24 hours">آخر 24 ساعة</button>
+      <button type="button" data-r="7" data-en="7 days">7 أيام</button>
+      <button type="button" data-r="30" data-en="30 days">30 يوماً</button>
+      <button type="button" data-r="90" data-en="90 days">90 يوماً</button>
+      <button type="button" data-r="custom" data-en="Custom">فترة مخصصة</button>
+    </div>
+    <div class="t-custom" id="custom" hidden>
+      <label><span data-en="From">من</span> <input type="date" id="from"></label>
+      <label><span data-en="To">إلى</span> <input type="date" id="to"></label>
+    </div>
+  </div>
+  <p class="t-scope" id="scope" aria-live="polite"></p>
+  <div id="state"></div>
+  <div id="trends" hidden>
+    <section class="t-kpis" id="kpis" aria-label="مقارنة بالفترة السابقة" data-en-aria-label="Compared with the previous period"></section>
+    <section class="t-findings" aria-labelledby="h-find">
+      <h2 id="h-find" data-en="What the numbers say">ماذا تقول الأرقام</h2>
+      <ul id="findings"></ul>
+      <p class="t-note" data-en="Every sentence is computed from the counts below by fixed rules; none is written by a language model, and none predicts the future.">كل جملة هنا محسوبة من الأرقام أدناه بقواعد ثابتة، لا يكتبها نموذج لغوي، ولا تتنبأ بالمستقبل.</p>
+    </section>
+
+    <h2 class="t-pillar" data-en="Vulnerabilities">الثغرات</h2>
+    <div class="t-grid">
+      <section class="card wide" aria-labelledby="h-v">
+        <h3 id="h-v" data-en="New vulnerabilities published">الثغرات الجديدة المنشورة</h3>
+        <p class="s-note" id="n-v"></p>
+        <div class="chart" id="c-v"></div>
+      </section>
+      <section class="card" aria-labelledby="h-ch">
+        <h3 id="h-ch" data-en="Critical and high (CVSS)">الحرجة والعالية (CVSS)</h3>
+        <p class="s-note" data-en="Critical: CVSS 9 or more. High: 7 to 8.9.">الحرجة: درجة 9 فأكثر. العالية: من 7 إلى 8.9.</p>
+        <div class="chart" id="c-ch"></div>
+      </section>
+      <section class="card" aria-labelledby="h-k">
+        <h3 id="h-k" data-en="Added to CISA's exploited list">أُضيفت إلى قائمة CISA للثغرات المستغلة</h3>
+        <p class="s-note" id="n-k"></p>
+        <div class="chart" id="c-k"></div>
+      </section>
+      <section class="card" aria-labelledby="h-cwe">
+        <h3 id="h-cwe" data-en="Most common weakness types (CWE)">أكثر أنواع الضعف (CWE)</h3>
+        <p class="s-note" id="n-cwe"></p>
+        <ul class="hbars plain" id="cwe"></ul>
+      </section>
+      <section class="card" aria-labelledby="h-prod">
+        <h3 id="h-prod" data-en="Most affected products">أكثر المنتجات تأثراً</h3>
+        <p class="s-note" id="n-prod"></p>
+        <div class="t-rank-wrap"><table class="t-rank"><thead><tr><th scope="col">#</th><th scope="col" data-en="Product">المنتج</th><th scope="col" data-en="Vulnerabilities">الثغرات</th></tr></thead><tbody id="prod"></tbody></table></div>
+      </section>
+    </div>
+
+    <h2 class="t-pillar" data-en="Security updates">التحديثات الأمنية</h2>
+    <div class="t-grid">
+      <section class="card wide" aria-labelledby="h-u">
+        <h3 id="h-u" data-en="Updates and advisories published by vendors">التحديثات والنشرات التي أصدرتها الشركات</h3>
+        <p class="s-note" id="n-u"></p>
+        <div class="chart" id="c-u"></div>
+      </section>
+    </div>
+
+    <h2 class="t-pillar" data-en="Tech news">الأخبار التقنية</h2>
+    <div class="t-grid">
+      <section class="card wide" aria-labelledby="h-n">
+        <h3 id="h-n" data-en="News volume: security vs. other tech news">حجم الأخبار: الأمنية مقابل بقية الأخبار التقنية</h3>
+        <p class="s-note" id="n-n"></p>
+        <div class="chart" id="c-n"></div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<div class="wrap">
+  <footer class="foot">
+    <p data-en="A graduation project by Abdullah Talal Alqahtani and Abdullah Yaqoub Alkhalifa.">مشروع تخرج من إعداد عبدالله طلال القحطاني وعبدالله يعقوب الخليفة.</p>
+    <p data-en="Vulnerability history comes from NVD records the radar loaded for the last 90 days (date, score, weakness type and product only). KEV additions use the dates in CISA's catalog. News and updates are counted from what the radar collected.">تاريخ الثغرات من سجلات NVD التي حمّلها الرادار لآخر 90 يوماً (التاريخ والدرجة ونوع الضعف والمنتج فقط). وإضافات قائمة CISA بتواريخ القائمة نفسها. والأخبار والتحديثات محسوبة مما جمعه الرادار.</p>
+  </footer>
+</div>
+
+<script src="assets/core.js?v=r4"></script>
+<script src="assets/trends.js?v=r4"></script>
+</body>
+</html>

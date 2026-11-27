@@ -498,7 +498,10 @@ ERR = []
 SCHEMA = """CREATE TABLE IF NOT EXISTS items(uid TEXT PRIMARY KEY, kind, type, title, link, text, summary, pending INT, source, published,
   severity, score REAL, kev INT, system, status, reason, created);
 CREATE TABLE IF NOT EXISTS errors(ts, stage, msg);
-CREATE TABLE IF NOT EXISTS events(ts TEXT, uid TEXT, kind TEXT, detail TEXT);"""
+CREATE TABLE IF NOT EXISTS events(ts TEXT, uid TEXT, kind TEXT, detail TEXT);
+CREATE TABLE IF NOT EXISTS vuln_history(uid TEXT PRIMARY KEY, published TEXT, score REAL, severity TEXT, cwe TEXT, system TEXT);"""
+# [CTI] vuln_history: metadata only (date, CVSS, CWE, product) of every NVD CVE in the trends window, for historical
+# analysis. Filled once by --backfill-history and then by every cycle. It never feeds the site's item list or alerts.
 # [المرحلة 3] أعمدة أُضيفت بعد إنشاء القاعدة: تُضاف تلقائياً للقواعد القديمة (لا نفقد شيئاً من البيانات المخزنة)
 EXTRA_COLS = ["modified", "vector", "cvss_ver", "kev_added", "kev_action", "kev_due", "kev_ransom", "summary_src", "checked", "nvd_published",
               "refs", "cwe", "nvd_status",   # [CTI] NVD reference tags (JSON), CWE ids, NVD analysis status
@@ -697,6 +700,8 @@ def export(con, out):
                    "events": [dict(ts=e[0], id=e[1], kind=e[2], detail=e[3]) for e in evs]}, f, ensure_ascii=False, separators=(",", ":"))
     with open(os.path.join(os.path.dirname(out) or ".", "stats.json"), "w", encoding="utf-8") as f:
         json.dump(stats(con, gen), f, ensure_ascii=False, separators=(",", ":"))
+    with open(os.path.join(os.path.dirname(out) or ".", "trends.json"), "w", encoding="utf-8") as f:   # [CTI] trends page
+        json.dump(trends(con, gen), f, ensure_ascii=False, separators=(",", ":"))
 
 RIYADH = timezone(timedelta(hours=3))     # الأيام في الإحصائيات بتوقيت السعودية
 SEVS = ("critical", "high", "medium", "low", "unknown")
@@ -706,6 +711,115 @@ def clean_system(s):
     w = (s or "").split()
     if len(w) >= 2 and len(w) % 2 == 0 and w[:len(w) // 2] == w[len(w) // 2:]: w = w[:len(w) // 2]
     return " ".join(w)
+
+# ---------------------------------------------------------------- [CTI] Trends & analytics (trends.json)
+TREND_DAYS = 90
+TREND_RANGES = (1, 7, 30, 90)       # preset ranges (days) for which product and CWE rankings are precomputed
+
+def history_put(con, it):
+    """Store one NVD record's metadata in vuln_history (insert or refresh the score)."""
+    text = it.get("text") or ""
+    sysn = extract_system(clean_text(text)) or ""
+    con.execute("INSERT INTO vuln_history VALUES(?,?,?,?,?,?) ON CONFLICT(uid) DO UPDATE SET score=excluded.score, "
+                "severity=excluded.severity, cwe=COALESCE(NULLIF(excluded.cwe,''), vuln_history.cwe)",
+                (it["uid"], to_iso(it.get("date", "")), it.get("score"), severity_of(it.get("score")), it.get("cwe") or "", sysn))
+
+def trends(con, gen):
+    """Daily series (Riyadh days) for the last TREND_DAYS days, per pillar, plus rankings for preset ranges.
+    Coverage dates say from when each series is complete; days before that are null, never zero."""
+    now = datetime.fromisoformat(gen); today = now.astimezone(RIYADH).date()
+    keys = [(today - timedelta(days=i)).isoformat() for i in range(TREND_DAYS - 1, -1, -1)]
+    idx = {k: i for i, k in enumerate(keys)}
+    def day(s):
+        try: t = datetime.fromisoformat((s or "").replace("Z", "+00:00"))
+        except ValueError: return None
+        if t.tzinfo is None: t = t.replace(tzinfo=timezone.utc)
+        return t.astimezone(RIYADH).date().isoformat()
+    def series(): return [0] * TREND_DAYS
+    S = {k: series() for k in ("v_total", "v_critical", "v_high", "v_kev", "kev_added", "u_patch", "u_advisory", "u_release")}
+    # vulnerabilities: stored items (authoritative) + history rows not in items
+    kev_now = {r[0] for r in con.execute("SELECT uid FROM items WHERE kind='vuln' AND kev=1")}
+    vul = {r["uid"]: dict(r) for r in con.execute("SELECT uid, published, severity, system, cwe FROM vuln_history")}
+    for r in con.execute("SELECT uid, COALESCE(nvd_published, published) published, severity, system, cwe FROM items "
+                         "WHERE kind='vuln' AND status='published' AND source='NVD'"):
+        h = vul.get(r["uid"]) or {}; v = dict(r)
+        for k in ("cwe", "system"):                # keep the history value when the item has none
+            if not v[k] or v[k] == "غير محدد": v[k] = h.get(k) or v[k]
+        vul[r["uid"]] = v
+    per_day_rows = [[] for _ in keys]
+    for v in vul.values():
+        i = idx.get(day(v["published"]))
+        if i is None: continue
+        S["v_total"][i] += 1
+        if v["severity"] == "critical": S["v_critical"][i] += 1
+        if v["severity"] == "high": S["v_high"][i] += 1
+        if v["uid"] in kev_now: S["v_kev"][i] += 1
+        per_day_rows[i].append(v)
+    row = con.execute("SELECT v FROM meta WHERE k='kev_added_daily'").fetchone() if con.execute(
+        "SELECT 1 FROM sqlite_master WHERE name='meta'").fetchone() else None
+    kev_daily = json.loads(row[0]) if row else {}
+    for d, n in kev_daily.items():            # CISA dates are calendar days (US), used as-is
+        if d in idx: S["kev_added"][idx[d]] += n
+    ntypes = ("sec", "gen", "ai", "os", "dev", "fix")
+    N = {t: series() for t in ntypes}
+    for r in con.execute("SELECT type, published FROM items WHERE kind='news' AND status='published'"):
+        i = idx.get(day(r["published"]))
+        if i is not None and r["type"] in N: N[r["type"]][i] += 1
+    for r in con.execute("SELECT utype, published FROM items WHERE kind='update' AND status='published'"):
+        i = idx.get(day(r["published"]))
+        if i is not None and ("u_" + (r["utype"] or "")) in S: S["u_" + r["utype"]][i] += 1
+    # coverage: first day each series is complete
+    hist_min = con.execute("SELECT MIN(published) FROM vuln_history").fetchone()[0]
+    item_min = con.execute("SELECT MIN(created) FROM items WHERE kind='vuln'").fetchone()[0]
+    news_min = con.execute("SELECT MIN(created) FROM items WHERE kind='news'").fetchone()[0]
+    upd_min = con.execute("SELECT MIN(created) FROM items WHERE kind='update'").fetchone()[0]
+    vfrom = day(hist_min) if hist_min else day(item_min)
+    if hist_min and vfrom: vfrom = (datetime.fromisoformat(vfrom) + timedelta(days=1)).date().isoformat()   # first day may be partial
+    ufrom = (datetime.fromisoformat(day(upd_min)) - timedelta(days=UPDATE_MAX_AGE_DAYS - 1)).date().isoformat() if upd_min else None
+    cover = dict(vulns=vfrom, news=day(news_min), updates=ufrom, kev=keys[0] if kev_daily else None)
+    def blank(arr, start):                    # null before coverage start: "not observed", not "zero"
+        return [None if (not start or k < start) else x for k, x in zip(keys, arr)]
+    vk = ("v_total", "v_critical", "v_high", "v_kev")
+    out_s = {k: blank(v, cover["vulns"] if k in vk else cover["kev"] if k == "kev_added" else cover["updates"]) for k, v in S.items()}
+    out_s.update({"n_" + t: blank(N[t], cover["news"]) for t in ntypes})
+    # rankings for preset ranges: products and weakness types (CWE)
+    ranks = {}
+    for rd in TREND_RANGES:
+        prods, cwes, n = {}, {}, 0
+        for i in range(TREND_DAYS - rd, TREND_DAYS):
+            for v in per_day_rows[i]:
+                n += 1
+                p = clean_system(v["system"])
+                if p and p != "غير محدد": prods[p] = prods.get(p, 0) + 1
+                for c in (v["cwe"] or "").split(","):
+                    if c: cwes[c] = cwes.get(c, 0) + 1
+        top_c = sorted(cwes.items(), key=lambda x: (-x[1], x[0]))
+        ranks[str(rd)] = dict(total=n, products=[[k, c] for k, c in sorted(prods.items(), key=lambda x: (-x[1], x[0]))[:10]],
+                              cwe=[[k, c] for k, c in top_c[:8]], cwe_other=sum(c for _, c in top_c[8:]),
+                              with_cwe=sum(1 for i in range(TREND_DAYS - rd, TREND_DAYS) for v in per_day_rows[i] if v["cwe"]))
+    # last 48 hours, hour by hour (Riyadh), so "last 24 hours" is exact and can be compared with the 24 hours before
+    h0 = now.astimezone(RIYADH).replace(minute=0, second=0, microsecond=0)
+    hkeys = [(h0 - timedelta(hours=i)) for i in range(47, -1, -1)]
+    hidx = {h.isoformat(): i for i, h in enumerate(hkeys)}
+    def hour(s):
+        try: t = datetime.fromisoformat((s or "").replace("Z", "+00:00"))
+        except ValueError: return None
+        if t.tzinfo is None: t = t.replace(tzinfo=timezone.utc)
+        return hidx.get(t.astimezone(RIYADH).replace(minute=0, second=0, microsecond=0).isoformat())
+    HS = {k: [0] * 48 for k in ("v_total", "v_critical", "v_high", "v_kev", "n_sec", "n_other", "u_all")}
+    for v in vul.values():
+        i = hour(v["published"])
+        if i is None: continue
+        HS["v_total"][i] += 1; HS["v_critical"][i] += v["severity"] == "critical"; HS["v_high"][i] += v["severity"] == "high"
+        HS["v_kev"][i] += v["uid"] in kev_now
+    for r in con.execute("SELECT type, published FROM items WHERE kind='news' AND status='published'"):
+        i = hour(r["published"])
+        if i is not None: HS["n_sec" if r["type"] == "sec" else "n_other"][i] += 1
+    for r in con.execute("SELECT published FROM items WHERE kind='update' AND status='published'"):
+        i = hour(r["published"])
+        if i is not None: HS["u_all"][i] += 1
+    return dict(generated_at=gen, days=keys, coverage=cover, series=out_s, ranges=ranks,
+                hours=[h.isoformat() for h in hkeys], hourly=HS, note="historical counts only; no forecasting")
 
 def _count(values):
     c = {}
@@ -808,6 +922,17 @@ def run(a, fetchers=None, summarizer=None, notifier=None):
         try: raw += fn(); event(con, "fetch", "", f"{name}:ok")
         except Exception as e: ERR.append((name, str(e))); event(con, "fetch", "", f"{name}:fail:{e}")
     kinfo = getattr(kev_ids, "info", {})
+    if kinfo:   # [CTI] KEV additions per day from the full CISA catalog (real dates, so the KEV trend has history from day one)
+        per_day = {}
+        for v in kinfo.values():
+            d = v.get("kev_added") or ""
+            if d: per_day[d] = per_day.get(d, 0) + 1
+        con.execute("CREATE TABLE IF NOT EXISTS meta(k TEXT PRIMARY KEY, v)")
+        con.execute("INSERT OR REPLACE INTO meta VALUES('kev_added_daily', ?)", (json.dumps(per_day, separators=(",", ":")),))
+    for it in raw:   # [CTI] every NVD record seen this cycle also goes to the trends history (metadata only)
+        if it.get("kind") == "vuln" and it.get("source") == "NVD" and CVE_RE.match(it.get("uid") or ""):
+            history_put(con, it)
+    con.execute("DELETE FROM vuln_history WHERE published < ?", ((datetime.now(timezone.utc) - timedelta(days=TREND_DAYS + 30)).isoformat(),))
     # [أسبوع 7] أولوية التلخيص: حد الدورة 30 ملخصاً، وكانت ثغرات NVD (تصل أولاً وبالعشرات) تستهلكه كله فتبقى الأخبار بلا ملخص.
     # الترتيب الآن: الأخبار، ثم المستغلة فعلياً والحرجة، ثم الباقي (sorted مستقر فيحفظ الترتيب داخل كل مجموعة)
     raw.sort(key=summary_priority)
@@ -957,6 +1082,19 @@ def run(a, fetchers=None, summarizer=None, notifier=None):
     return st
 
 
+def backfill_history(db, days=TREND_DAYS):
+    """[CTI] One-time load of NVD metadata for the last `days` days into vuln_history (no summaries, no site items)."""
+    con = sqlite3.connect(db); con.row_factory = sqlite3.Row; con.executescript(SCHEMA); migrate(con)
+    end = datetime.now(timezone.utc); start = end - timedelta(days=days); n = 0
+    while start < end:                            # 30-day windows (NVD allows 120): a failure loses less work
+        stop = min(end, start + timedelta(days=30))
+        for it in fetch_nvd(0, start, stop): history_put(con, it); n += 1
+        con.commit(); log.info("history %s .. %s: %d so far", start.date(), stop.date(), n)
+        start = stop; time.sleep(0.7 if NVD_KEY else 6.2)
+    total = con.execute("SELECT COUNT(*) FROM vuln_history").fetchone()[0]
+    con.close()
+    return dict(fetched=n, history_rows=total)
+
 def backfill_refs(db):
     """[CTI] One-time fill of refs/cwe/nvd_status for stored vulns (they were dropped before the risk engine).
     Only those three columns are written: summaries, scores and history are untouched."""
@@ -994,9 +1132,12 @@ def main():
     p.add_argument("--max-refresh", type=int, default=MAX_REFRESH, help="أقصى عدد ثغرات مخزنة يُعاد فحصها في NVD في الدورة")
     p.add_argument("--json", action="store_true", help="طباعة النتيجة بصيغة JSON (لاستخدام n8n)")
     p.add_argument("--backfill-refs", action="store_true", help="[CTI] fill NVD reference tags/CWE for stored vulns, then exit")
+    p.add_argument("--backfill-history", action="store_true", help="[CTI] load 90 days of NVD metadata for trends, then exit")
     a = p.parse_args(); logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
     if a.backfill_refs:
         print(json.dumps(backfill_refs(a.db))); return 0
+    if a.backfill_history:
+        print(json.dumps(backfill_history(a.db))); return 0
     st = run(a)
     print(json.dumps(st, ensure_ascii=False) if a.json else json.dumps(st, ensure_ascii=False, indent=1))
     return 0

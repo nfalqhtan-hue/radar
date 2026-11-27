@@ -385,4 +385,34 @@ check("stats.json has the updates pillar", st_u["total"] == 1 and st_u["action"]
 check("security news is its own type, general tech news stays gen",
       rp.classify(dict(kind="news", title="Ransomware gang hits hospital", text="", score=None, kev=0))["type"] == "sec"
       and rp.classify(dict(kind="news", title="New laptop chips announced at trade show", text="", score=None, kev=0))["type"] in ("gen", "dev"))
+# ---------------------------------------------------------------- [CTI] trends & analytics
+dt_ = tempfile.mkdtemp(); ct = sqlite3.connect(os.path.join(dt_, "t.db")); ct.row_factory = sqlite3.Row; ct.executescript(rp.SCHEMA); rp.migrate(ct)
+gen_t = "2026-11-27T09:00:00+00:00"          # = 12:00 Riyadh, 27 Nov
+def H(uid, when, score, cwe="", text=""):
+    rp.history_put(ct, dict(uid=uid, date=when, score=score, cwe=cwe, text=text))
+H("CVE-2026-1", "2026-11-20T10:00:00+00:00", 9.8, "CWE-79", "Stored XSS in WordPress plugin Foo before 1.2.")
+H("CVE-2026-2", "2026-11-26T10:00:00+00:00", 7.5, "CWE-79,CWE-89")
+H("CVE-2026-3", "2026-11-27T05:00:00+00:00", 5.0, "CWE-89")
+H("CVE-2026-3", "2026-11-27T05:00:00+00:00", 9.1, "")          # refreshed score, CWE kept
+H("CVE-2026-4", "2026-11-26T22:30:00+00:00", 9.0)                # 22:30 UTC = 01:30 on 27 Nov in Riyadh
+ct.execute("INSERT INTO items(uid,kind,type,title,link,status,published,created,severity,source,kev) VALUES"
+           "('CVE-2026-2','vuln','vul','x','l','published','2026-11-26T10:00:00+00:00','2026-11-20T00:00:00+00:00','high','NVD',1)")
+ct.execute("INSERT INTO items(uid,kind,type,title,link,status,published,created) VALUES('n1','news','sec','x','l1','published','2026-11-25T10:00:00+00:00','2026-11-24T00:00:00+00:00')")
+ct.execute("INSERT INTO items(uid,kind,type,title,link,status,published,created) VALUES('n2','news','gen','x','l2','published','2026-11-20T10:00:00+00:00','2026-11-24T00:00:00+00:00')")
+ct.execute("INSERT INTO items(uid,kind,type,title,link,status,published,created,utype) VALUES('u1','update','upd','x','l3','published','2026-11-26T10:00:00+00:00','2026-11-27T00:00:00+00:00','patch')")
+ct.execute("INSERT INTO meta VALUES('kev_added_daily', ?)", (json.dumps({"2026-11-26": 2, "2026-08-01": 5}),))
+T = rp.trends(ct, gen_t); D = T["days"]; Sx = T["series"]; at = lambda k, d: Sx[k][D.index(d)]
+check("trends: 90 Riyadh days ending today", len(D) == 90 and D[-1] == "2026-11-27" and D[0] == "2026-08-30")
+check("trends: vulnerabilities per day by severity, days counted in Riyadh time, refreshed score used",
+      at("v_total", "2026-11-27") == 2 and at("v_critical", "2026-11-27") == 2 and at("v_high", "2026-11-26") == 1 and at("v_kev", "2026-11-26") == 1)
+check("trends: days before the history starts are null (not observed), not zero",
+      T["coverage"]["vulns"] == "2026-11-21" and at("v_total", "2026-11-20") is None and at("v_total", "2026-11-22") == 0)
+check("trends: KEV additions from the CISA catalog dates; outside the window ignored", at("kev_added", "2026-11-26") == 2 and sum(x or 0 for x in Sx["kev_added"]) == 2)
+check("trends: news by type from first collection day, older backlog not counted as complete",
+      T["coverage"]["news"] == "2026-11-24" and at("n_sec", "2026-11-25") == 1 and at("n_gen", "2026-11-20") is None)
+check("trends: updates by kind, covered 30 days back from first fetch", at("u_patch", "2026-11-26") == 1 and T["coverage"]["updates"] == "2026-10-29")
+r7 = T["ranges"]["7"]
+check("trends: 7-day ranking of weakness types and products", r7["total"] == 3 and r7["cwe"][0] == ["CWE-89", 2] and r7["with_cwe"] == 2
+      and T["ranges"]["90"]["cwe"][0] == ["CWE-79", 2] and T["ranges"]["90"]["products"][0][0] == "WordPress")
+check("trends: labelled as history, no forecasting", "no forecasting" in T["note"])
 print(f"\n{ok} checks passed")
