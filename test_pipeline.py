@@ -451,4 +451,27 @@ export_dir = os.path.join(dr_, "site"); rp.export_reports(cr, export_dir)
 check("daily report: archive exported (index + one file per day)",
       json.load(open(os.path.join(export_dir, "reports", "index.json"), encoding="utf-8"))["reports"][0]["day"] == "2026-11-26"
       and os.path.exists(os.path.join(export_dir, "reports", "2026-11-26.json")))
+# ---------------------------------------------------------------- [CTI] threat map: geography only when stated
+g1 = rp.geo_facts("China-Linked Hackers Exploit VMware Zero-Day", "")
+check("map: attributed origin from 'X-linked hackers', with the matched words as evidence",
+      g1 and g1[0][:2] == ("CN", "origin") and "China-Linked Hackers" in g1[0][2])
+check("map: victim location after an attack verb ('breached a Russian organization', 'targeting Indian banks')",
+      rp.geo_facts("Attackers breached a Russian organization using a public PoC.", "")[0][:2] == ("RU", "victim")
+      and rp.geo_facts("Hackers targeting Indian banks stole funds.", "")[0][:2] == ("IN", "victim"))
+check("map: the nationality of the accused company is NOT a victim location", rp.geo_facts("The Chinese telecom giant was accused of stealing code.", "") == [])
+check("map: a country named outside any attack sentence is not placed",
+      rp.geo_facts("Nvidia pauses chip shipments to Singapore", "The company cited demand in China.") == [])
+check("map: 'South Korea's power giant confirms data breach' -> victim", rp.geo_facts("South Korea’s power giant KEPCO confirms data breach", "")[0][:2] == ("KR", "victim"))
+check("map: threat category from keywords", rp.threat_category("New ransomware gang extorts hospitals") == "ransomware"
+      and rp.threat_category("Iranian APT espionage campaign") == "espionage")
+dm = tempfile.mkdtemp(); cm = sqlite3.connect(os.path.join(dm, "m.db")); cm.row_factory = sqlite3.Row; cm.executescript(rp.SCHEMA); rp.migrate(cm)
+nowm = datetime.now(timezone.utc)
+for uid_, ty_, ti_, days_ in [("m1", "sec", "North Korea-Linked hackers poison GitHub repositories", 2), ("m2", "sec", "New phishing kit targets banks", 3),
+                              ("m3", "ai", "OpenAI ships a model", 1), ("m4", "sec", "Iranian APT hits telecoms", 45)]:
+    cm.execute("INSERT INTO items(uid,kind,type,title,text,link,source,status,published) VALUES(?,?,?,?,?,?,?,?,?)",
+               (uid_, "news", ty_, ti_, "", "https://ex.com/" + uid_, "ex.com", "published", (nowm - timedelta(days=days_)).isoformat()))
+TM = rp.threat_map(cm, nowm.isoformat(timespec="seconds"))
+check("map: located incidents, unlocated security news listed apart, non-security news and items older than 30 days left out",
+      [i["id"] for i in TM["incidents"]] == ["m1"] and [u["id"] for u in TM["unlocated"]] == ["m2"]
+      and TM["incidents"][0]["places"][0]["role"] == "origin" and TM["incidents"][0]["severity"] == "unknown" and TM["countries"]["KP"]["ar"] == "كوريا الشمالية")
 print(f"\n{ok} checks passed")

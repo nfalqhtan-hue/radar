@@ -702,6 +702,8 @@ def export(con, out):
         json.dump(stats(con, gen), f, ensure_ascii=False, separators=(",", ":"))
     with open(os.path.join(os.path.dirname(out) or ".", "trends.json"), "w", encoding="utf-8") as f:   # [CTI] trends page
         json.dump(trends(con, gen), f, ensure_ascii=False, separators=(",", ":"))
+    with open(os.path.join(os.path.dirname(out) or ".", "map.json"), "w", encoding="utf-8") as f:     # [CTI] threat map
+        json.dump(threat_map(con, gen), f, ensure_ascii=False, separators=(",", ":"))
     make_reports(con, gen); con.commit()                           # [CTI] daily report(s) for finished days
     export_reports(con, os.path.dirname(out) or ".")
 
@@ -916,6 +918,120 @@ def export_reports(con, outdir):
         json.dump(dict(reports=idx), f, ensure_ascii=False, separators=(",", ":"))
     for fn in os.listdir(rd):
         if re.fullmatch(r"\d{4}-\d{2}-\d{2}\.json", fn) and fn not in keep: os.remove(os.path.join(rd, fn))
+
+# ---------------------------------------------------------------- [CTI] Threat map (geo facts from news text)
+# A country is placed on the map ONLY when the article states its role in plain words, in a sentence about an attack:
+#   origin  the source attributes the activity to actors linked to that country ("China-linked hackers", "Iranian APT")
+#   victim  the targeted organisations or users are in / of that country ("Indian banks", "South Korea's power giant")
+# Nothing is inferred from IP addresses, company headquarters or vendor nationality. Attribution is the source's claim
+# and is labelled as such. Everything else goes to the "unlocated" list. Each placement keeps the matched words as evidence.
+MAP_DAYS = 30
+GEO = {   # code: (English names, demonyms, Arabic name, lat, lon)  - lat/lon = approximate country centre, for the marker
+    "CN": (["China", "PRC"], ["Chinese"], "الصين", 35.0, 103.0), "RU": (["Russia"], ["Russian"], "روسيا", 60.0, 90.0),
+    "KP": (["North Korea", "DPRK"], ["North Korean"], "كوريا الشمالية", 40.2, 127.3), "KR": (["South Korea"], ["South Korean"], "كوريا الجنوبية", 36.4, 127.9),
+    "IR": (["Iran"], ["Iranian"], "إيران", 32.4, 53.7), "UA": (["Ukraine"], ["Ukrainian"], "أوكرانيا", 49.0, 31.4),
+    "IL": (["Israel"], ["Israeli"], "إسرائيل", 31.4, 35.0), "US": (["United States", "U.S.", "USA"], ["American"], "الولايات المتحدة", 39.5, -98.4),
+    "GB": (["United Kingdom", "UK", "Britain"], ["British"], "المملكة المتحدة", 54.0, -2.0), "JP": (["Japan"], ["Japanese"], "اليابان", 36.2, 138.3),
+    "IN": (["India"], ["Indian"], "الهند", 21.0, 78.9), "PK": (["Pakistan"], ["Pakistani"], "باكستان", 30.4, 69.3),
+    "DE": (["Germany"], ["German"], "ألمانيا", 51.2, 10.4), "FR": (["France"], ["French"], "فرنسا", 46.6, 2.2),
+    "IT": (["Italy"], ["Italian"], "إيطاليا", 42.8, 12.6), "ES": (["Spain"], ["Spanish"], "إسبانيا", 40.4, -3.7),
+    "NL": (["Netherlands"], ["Dutch"], "هولندا", 52.1, 5.3), "PL": (["Poland"], ["Polish"], "بولندا", 52.0, 19.1),
+    "TW": (["Taiwan"], ["Taiwanese"], "تايوان", 23.7, 121.0), "VN": (["Vietnam"], ["Vietnamese"], "فيتنام", 14.1, 108.3),
+    "SG": (["Singapore"], ["Singaporean"], "سنغافورة", 1.35, 103.8), "ID": (["Indonesia"], ["Indonesian"], "إندونيسيا", -2.5, 118.0),
+    "AU": (["Australia"], ["Australian"], "أستراليا", -25.3, 133.8), "CA": (["Canada"], ["Canadian"], "كندا", 56.1, -106.3),
+    "BR": (["Brazil"], ["Brazilian"], "البرازيل", -14.2, -51.9), "MX": (["Mexico"], ["Mexican"], "المكسيك", 23.6, -102.5),
+    "SA": (["Saudi Arabia"], ["Saudi"], "السعودية", 23.9, 45.1), "AE": (["United Arab Emirates", "UAE"], ["Emirati"], "الإمارات", 23.4, 53.8),
+    "QA": (["Qatar"], ["Qatari"], "قطر", 25.3, 51.2), "EG": (["Egypt"], ["Egyptian"], "مصر", 26.8, 30.8),
+    "TR": (["Turkey", "Türkiye"], ["Turkish"], "تركيا", 39.0, 35.2), "BY": (["Belarus"], ["Belarusian"], "بيلاروسيا", 53.7, 27.9),
+    "CH": (["Switzerland"], ["Swiss"], "سويسرا", 46.8, 8.2), "SE": (["Sweden"], ["Swedish"], "السويد", 60.1, 18.6),
+    "NO": (["Norway"], ["Norwegian"], "النرويج", 60.5, 8.5), "FI": (["Finland"], ["Finnish"], "فنلندا", 61.9, 25.7),
+    "DK": (["Denmark"], ["Danish"], "الدنمارك", 56.3, 9.5), "BE": (["Belgium"], ["Belgian"], "بلجيكا", 50.5, 4.5),
+    "CZ": (["Czech Republic", "Czechia"], ["Czech"], "التشيك", 49.8, 15.5), "RO": (["Romania"], ["Romanian"], "رومانيا", 45.9, 25.0),
+    "TH": (["Thailand"], ["Thai"], "تايلاند", 15.9, 101.0), "PH": (["Philippines"], ["Filipino", "Philippine"], "الفلبين", 12.9, 121.8),
+    "MY": (["Malaysia"], ["Malaysian"], "ماليزيا", 4.2, 102.0), "ZA": (["South Africa"], ["South African"], "جنوب أفريقيا", -30.6, 22.9),
+    "NG": (["Nigeria"], ["Nigerian"], "نيجيريا", 9.1, 8.7), "AR": (["Argentina"], ["Argentine", "Argentinian"], "الأرجنتين", -38.4, -63.6),
+    "CO": (["Colombia"], ["Colombian"], "كولومبيا", 4.6, -74.3), "NZ": (["New Zealand"], [], "نيوزيلندا", -40.9, 174.9),
+    "IE": (["Ireland"], ["Irish"], "أيرلندا", 53.4, -8.2), "AT": (["Austria"], ["Austrian"], "النمسا", 47.5, 14.6),
+    "PT": (["Portugal"], ["Portuguese"], "البرتغال", 39.4, -8.2), "GR": (["Greece"], ["Greek"], "اليونان", 39.1, 21.8),
+    "HK": (["Hong Kong"], [], "هونغ كونغ", 22.3, 114.2), "KW": (["Kuwait"], ["Kuwaiti"], "الكويت", 29.3, 47.5),
+    "JO": (["Jordan"], ["Jordanian"], "الأردن", 30.6, 36.2), "MA": (["Morocco"], ["Moroccan"], "المغرب", 31.8, -7.1),
+}
+_ATTACK = re.compile(r"\b(?:hack\w*|breach\w*|attack\w*|ransomware|malware|backdoor|espionage|spy\w*|stole|stolen|steal\w*|leak\w*|"
+                     r"compromis\w*|phishing|vishing|exploit\w*|intrusion|cyber\w*|threat actors?|APT\d*|botnet|extortion|DDoS)\b", re.I)
+_ORIGIN_NOUN = (r"(?:state[- ]sponsored |state[- ]backed |government[- ]backed |nation[- ]state |cyber ?criminal |hacking )?"
+                r"(?:hackers?|threat actors?|threat groups?|APTs?|APT ?\d+|cyber ?spies|spies|hacking groups?|hacker groups?|"
+                r"cyber ?criminals|cyberespionage|espionage (?:groups?|campaigns?|actors?)|state actors?|operatives|intelligence (?:services?|agency))")
+_VICTIM_NOUN = (r"(?:banks?|companies|company|firms?|organi[sz]ations?|government(?: agencies| entities| networks)?|hospitals?|users|citizens|"
+                r"universities|telecoms?|telecommunications|retailers?|entities|ministr(?:y|ies)|military|critical infrastructure|"
+                r"energy|utilit(?:y|ies)|airlines?|operators?|agencies|defen[cs]e (?:firms|contractors)|power (?:giant|company|grid))")
+def _geo_rx():
+    out = []
+    for code, (names, dems, *_ ) in GEO.items():
+        n = "|".join(re.escape(x) for x in names); d = "|".join(re.escape(x) for x in dems) or "(?!x)x"
+        out.append((code, "origin", re.compile(rf"\b(?:{n}|{d})[- ](?:linked|aligned|backed|nexus|sponsored|affiliated|tied|state)\b", re.I)))
+        out.append((code, "origin", re.compile(rf"\b(?:{d}) {_ORIGIN_NOUN}\b")))
+        out.append((code, "origin", re.compile(rf"\b(?:hired|employed|tasked|directed) by (?:the )?(?:{n})\b")))
+        # "South Korea's power giant KEPCO confirms data breach": the organisation itself reports being hit
+        out.append((code, "victim", re.compile(rf"\b(?:{n})(?:’s|'s) (?:[\w-]+ ){{0,4}}?{_VICTIM_NOUN}\b(?:[\w ,-]{{0,40}}?)\b(?:confirm\w*|disclos\w*|report\w*|suffer\w*|hit|was breached|"
+                                               r"breach(?:ed)?|attack(?:ed)?|compromised|victim)", re.I)))
+        # a nationality marks the victim only right after an attack verb ("breach a Russian organization", "targeting Indian banks");
+        # "the Chinese telecom giant accused of stealing" is the actor's nationality and must not match
+        out.append((code, "victim", re.compile(rf"\b(?:target\w*|against|attacks? on|hit|hitting|breach\w*|compromis\w*|infect\w*|broke into|broken into|"
+                                               rf"impersonat\w*|victimi[sz]\w*|stole from|steal from) (?:[\w-]+ ){{0,4}}?(?:{d}) (?:[A-Z][\w-]* ){{0,2}}{_VICTIM_NOUN}\b")))
+        out.append((code, "victim", re.compile(rf"\b(?:targeting|targeted|targets|against|attacks? on|in|across) (?:the )?(?:{n})\b(?![- ](?:linked|aligned|backed|based))")))
+    return out
+_GEO_RX = _geo_rx()
+_SENT = re.compile(r"(?<=[.!?])\s+")
+THREAT_CATS = [("ransomware", r"ransomware|extortion"), ("espionage", r"espionage|cyber ?spies|\bspy|\bAPT|state[- ](?:sponsored|backed)|nation[- ]state"),
+               ("breach", r"data breach|breach|leak|stole|stolen|exposed|exfiltrat"), ("malware", r"malware|backdoor|trojan|botnet|stealer|rootkit|bootkit|loader"),
+               ("phishing", r"phishing|vishing|smishing|social engineering"), ("exploitation", r"exploit|zero-day|0-day|vulnerab")]
+
+def geo_facts(title, text):
+    """[(code, role, evidence)] from sentences that talk about an attack. One fact per (country, role)."""
+    facts, seen = [], set()
+    for sent in [title] + _SENT.split(text or ""):
+        if not _ATTACK.search(sent) and sent is not title: continue
+        if sent is title and not _ATTACK.search(title + " " + (text or "")[:300]): continue
+        for code, role, rx in _GEO_RX:
+            m = rx.search(sent)
+            if m and (code, role) not in seen:
+                seen.add((code, role))
+                a, b = max(0, m.start() - 60), min(len(sent), m.end() + 60)
+                facts.append((code, role, ("…" if a else "") + sent[a:b].strip() + ("…" if b < len(sent) else "")))
+    return facts
+
+def threat_category(blob):
+    return next((c for c, rx in THREAT_CATS if re.search(rx, blob, re.I)), "other")
+
+def threat_map(con, gen):
+    """Incidents with explicit geography (last MAP_DAYS days) + the security news we could not place."""
+    since = (datetime.fromisoformat(gen) - timedelta(days=MAP_DAYS)).isoformat()
+    risk = {}
+    gnow = datetime.fromisoformat(gen)
+    def cve_level(blob):     # severity only when the story cites a CVE the radar tracks (risk score); otherwise unknown
+        best = None
+        for cid in set(_CVE_ANY.findall(blob)):
+            if cid not in risk:
+                r = con.execute("SELECT * FROM items WHERE uid=? AND kind='vuln'", (cid,)).fetchone()
+                risk[cid] = risk_score(dict(r), gnow) if r else None
+            x = risk[cid]
+            if x and (best is None or x["score"] > best[1]): best = (cid, x["score"], x["level"])
+        return best
+    inc, unloc = [], []
+    for r in con.execute("SELECT uid, title, text, link, source, published, type FROM items WHERE kind='news' AND status='published' "
+                         "AND published >= ? ORDER BY published DESC", (since,)):
+        blob = r["title"] + " " + (r["text"] or "")
+        cyber = r["type"] == "sec" or bool(_ATTACK.search(r["title"]))
+        if not cyber: continue
+        facts = geo_facts(r["title"], r["text"] or "")
+        cl = cve_level(blob)
+        row = dict(id=r["uid"], title=r["title"], link=r["link"], source=r["source"], date=r["published"], category=threat_category(blob),
+                   severity=cl[2] if cl else "unknown", cve=cl[0] if cl else "", risk=cl[1] if cl else None)
+        if facts: inc.append(dict(row, places=[dict(code=c, role=ro, evidence=e) for c, ro, e in facts]))
+        else: unloc.append(row)
+    return dict(generated_at=gen, days=MAP_DAYS, countries={c: dict(ar=v[2], en=v[0][0], lat=v[3], lon=v[4]) for c, v in GEO.items()},
+                incidents=inc, unlocated=unloc,
+                method="country placed only when the article names its role (attributed origin or victim location) in a sentence about an attack")
 
 def _count(values):
     c = {}

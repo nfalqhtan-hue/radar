@@ -1,0 +1,60 @@
+/* Tech Radar: threat map (builds on dashboard.css for cards, seg, as-table) */
+:root { --m-origin: #A8741A; --m-victim: #2F5DA8; --m-land: #DCE2EC; --m-border: #F7F9FC; }
+:root[data-theme="dark"] { --m-origin: #D7AE6E; --m-victim: #7FA7E8; --m-land: #1E2D4A; --m-border: #0F1A30; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --m-origin: #D7AE6E; --m-victim: #7FA7E8; --m-land: #1E2D4A; --m-border: #0F1A30; } }
+
+.m-page { padding-top: 22px; padding-bottom: 30px; }
+.m-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-bottom: 14px; }
+.m-filters .seg { flex-wrap: wrap; }
+.m-sel { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--muted); }
+.m-sel select { font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; min-height: 40px; }
+
+.m-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 16px; align-items: start; }
+.m-map { position: relative; }
+.m-svg-wrap { min-height: 0; }
+.m-skel { display: block; height: 320px; }
+.m-svg { display: block; width: 100%; height: auto; }
+.m-svg .land path { fill: var(--m-land); stroke: var(--m-border); stroke-width: .6; }
+.m-svg .mk { cursor: pointer; outline: none; }
+.m-svg .ring, .m-legend .ring { fill: color-mix(in srgb, var(--m-origin) 18%, transparent); stroke: var(--m-origin); stroke-width: 2.5; }
+.m-svg .disc, .m-legend .disc { fill: var(--m-victim); stroke: var(--surface); stroke-width: 1.5; }
+.m-svg .mk-n { font-size: 17px; font-weight: 700; fill: var(--text); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; pointer-events: none; }
+.m-svg .hit { fill: transparent; }
+.m-svg .mk:hover .ring, .m-svg .mk:focus-visible .ring, .m-svg .mk.on .ring { stroke-width: 4; }
+.m-svg .mk:focus-visible .hit, .m-svg .mk.on .hit { stroke: var(--focus); stroke-width: 2; }
+.m-legend { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+.m-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.m-note { color: var(--muted); font-size: 13.5px; margin: 8px 0 0; }
+
+.m-panel { max-height: 640px; overflow: auto; }
+.m-panel h2 { font-family: var(--f-display); font-size: 18px; margin: 0 0 4px; }
+.m-ph { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.m-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 16px; margin: 10px 0 12px; font-size: 14px; }
+.m-facts dt { color: var(--muted); font-size: 12.5px; }
+.m-facts dd { margin: 0; font-weight: 600; }
+.m-rank { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 4px; }
+.m-rank button { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 40px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 8px; background: none; color: var(--text); cursor: pointer; font: inherit; }
+.m-rank button:hover { background: var(--hover); }
+.m-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.m-list li { border-top: 1px solid var(--line); padding-top: 10px; font-size: 14px; }
+.m-list a { font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
+.m-list a:hover { text-decoration: underline; }
+.m-list small { display: block; color: var(--muted); margin-top: 2px; }
+.m-top { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 12.5px; color: var(--muted); margin-bottom: 4px; }
+.m-top .pill { --c: var(--accent); }
+.m-role { font-weight: 700; }
+.m-role.origin { color: var(--m-origin); }
+.m-role.victim { color: var(--m-victim); }
+.m-ev { margin: 6px 0 0; padding: 6px 10px; border-inline-start: 3px solid var(--line); background: color-mix(in srgb, var(--text) 4%, transparent); font-size: 13px; color: var(--muted); border-radius: 4px; text-align: left; }
+.m-table { margin-top: 12px; }
+.m-unloc { margin-top: 26px; }
+.m-unloc h2 { font-family: var(--f-display); font-size: 19px; margin: 0; }
+.m-unloc .m-list { margin-top: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 24px; }
+
+@media (max-width: 1180px) {
+  .m-wrap { grid-template-columns: minmax(0, 1fr); }
+  .m-panel { max-height: none; }
+}
+@media (max-width: 900px) {
+  .m-unloc .m-list { grid-template-columns: minmax(0, 1fr); }
+}
