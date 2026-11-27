@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/app.css?v=r6">
+<link rel="stylesheet" href="assets/assistant.css?v=r7">
 <link rel="stylesheet" href="assets/about.css?v=r6">
 </head>
 <body>
@@ -167,6 +168,8 @@
         <li data-en="Summaries come from a small local model and can be wrong; each one is labeled and links to its source.">الملخصات من نموذج محلي صغير وقد تخطئ، لذا يُعلَّم كل ملخص ويرتبط بمصدره.</li>
         <li data-en="There is no server: the agent runs on our computer, so the site does not update while it is off. Missed hours are fetched on the next run.">لا يوجد خادم: الوكيل يعمل على جهازنا، فلا يتحدث الموقع وهو مطفأ، وما فات يُجلب في الدورة التالية.</li>
         <li data-en="The affected product is extracted by rules from the description and is not always found.">المنتج المتأثر يُستخرج بقواعد من نص الوصف، ولا يُعرف دائماً.</li>
+        <li data-en="The “Ask the radar” assistant searches the radar's published data and answers with records, dates and source links. It is not a free-form chat model: a static site cannot run one or keep an API key secret. Short term explanations are labelled “general explanation”.">مساعد «اسأل الرادار» يبحث في بيانات الرادار المنشورة ويجيب بالسجلات وتواريخها وروابط مصادرها. وهو ليس نموذج محادثة حراً، لأن الموقع الثابت لا يستطيع تشغيل نموذج ولا إخفاء مفتاح API. وشروح المصطلحات القصيرة معلَّمة بأنها «شرح عام».</li>
+        <li data-en="The threat map places a country only when the article states its role; most security news names no country and stays unlocated.">خريطة التهديدات لا تضع دولة إلا إذا ذكر الخبر دورها صراحة، وأغلب الأخبار الأمنية لا تذكر دولة فتبقى بلا موقع.</li>
       </ul>
     </div>
   </section>
@@ -189,5 +192,6 @@
 
 <script src="assets/core.js?v=r6"></script>
 <script src="assets/about.js?v=r6"></script>
+<script src="assets/assistant.js?v=r7"></script>
 </body>
 </html>
