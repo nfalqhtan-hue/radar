@@ -16,16 +16,21 @@
   var L = R.L;
 
   R.TYPES = R.en
-    ? { vul: "Vulnerability", gen: "Tech & security news", ai: "AI", fix: "Fixed issue", os: "Operating systems", dev: "Devices & phones" }
-    : { vul: "ثغرة", gen: "أخبار تقنية وأمنية", ai: "ذكاء اصطناعي", fix: "مشكلة محلولة", os: "أنظمة التشغيل", dev: "أجهزة وجوالات" };
-  R.TYPE_ORDER = ["vul", "gen", "ai", "fix", "os", "dev"];
+    ? { vul: "Vulnerability", upd: "Security updates", sec: "Security news", gen: "Tech news", ai: "AI", fix: "Fixed issue", os: "Operating systems", dev: "Devices & phones" }
+    : { vul: "ثغرة", upd: "تحديثات أمنية", sec: "أخبار أمنية", gen: "أخبار تقنية", ai: "ذكاء اصطناعي", fix: "مشكلة محلولة", os: "أنظمة التشغيل", dev: "أجهزة وجوالات" };
+  R.TYPE_ORDER = ["vul", "upd", "sec", "gen", "ai", "fix", "os", "dev"];
+  // [CTI] pillar 3: kinds of vendor update, kept apart from vulnerability disclosures
+  R.UTYPE = R.en ? { patch: "Security patch", advisory: "Security advisory", release: "General update" }
+    : { patch: "تحديث أمني", advisory: "نشرة أمنية", release: "تحديث عام" };
   R.SEV = R.en
     ? { critical: "Critical", high: "High", medium: "Medium", low: "Low", unknown: "Not scored yet" }
     : { critical: "حرجة", high: "عالية", medium: "متوسطة", low: "منخفضة", unknown: "غير مقيّمة بعد" };
   R.SEV_ORDER = ["critical", "high", "medium", "low", "unknown"];
   R.RADAR_SEV = { critical: "#FF6B66", high: "#FF9F4D", medium: "#E8C547", low: "#5FCB8D", unknown: "#A3ADBF" };
   R.SOURCES = { "feeds.feedburner.com": "The Hacker News", "feeds.arstechnica.com": "Ars Technica", "www.theverge.com": "The Verge",
-    "techcrunch.com": "TechCrunch", "www.bleepingcomputer.com": "BleepingComputer" };
+    "techcrunch.com": "TechCrunch", "www.bleepingcomputer.com": "BleepingComputer",
+    "chromereleases.googleblog.com": "Chrome Releases", "ubuntu.com": "Ubuntu Security Notices", "lists.debian.org": "Debian Security",
+    "sec.cloudapps.cisco.com": "Cisco PSIRT", "fortiguard.fortinet.com": "Fortinet PSIRT", "www.oracle.com": "Oracle Security Alerts" };
   R.ADVICE = L("حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح.",
     "Update the affected system or software to the latest version from the official source, and check the vendor advisory for fix details.");
   R.UNSPEC = "غير محدد";
@@ -166,6 +171,13 @@
     o.risk = o.type === "vul" ? rs : null;
     o.riskLevel = o.type === "vul" ? (rs != null && R.RISK[it.risk_level] && it.risk_level !== "unknown" ? it.risk_level : "unknown") : null;
     o.t = Date.parse(o.date) || genAt;
+    if (o.type === "upd") {   // [CTI] security update fields, validated like the rest
+      o.utype = R.UTYPE[it.utype] ? it.utype : "advisory";
+      o.product = str(it.product, 120); o.fixed = str(it.fixed, 120); o.affected = str(it.affected, 200);
+      o.cves = Array.isArray(it.cves) ? it.cves.filter(function (c) { return typeof c === "string" && /^CVE-\d{4}-\d{4,}$/.test(c); }).slice(0, 12) : [];
+      o.cveN = typeof it.cve_n === "number" && it.cve_n >= 0 ? Math.min(it.cve_n, 999) : o.cves.length;
+      o.vendorExploited = it.vendor_exploited === true; o.action = it.action === true;
+    }
     return o;
   }
   // cache: "no-cache" يسمح للمتصفح بإعادة استخدام نسخته إذا لم يتغير الملف (رد 304) بدل تنزيله كاملاً كل مرة

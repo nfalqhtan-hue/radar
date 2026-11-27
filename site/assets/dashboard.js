@@ -153,6 +153,17 @@
     bars("n-src", Object.keys(bs).sort(function (a, b) { return bs[b] - bs[a]; }).map(function (s) { return [R.srcName(s), num(bs[s])]; }));
   }
 
+  // [CTI] pillar 3: security updates (stats.json "updates"; older files have none, so the card stays hidden)
+  function renderUpdates() {
+    var u = S.updates; if (!u) return;
+    $("upd-card").hidden = false;
+    $("u-total").textContent = nf.format(num(u.total)); $("u-7").textContent = nf.format(num(u.last7)); $("u-act").textContent = nf.format(num(u.action));
+    var bv = u.by_vendor || {}, bt = u.by_utype || {};
+    bars("u-vendor", Object.keys(bv).sort(function (a, b) { return num(bv[b]) - num(bv[a]); }).map(function (v) {
+      return [v, num(bv[v]), { href: "updates.html#vendor=" + encodeURIComponent(v) }]; }));
+    bars("u-type", ["patch", "advisory", "release"].filter(function (t) { return bt[t]; }).map(function (t) {
+      return [R.UTYPE[t], num(bt[t]), { href: "updates.html#tab=" + t }]; }));
+  }
   function renderSums() {
     var LB = R.en ? { llm: "Language model, passed the check", template: "Built from the vulnerability data", failed: "Rejected by the check, not published", pending: "Waiting to be summarized" }
       : { llm: "نموذج لغوي، اجتاز الفحص", template: "مبني من بيانات الثغرة", failed: "رفضه فحص الجودة فلم يُنشر", pending: "بانتظار التلخيص" };
@@ -174,7 +185,7 @@
       if (!d || !d.vulns || !Array.isArray(d.hourly)) throw new Error("bad-format");
       S = d; R.status("ok", Date.parse(d.generated_at) || Date.now());
       $("dash").hidden = false;
-      renderKpis(); renderSev(); renderTime(); renderSystems(); renderNews(); renderSums();
+      renderKpis(); renderSev(); renderTime(); renderSystems(); renderNews(); renderSums(); renderUpdates();
     })
     .catch(function (err) { R.status("error"); R.errorNotice($("state"), err, function () { location.reload(); }); });
 })();

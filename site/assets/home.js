@@ -99,11 +99,12 @@
   function item(it) {
     var sv = sevOf(it), cv = R.splitCve(it), pp = parts(it), text = pp.body;
     var art = el("article", "item" + (text ? "" : " compact"));
-    art.id = "i-" + it.id; art.style.setProperty("--c", sv ? "var(--s-" + sv + ")" : "var(--s-news)");
+    art.id = "i-" + it.id; art.style.setProperty("--c", sv ? "var(--s-" + sv + ")" : it.type === "upd" ? (it.action ? "var(--s-critical)" : "var(--s-low)") : "var(--s-news)");
     art.appendChild(el("div", "rail"));
     var body = el("div");
     var top = el("div", "item-top");
-    top.appendChild(el("span", "tag", TYPES[it.type] || L("أخرى", "Other")));
+    top.appendChild(el("span", "tag", it.type === "upd" ? R.UTYPE[it.utype] : TYPES[it.type] || L("أخرى", "Other")));
+    if (it.type === "upd" && it.action) top.appendChild(el("span", "pill kev", L("تحتاج تصرفاً", "Act now")));
     if (cv.id) top.appendChild(el("bdi", "cve", cv.id));
     if (sv) top.appendChild(el("span", "pill", SEV[sv] + (it.score != null ? " " + Number(it.score).toFixed(1) : "")));
     if (it.kev) top.appendChild(el("span", "pill kev", L("ثبت استغلالها", "Known exploited")));
@@ -133,9 +134,12 @@
       var ad = el("p", "advice"); ad.appendChild(el("b", null, L("ماذا تفعل: ", "What to do: "))); ad.appendChild(document.createTextNode(R.ADVICE)); body.appendChild(ad);
     }
     var foot = el("div", "item-foot");
-    if (it.system) { var s = el("span"); s.appendChild(document.createTextNode(L("النظام المتأثر: ", "Affected: "))); s.appendChild(el("bdi", null, R.sysName(it.system))); foot.appendChild(s); }
+    if (it.type === "upd") {   // [CTI] vendor and fixed version, only when the vendor stated it
+      var us = el("span"); us.appendChild(document.createTextNode(L("الشركة: ", "Vendor: "))); us.appendChild(el("bdi", null, it.system)); foot.appendChild(us);
+      if (it.fixed) { var uf = el("span"); uf.appendChild(document.createTextNode(L("الإصدار المصحح: ", "Fixed in: "))); var fv = el("bdi", null, it.fixed); fv.setAttribute("dir", "ltr"); uf.appendChild(fv); foot.appendChild(uf); }
+    } else if (it.system) { var s = el("span"); s.appendChild(document.createTextNode(L("النظام المتأثر: ", "Affected: "))); s.appendChild(el("bdi", null, R.sysName(it.system))); foot.appendChild(s); }
     var src = el("span"); src.appendChild(document.createTextNode(L("المصدر: ", "Source: "))); src.appendChild(el("bdi", null, R.srcName(it.source))); foot.appendChild(src);
-    if (url) foot.appendChild(R.link(el("a", null, it.type === "vul" ? L("التفاصيل في NVD", "Details in NVD") : L("اقرأ الخبر كاملاً", "Read the full story")), url));
+    if (url) foot.appendChild(R.link(el("a", null, it.type === "vul" ? L("التفاصيل في NVD", "Details in NVD") : it.type === "upd" ? L("نشرة الشركة", "Vendor bulletin") : L("اقرأ الخبر كاملاً", "Read the full story")), url));
     body.appendChild(foot);
     art.appendChild(body);
     return art;

@@ -13,8 +13,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/app.css?v=r2">
-<link rel="stylesheet" href="assets/about.css?v=r2">
+<link rel="stylesheet" href="assets/app.css?v=r3">
+<link rel="stylesheet" href="assets/about.css?v=r3">
 </head>
 <body>
 <a class="skip" href="#main" data-en="Skip to the content">انتقل إلى المحتوى</a>
@@ -28,6 +28,7 @@
       <nav class="nav" aria-label="أقسام الموقع" data-en-aria-label="Site sections">
         <a href="./" data-en="Home">الرئيسية</a>
         <a href="alerts.html" data-en="Alerts">التنبيهات</a>
+        <a href="updates.html" data-en="Updates">التحديثات</a>
         <a href="dashboard.html" data-en="Statistics">الإحصائيات</a>
         <a href="about.html" aria-current="page" data-en="About">عن المشروع</a>
       </nav>
@@ -97,6 +98,7 @@
         <tbody>
           <tr><th scope="row"><bdi>NVD</bdi><small data-en="US National Vulnerability Database (NIST)">قاعدة الثغرات الوطنية الأمريكية (NIST)</small></th><td data-en="Every new CVE: description, CVSS score and vector, publish and last-modified dates, weakness type (CWE) and reference links tagged Exploit, Patch or Vendor Advisory. Stored CVEs are re-checked for score changes and new tags.">كل ثغرة CVE جديدة: الوصف، ودرجة CVSS ومتجهها، وتاريخا النشر وآخر تعديل، ونوع الضعف (CWE)، والروابط الموسومة «Exploit» أو «Patch» أو «Vendor Advisory». والثغرات المخزنة يُعاد فحصها لرصد تغير الدرجة والوسوم الجديدة.</td><td>REST API 2.0</td></tr>
           <tr><th scope="row"><bdi>CISA KEV</bdi><small data-en="US Cybersecurity and Infrastructure Security Agency">وكالة الأمن السيبراني وأمن البنية التحتية الأمريكية</small></th><td data-en="Which vulnerabilities attackers have actually exploited, when they were added, the required action and ransomware use.">الثغرات التي ثبت أن المهاجمين استغلوها، وتاريخ إدراجها، والإجراء المطلوب، واستخدامها في حملات الفدية.</td><td>JSON</td></tr>
+          <tr><th scope="row"><span data-en="Vendor security feeds">نشرات الشركات الأمنية</span><small data-en="Security updates and advisories">التحديثات والنشرات الأمنية</small></th><td data-en="Chrome Releases, Ubuntu Security Notices, Debian Security Advisories, Cisco PSIRT, Fortinet PSIRT and Oracle Critical Patch Updates: type of update, the CVEs it fixes, and affected and fixed versions when the vendor states them. Not covered yet because they offer no feed a script can read: Microsoft, Apple and Mozilla advisories (their vulnerabilities still arrive through NVD).">Chrome Releases، ونشرات Ubuntu الأمنية، ونشرات Debian الأمنية، وCisco PSIRT، وFortinet PSIRT، وتحديثات Oracle الحرجة: نوع التحديث، والثغرات التي يصلحها، والإصدارات المتأثرة والمصححة إذا ذكرتها الشركة. ولا تشمل بعد نشرات Microsoft وApple وMozilla لأنها لا توفر خلاصة يقرؤها برنامج (وثغراتها تصل عبر NVD).</td><td>RSS / Atom / RDF</td></tr>
           <tr><th scope="row"><bdi>RSS</bdi><small data-en="Tech and security news">أخبار التقنية والأمن</small></th><td><bdi data-en="The Hacker News, BleepingComputer, Ars Technica, The Verge, TechCrunch">The Hacker News، BleepingComputer، Ars Technica، The Verge، TechCrunch</bdi></td><td>RSS / Atom</td></tr>
         </tbody>
       </table>
@@ -182,7 +184,7 @@
   </footer>
 </div>
 
-<script src="assets/core.js?v=r2"></script>
-<script src="assets/about.js?v=r2"></script>
+<script src="assets/core.js?v=r3"></script>
+<script src="assets/about.js?v=r3"></script>
 </body>
 </html>

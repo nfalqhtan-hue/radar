@@ -89,7 +89,7 @@ check("LLM down: summarizer tried once per run (circuit breaker)", len(calls) ==
 w = rp.classify(dict(kind="news", title="Market scenarios for retailers", text="", score=None, kev=0))
 check("whole-word matching ('scenarios' is not iOS)", w["type"] == "gen")
 b = rp.classify(dict(kind="news", title="Retailer data breach exposes users", text="customers used the smartphone app", score=None, kev=0))
-check("breach news is not classified as devices", b["type"] == "gen")
+check("breach news is security news (sec), not devices", b["type"] == "sec")
 
 # ---------------- إصلاحات الأسبوع السادس
 # CVSS: نفضّل تقييم NVD الرسمي (Primary) حتى لو جاء بعد تقييم الجهة المبلّغة
@@ -153,7 +153,7 @@ c_a = rp.classify(dict(kind="news", title="Hackers Exploit N-able MailAssure Fla
 c_b = rp.classify(dict(kind="news", title="UEFI bootkit infected fully patched Windows machines", text="", score=None, kev=0))
 c_c = rp.classify(dict(kind="news", title="Meta brings its Muse AI assistant directly into Instagram DMs", text="", score=None, kev=0))
 check("round 3 misclassifications fixed (security before AI, bootkit) and AI news still AI",
-      c_a["type"] == "gen" and c_b["type"] == "gen" and c_c["type"] == "ai")
+      c_a["type"] == "sec" and c_b["type"] == "sec" and c_c["type"] == "ai")
 def bad(it): raise rp.BadSummary("الملخص يحتوي حروفاً صينية")
 a9 = argparse.Namespace(db=os.path.join(tempfile.mkdtemp(), "t.db"), out=os.path.join(d, "o9.json"), hours=2, no_llm=False, no_alert=True)
 s9 = rp.run(a9, dict(kev=lambda: (set(), []), nvd=lambda: [], rss=news), bad, None)
@@ -209,8 +209,8 @@ check("stored vuln found in CISA catalog -> exploited, with date and required ac
 check("refresh from NVD: new score 9.1 -> critical, last-modified and vector stored, change logged",
       r0["score"] == 9.1 and r0["severity"] == "critical" and r0["modified"].startswith("2026-11-26") and r0["vector"] == "CVSS:3.1/AV:N"
       and any(e["kind"] == "score" and e["detail"].startswith("7.2>9.1") for e in co.execute("select * from events")))
-check("events backfilled from stored discovery time + fetch results logged",
-      ("new", "CVE-2026-1200") in ev and sum(1 for k, _ in ev if k == "fetch") == 3)
+check("events backfilled from stored discovery time + fetch results logged (kev, nvd, rss, upd)",
+      ("new", "CVE-2026-1200") in ev and sum(1 for k, _ in ev if k == "fetch") == 4)
 check("alert sent for the newly exploited vuln and logged as an alert event", any("CVE-2026-1201" in m for m in sento) and ("alert", "CVE-2026-1201") in ev)
 det = json.load(open(os.path.join(os.path.dirname(ao.out), "details.json"), encoding="utf-8"))["items"]
 check("details.json carries original description, last-modified and CISA data",
@@ -334,4 +334,55 @@ check("export: risk + level in data.json, factors/evidence/refs in details.json,
       it["risk_level"] == "critical" and isinstance(it["risk"], int) and dj["risk_model"]["weights"]["exploitation"] == 50
       and de["items"]["CVE-2026-2001"]["risk_f"]["exploitation"] == [1.0, 50] and de["items"]["CVE-2026-2001"]["refs"][0]["t"] == ["Exploit"]
       and st["vulns"]["by_risk"]["critical"] == 1 and st["vulns"]["public_exploit"] == 1)
+# ---------------------------------------------------------------- [CTI] pillar 3: security updates
+UNOW = datetime(2026, 11, 27, 12, 0, tzinfo=timezone.utc)
+chrome_raw = dict(title="Stable Channel Update for Desktop", link="https://chromereleases.googleblog.com/2026/11/stable.html", date="2026-11-25T10:00:00-08:00",
+                  text="<p>The Stable channel has been updated to 159.0.8154.33/.34 for Windows, Mac.</p><p>Security Fixes and Rewards</p>"
+                       "<p>[$5000][123] High CVE-2026-9001: Use after free in V8. [N/A] High CVE-2026-9002: Type confusion.</p>"
+                       "<p>Google is aware that an exploit for CVE-2026-9001 exists in the wild.</p>")
+cu = rp.parse_update(chrome_raw, "Google Chrome", UNOW)
+check("Chrome stable: patch, fixed version, CVEs, vendor states exploitation",
+      cu["utype"] == "patch" and cu["fixed_ver"] == "159.0.8154.33/.34" and cu["cves"] == "CVE-2026-9001,CVE-2026-9002"
+      and cu["vendor_flag"] == "exploited" and cu["kind"] == "update" and cu["system"] == "Google Chrome")
+check("Chrome Beta/Dev entries are skipped; a stable update with no security fixes is a general release",
+      rp.parse_update(dict(chrome_raw, title="Chrome Beta for Desktop Update"), "Google Chrome", UNOW) is None
+      and rp.parse_update(dict(chrome_raw, text="The Stable channel has been updated to 1.2.3.4 for Windows."), "Google Chrome", UNOW)["utype"] == "release")
+check("entries older than 30 days are not imported", rp.parse_update(dict(chrome_raw, date="2026-09-01T00:00:00Z"), "Google Chrome", UNOW) is None)
+uu = rp.parse_update(dict(title="USN-9214-1: GNU binutils vulnerabilities", link="https://ubuntu.com/security/notices/USN-9214-1",
+                          date="Thu, 26 Nov 2026 22:34:55 +0000", text="It was discovered that binutils mishandled input. This issue only affected "
+                          "Ubuntu 22.04 LTS and Ubuntu 24.04 LTS. (CVE-2026-1111)"), "Ubuntu", UNOW)
+check("Ubuntu notice: product from title, affected releases from text", uu["product"] == "GNU binutils"
+      and uu["affected_ver"] == "Ubuntu 22.04 LTS, 24.04 LTS" and uu["utype"] == "patch" and uu["fixed_ver"] == "")
+cs = rp.parse_update(dict(title="Vulnerabilities in nginx Affecting Cisco Products: November 2026", link="https://sec.cloudapps.cisco.com/x",
+                          date="2026-11-26 01:48:13.0", text="These vulnerabilities affect nginx releases 1.9.5 through 1.31.8 and is fixed in releases "
+                          "1.31.9 (mainline) and 1.30.7 (stable). CVE-2026-113425"), "Cisco", UNOW)
+check("Cisco advisory: affected and fixed releases only from explicit wording",
+      cs["utype"] == "advisory" and cs["affected_ver"] == "nginx 1.9.5 through 1.31.8" and cs["product"] == "nginx" and cs["fixed_ver"] == "1.31.9 (mainline) and 1.30.7 (stable)")
+RDF = b"""<?xml version="1.0"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<item rdf:about="https://lists.debian.org/x"><title>DSA-6060-1 chromium - security update</title><link>https://lists.debian.org/x</link>
+<description>Security issues were found in chromium.</description><dc:date>2026-11-26T10:00:00Z</dc:date></item></rdf:RDF>"""
+dd = rp.parse_update(rp.parse_feed(RDF, "Debian")[0], "Debian", UNOW)
+check("RSS 1.0 (Debian) parsed: DSA product and link", dd["product"] == "chromium" and dd["link"] == "https://lists.debian.org/x")
+ATOM2 = b"""<?xml version="1.0"?><feed xmlns="http://www.w3.org/2005/Atom"><entry><title>T</title><link rel="replies" href="https://ex.com/comments"/>
+<link rel="alternate" href="https://ex.com/post"/><updated>2026-11-26T09:00:00Z</updated></entry></feed>"""
+check("Atom: the rel=alternate article link is used, not the comments link", rp.parse_feed(ATOM2, "x")[0]["link"] == "https://ex.com/post")
+s_upd = rp.update_summary(cu)
+check("update summary is built from facts only (vendor, CVE count, fixed version, vendor exploitation note)",
+      s_upd.startswith("تحديث أمني من Google Chrome") and "يعالج ثغرتين" in s_upd and "159.0.8154.33/.34" in s_upd and "مستغلة فعلياً" in s_upd)
+# run(): updates stored, linked to KEV, exported with their fields, never trigger a Telegram vulnerability alert
+du = tempfile.mkdtemp(); au = argparse.Namespace(db=os.path.join(du, "u.db"), out=os.path.join(du, "data.json"), hours=2, no_llm=True, no_alert=False, max_llm=30)
+sent_u = []
+uu_now = dict(uu, date=(datetime.now(timezone.utc) - timedelta(hours=2)).isoformat())
+su = rp.run(au, dict(kev=lambda: ({"CVE-2026-1111"}, []), nvd=lambda: [], rss=lambda: [], upd=lambda: [dict(uu_now)], refresh=lambda u: None),
+            None, lambda m: sent_u.append(m) or True)
+du_j = json.load(open(au.out, encoding="utf-8")); ui = next(i for i in du_j["items"] if i["type"] == "upd")
+check("update stored and exported: type upd, utype, product, affected, CVEs, template summary, action because its CVE is in CISA KEV",
+      ui["utype"] == "patch" and ui["product"] == "GNU binutils" and ui["cves"] == ["CVE-2026-1111"] and ui["action"] is True
+      and ui["kev"] is True and ui["sum_src"] == "template" and ui["summary"].startswith("تحديث أمني من Ubuntu"))
+check("no Telegram alert for an update (alerts stay for vulnerabilities)", sent_u == [] and su["alerts_sent"] == 0)
+st_u = json.load(open(os.path.join(du, "stats.json"), encoding="utf-8"))["updates"]
+check("stats.json has the updates pillar", st_u["total"] == 1 and st_u["action"] == 1 and st_u["by_vendor"] == {"Ubuntu": 1})
+check("security news is its own type, general tech news stays gen",
+      rp.classify(dict(kind="news", title="Ransomware gang hits hospital", text="", score=None, kev=0))["type"] == "sec"
+      and rp.classify(dict(kind="news", title="New laptop chips announced at trade show", text="", score=None, kev=0))["type"] in ("gen", "dev"))
 print(f"\n{ok} checks passed")

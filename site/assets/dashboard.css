@@ -75,3 +75,7 @@ a.hbar:hover { background: var(--hover); }
   .cols { height: 160px; gap: 1px; }
   .hbar { grid-template-columns: minmax(80px, 38%) minmax(0, 1fr) auto; }
 }
+/* [CTI] updates card: two lists side by side on wide screens */
+.two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 28px; }
+.mini-kpis .kev-n { color: var(--s-critical); }
+@media (max-width: 900px) { .two-col { grid-template-columns: minmax(0, 1fr); } }

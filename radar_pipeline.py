@@ -59,9 +59,16 @@ def parse_feed(xml_bytes, source):
     for it in root.iter("item"):                       # RSS
         g = lambda t: (it.findtext(t) or "").strip()
         out.append(dict(title=g("title"), link=g("link"), text=g("description"), date=g("pubDate")))
+    r1 = "{http://purl.org/rss/1.0/}"
+    for it in root.iter(r1 + "item"):                  # [CTI] RSS 1.0 / RDF (Debian security advisories)
+        g = lambda t: (it.findtext(r1 + t) or "").strip()
+        out.append(dict(title=g("title"), link=g("link"), text=g("description"),
+                        date=(it.findtext("{http://purl.org/dc/elements/1.1/}date") or "").strip()))
     ns = "{http://www.w3.org/2005/Atom}"
     for e in root.iter(ns + "entry"):                  # Atom
-        l = e.find(ns + "link")
+        # [CTI] the article link is rel="alternate"; Blogger feeds list a comments link first
+        l = next((x for x in e.findall(ns + "link") if x.get("rel", "alternate") == "alternate"), None)
+        if l is None: l = e.find(ns + "link")
         out.append(dict(title=(e.findtext(ns + "title") or "").strip(), link=(l.get("href") if l is not None else ""),
                         text=(e.findtext(ns + "summary") or e.findtext(ns + "content") or ""),
                         date=(e.findtext(ns + "updated") or e.findtext(ns + "published") or "")))
@@ -75,6 +82,101 @@ def fetch_rss():
         except Exception as e:
             log.warning("RSS %s: %s", f, e); ERR.append(("rss", f"{f}: {e}"))
     return items
+
+# ---------------------------------------------------------------- [CTI] Pillar 3: security updates from official vendor feeds
+# Each source was tested on 2026-11-27. Not usable from a script: Mozilla advisories (no feed), Microsoft MSRC (a per-CVE
+# feed, already covered by NVD), Apple (HTML only), CISA advisories (HTTP 403 for scripts).
+UPDATE_FEEDS = [
+    ("https://chromereleases.googleblog.com/feeds/posts/default", "Google Chrome"),
+    ("https://ubuntu.com/security/notices/rss.xml", "Ubuntu"),
+    ("https://www.debian.org/security/dsa.rdf", "Debian"),
+    ("https://sec.cloudapps.cisco.com/security/center/psirtrss20/CiscoSecurityAdvisory.xml", "Cisco"),
+    ("https://filestore.fortinet.com/fortiguard/rss/ir.xml", "Fortinet"),
+    ("https://www.oracle.com/ocom/groups/public/@otn/documents/webcontent/rss-otn-sec.xml", "Oracle"),
+]
+UPDATE_MAX_AGE_DAYS = 30          # vendor feeds keep years of history; only recent entries are imported
+UTYPES = ("patch", "advisory", "release")   # security patch release / security advisory / general (non-security) update
+_CVE_ANY = re.compile(r"CVE-\d{4}-\d{4,}")
+# The vendor itself states exploitation (Chrome: "Google is aware that an exploit for CVE-... exists in the wild")
+_VENDOR_EXPLOITED = re.compile(r"exists in the wild|exploited in the wild|actively exploited|known to be exploited"
+                               r"|may have been exploited|limited,? (?:and )?targeted attack", re.I)
+_UBUNTU_REL = re.compile(r"Ubuntu \d\d\.\d\d(?: LTS)?")
+_FIXED_IN = re.compile(r"\b(?:is |are )?fixed in (?:releases?|versions?) ([0-9][\w.() ,-]{0,80}?)(?:\.\s|\.$|;|$)", re.I)
+_AFFECTS = re.compile(r"\baffects? ([A-Za-z][\w.+-]*(?: [A-Za-z][\w.+-]*){0,4}?) (?:releases?|versions?) "
+                      r"([0-9][\w. ,-]{0,60}?(?:through|to|-)\s?[0-9][\w.]*)", re.I)
+
+def parse_update(raw, vendor, now=None):
+    """One vendor feed entry -> an `update` item, or None (too old, or not a stable/security release).
+    Only facts stated in the entry are kept; versions come from vendor-specific or explicit 'fixed in / affects' wording."""
+    now = now or datetime.now(timezone.utc)
+    title = clean_text(raw.get("title"), 200); full = clean_text(raw.get("text"), 20000)
+    date = to_iso(raw.get("date", ""))
+    if not title or datetime.fromisoformat(date) < now - timedelta(days=UPDATE_MAX_AGE_DAYS): return None
+    cves = list(dict.fromkeys(_CVE_ANY.findall(title + " " + full)))[:40]
+    it = dict(kind="update", source=urllib.parse.urlparse(raw.get("link") or "").netloc or vendor, title=title,
+              link=(raw.get("link") or "").strip(), date=date, text=full[:1200], system=vendor, cves=",".join(cves),
+              fixed_ver="", affected_ver="", vendor_flag="exploited" if _VENDOR_EXPLOITED.search(full) else "",
+              utype="advisory", product="")
+    if vendor == "Google Chrome":
+        if re.search(r"\b(?:Beta|Dev|Canary)\b", title): return None
+        if not re.search(r"Stable|LTS|Android Update|iOS Update|ChromeOS", title): return None
+        m = re.search(r"updated to ([0-9]+(?:\.[0-9]+){3}(?:/\.?[0-9]+)?)", full)
+        if m: it["fixed_ver"] = m.group(1)
+        it["utype"] = "patch" if (cves or re.search(r"security fix", full, re.I)) else "release"
+        it["product"] = "Chrome"
+    elif vendor == "Ubuntu":
+        m = re.match(r"USN-[\d-]+:\s*(.+?)(?:\s+(?:vulnerabilit(?:y|ies)|regressions?|update|issues?))?$", title)
+        it["product"] = m.group(1) if m else ""
+        rels = [r[len("Ubuntu "):] for r in dict.fromkeys(_UBUNTU_REL.findall(full))]
+        it["affected_ver"] = ("Ubuntu " + ", ".join(rels))[:200] if rels else ""   # "Ubuntu 22.04 LTS, 24.04 LTS"
+        it["utype"] = "patch"
+    elif vendor == "Debian":
+        m = re.match(r"DSA-[\d-]+\s+(\S+)", title)
+        it["product"] = m.group(1) if m else ""
+        it["utype"] = "patch"
+    elif vendor == "Oracle":
+        it["utype"] = "patch" if "Patch Update" in title else "advisory"
+    else:   # Cisco, Fortinet: security advisories describing affected and fixed releases
+        if vendor == "Cisco":
+            m = re.match(r"Vulnerabilit(?:y|ies) in (.+?) Affecting Cisco", title)
+            if m: it["product"] = m.group(1)
+            elif not title.startswith("Cisco Informational"):
+                it["product"] = re.sub(r"\s+Vulnerabilit(?:y|ies)\b.*$", "", title)[:120]
+        m = re.search(r"CVSSv3 Score:\s*([0-9]+(?:\.[0-9])?)", full)
+        if m and float(m.group(1)) <= 10: it["score"] = float(m.group(1))   # the vendor's own CVSS, labelled as such
+    m = _FIXED_IN.search(full)
+    if m and not it["fixed_ver"]: it["fixed_ver"] = m.group(1).strip(" ,")[:120]
+    m = _AFFECTS.search(full)
+    if m and not it["affected_ver"]:
+        it["affected_ver"] = (m.group(1) + " " + m.group(2).strip(" ,"))[:120]   # e.g. "NGINX OSS 1.31.0 - 1.31.8"
+        if not it["product"]: it["product"] = m.group(1)
+    return it
+
+def fetch_updates():
+    items, fails = [], 0
+    for url, vendor in UPDATE_FEEDS:
+        try:
+            for raw in parse_feed(http(url), vendor):
+                u = parse_update(raw, vendor)
+                if u: items.append(u)
+        except Exception as e:
+            fails += 1; log.warning("updates %s: %s", url, e); ERR.append(("upd", f"{vendor}: {e}"))
+    if fails == len(UPDATE_FEEDS): raise RuntimeError("all update feeds failed")
+    return items
+
+UTYPE_AR = {"patch": "تحديث أمني", "advisory": "نشرة أمنية", "release": "تحديث برمجي"}
+def update_summary(it):
+    """Arabic summary built only from the entry's facts (no language model): what, from whom, how many CVEs, versions."""
+    s = f"{UTYPE_AR.get(it.get('utype'), 'تحديث')} من {it.get('system')}"
+    fem = it.get("utype") == "advisory"                  # «نشرة» is feminine: تخص / تتناول
+    p = it.get("product") or ""
+    if p and p.lower() not in (it.get("system") or "").lower(): s += (" تخص " if fem else " يخص ") + p
+    n = len([c for c in (it.get("cves") or "").split(",") if c])
+    if n: s += ("، تتناول " if fem else "، يعالج ") + ("ثغرة واحدة" if n == 1 else "ثغرتين" if n == 2 else f"{n} ثغرة" if n > 10 else f"{n} ثغرات")
+    if it.get("fixed_ver"): s += f". الإصدار المصحح: {it['fixed_ver']}"
+    if it.get("affected_ver"): s += f". المتأثر: {it['affected_ver']}"
+    if it.get("vendor_flag") == "exploited": s += ". تذكر الشركة أن ثغرة واحدة على الأقل مستغلة فعلياً"
+    return s + ". التفاصيل في نشرة الشركة."
 
 def parse_nvd(data):
     out = []
@@ -165,7 +267,8 @@ def parse_kev(data, days=7):
 # ---------------------------------------------------------------- 2-3) التنظيف والتصنيف
 # [إصلاح أسبوع 6 - جولة 3] قاعدة الأمن قبل الذكاء الاصطناعي: «Hackers exploit ... while AI agents ...» خبر أمني لا خبر AI
 RULES = [# أخبار الاختراقات والهجمات تذهب للعام حتى لا تُصنف «أجهزة» أو «أنظمة» أو «ذكاء اصطناعي» بسبب كلمة عابرة
-         ("gen", ["data breach", "breach", "cyberattack", "cyberattacks", "hackers", "ransomware", "extortion", "vishing", "phishing",
+         # [CTI] security news has its own type "sec", so general tech news ("gen") is no longer buried under it
+         ("sec", ["data breach", "breach", "cyberattack", "cyberattacks", "hackers", "ransomware", "extortion", "vishing", "phishing",
                   "malware", "bootkit", "rootkit", "spyware", "botnet", "zero-day", "actively exploited", "threat actor", "attackers", "اختراق"]),
          ("ai", ["artificial intelligence", "ai", "llm", "gpt", "chatbot", "chatbots", "openai", "anthropic", "gemini", "claude", "machine learning", "ذكاء اصطناعي"]),
          ("fix", ["fixes", "fixed", "patches issue", "resolves", "workaround", "hotfix", "bug fix", "إصلاح"]),
@@ -259,7 +362,7 @@ def severity_of(s):
 
 def urgent(it):
     """ما يستحق تنبيهاً: حرجة حسب CVSS، أو ثبت استغلالها (CISA KEV) أياً كانت درجتها."""
-    return it.get("severity") == "critical" or bool(it.get("kev"))
+    return it.get("kind", "vuln") == "vuln" and (it.get("severity") == "critical" or bool(it.get("kev")))
 
 def ai_strong(it, rx):
     """[المرحلة 6] «ذكاء اصطناعي» يحتاج دليلاً أقوى من كلمة عابرة: الكلمة في العنوان، أو مرتين في النص
@@ -276,6 +379,8 @@ def classify(it):
         # [إصلاح أسبوع 6] ثغرة بلا تقييم CVSS بعد تُعرض «غير مقيّمة» بدل «منخفضة» (كان تضليلاً)
         # [المرحلة 3] الخطورة من درجة CVSS وحدها، وحالة الاستغلال (kev) حقل مستقل: كانت كل ثغرة مستغلة تُحسب «حرجة» ولو درجتها 7
         it["severity"] = severity_of(it["score"])
+    elif it["kind"] == "update":     # [CTI] pillar 3: vendor/product already set by parse_update
+        it["type"], it["severity"] = "upd", None
     else:
         it["type"] = next((t for t, rx in _RULE_RE if rx.search(blob) and (t != "ai" or ai_strong(it, rx))), "gen")
         it["severity"], it["system"] = None, ""
@@ -396,8 +501,9 @@ CREATE TABLE IF NOT EXISTS errors(ts, stage, msg);
 CREATE TABLE IF NOT EXISTS events(ts TEXT, uid TEXT, kind TEXT, detail TEXT);"""
 # [المرحلة 3] أعمدة أُضيفت بعد إنشاء القاعدة: تُضاف تلقائياً للقواعد القديمة (لا نفقد شيئاً من البيانات المخزنة)
 EXTRA_COLS = ["modified", "vector", "cvss_ver", "kev_added", "kev_action", "kev_due", "kev_ransom", "summary_src", "checked", "nvd_published",
-              "refs", "cwe", "nvd_status"]   # [CTI] NVD reference tags (JSON), CWE ids, NVD analysis status
-QUALITY_VERSION = 9   # [المرحلة 6] رفعه يعيد فحص البيانات المخزنة بقواعد الجودة الحالية مرة واحدة
+              "refs", "cwe", "nvd_status",   # [CTI] NVD reference tags (JSON), CWE ids, NVD analysis status
+              "utype", "cves", "fixed_ver", "affected_ver", "vendor_flag", "product"]   # [CTI] security updates pillar
+QUALITY_VERSION = 10  # [المرحلة 6] رفعه يعيد فحص البيانات المخزنة بقواعد الجودة الحالية مرة واحدة
 ITEM_COLS = ["uid", "kind", "type", "title", "link", "text", "summary", "pending", "source", "published", "severity", "score", "kev",
              "system", "status", "reason", "created"] + EXTRA_COLS
 TEMPLATE_PREFIX = "ثغرة أمنية خطورتها"
@@ -461,9 +567,11 @@ MAX_ALERTS = 5       # أكثر من هذا في دورة واحدة: ترسل �
 
 def needs_llm(it):
     """[إصلاح أسبوع 6] «تلخيص المهم فقط»: كل الأخبار + الثغرات العالية والحرجة والمستغلة. الباقي ملخص قالبي من الحقائق فقط."""
+    if it["kind"] == "update": return False     # [CTI] update summaries are built from the vendor entry's facts only
     return it["kind"] == "news" or it["severity"] in ("critical", "high") or bool(it.get("kev"))
 
 def template_summary(it):
+    if it.get("kind") == "update": return update_summary(it)
     s = f"{TEMPLATE_PREFIX} {SEV_AR.get(it['severity'], 'غير مقيّمة بعد')}"
     if it["score"] is not None: s += f" (CVSS {it['score']})"
     if it.get("system") and it["system"] != "غير محدد": s += f" تؤثر على {it['system']}"
@@ -535,6 +643,13 @@ def alert_text(c):
     tag = "مستغلة فعلياً (CISA KEV)" if c.get("kev") else "حرجة"
     return f"تنبيه: ثغرة {tag}\n{c['title']}\nCVSS: {c['score'] if c['score'] is not None else 'غير متوفر'}\n{c['link']}"
 
+def update_fields(r):
+    """[CTI] Pillar 3 fields for the site. action = needs prompt action: a fixed CVE is in CISA KEV, or the vendor says exploited."""
+    cves = [c for c in (r["cves"] or "").split(",") if c]
+    return dict(utype=r["utype"] if r["utype"] in UTYPES else "advisory", product=r["product"] or "", cves=cves[:12], cve_n=len(cves),
+                fixed=r["fixed_ver"] or "", affected=r["affected_ver"] or "", vendor_exploited=r["vendor_flag"] == "exploited",
+                action=bool(r["kev"]) or r["vendor_flag"] == "exploited")
+
 def export(con, out):
     # [أسبوع 7] حصة لكل نوع: NVD تنشر مئات الثغرات يومياً فكانت تدفع الأخبار خارج آخر 200 عنصر
     q = "SELECT * FROM items WHERE status='published' AND kind=? ORDER BY published DESC LIMIT ?"
@@ -542,7 +657,8 @@ def export(con, out):
     vul = con.execute(q, ("vuln", 250)).fetchall()
     have = {r["uid"] for r in vul}
     vul += [r for r in con.execute("SELECT * FROM items WHERE status='published' AND kind='vuln' AND kev=1").fetchall() if r["uid"] not in have]
-    rows = sorted(con.execute(q, ("news", 120)).fetchall() + vul, key=lambda r: r["published"] or "", reverse=True)
+    rows = sorted(con.execute(q, ("news", 120)).fetchall() + con.execute(q, ("update", 150)).fetchall() + vul,
+                  key=lambda r: r["published"] or "", reverse=True)
     gen = now_iso()
     gnow = datetime.fromisoformat(gen)
     risk = {r["uid"]: risk_score(dict(r), gnow) for r in rows if r["kind"] == "vuln"}   # [CTI] same reference time for every item
@@ -553,7 +669,8 @@ def export(con, out):
              kev=bool(r["kev"]), system=r["system"], source=r["source"], link=r["link"], date=r["published"],
              sum_src=r["summary_src"] or ("pending" if r["pending"] else ""),
              advice=ADVICE if r["kind"] == "vuln" else None,
-             **({"risk": rk(r, "score"), "risk_level": rk(r, "level") or "unknown"} if r["kind"] == "vuln" else {})) for r in rows]}
+             **({"risk": rk(r, "score"), "risk_level": rk(r, "level") or "unknown"} if r["kind"] == "vuln" else {}),
+             **(update_fields(r) if r["kind"] == "update" else {})) for r in rows]}
     os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
     with open(out, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=1)
@@ -569,7 +686,7 @@ def export(con, out):
     # [المرحلة 3] سجل الأحداث: آخر 400 حدث، وآخر نجاح/فشل لكل مصدر بيانات
     evs = con.execute("SELECT ts, uid, kind, detail FROM events WHERE kind<>'fetch' ORDER BY ts DESC LIMIT 400").fetchall()
     sources = {}
-    for name in ("kev", "nvd", "rss"):
+    for name in ("kev", "nvd", "rss", "upd"):
         ok = con.execute("SELECT MAX(ts) FROM events WHERE kind='fetch' AND detail=?", (name + ":ok",)).fetchone()[0]
         bad = con.execute("SELECT ts, detail FROM events WHERE kind='fetch' AND detail LIKE ? ORDER BY ts DESC LIMIT 1", (name + ":fail%",)).fetchone()
         sources[name] = dict(last_ok=ok, last_fail=bad[0] if bad else None, error=(bad[1].split(":", 2)[2][:160] if bad else None))
@@ -590,6 +707,11 @@ def clean_system(s):
     if len(w) >= 2 and len(w) % 2 == 0 and w[:len(w) // 2] == w[len(w) // 2:]: w = w[:len(w) // 2]
     return " ".join(w)
 
+def _count(values):
+    c = {}
+    for v in values: c[v or ""] = c.get(v or "", 0) + 1
+    return c
+
 def stats(con, gen, days=14):
     """[المرحلة 4] إحصائيات من القاعدة كاملة (لا من آخر 250 ثغرة في data.json)، لصفحة لوحة الإحصائيات."""
     now = datetime.fromisoformat(gen)
@@ -600,6 +722,7 @@ def stats(con, gen, days=14):
     vul = con.execute(f"SELECT uid, severity, score, kev, system, published, summary_src, pending, refs, text, vector, nvd_published "
                       f"FROM items WHERE {pub} AND kind='vuln'").fetchall()
     news = con.execute(f"SELECT type, source, published, summary_src, pending FROM items WHERE {pub} AND kind='news'").fetchall()
+    upd = con.execute(f"SELECT system, utype, kev, vendor_flag, published FROM items WHERE {pub} AND kind='update'").fetchall()
     def recent(rows, hours): return sum(1 for r in rows if (t := ts(r["published"])) and timedelta(0) <= now - t <= timedelta(hours=hours))
     by_sev = {s: 0 for s in SEVS}
     for r in vul: by_sev[r["severity"] if r["severity"] in by_sev else "unknown"] += 1
@@ -653,7 +776,10 @@ def stats(con, gen, days=14):
                 top_systems=[dict(name=n, n=c) for n, c in top],
                 news=dict(total=len(news), last24=recent(news, 24), last7=recent(news, 24 * 7),
                           by_type=by_type, by_source=by_src),
-                summaries=dict(vuln=sumsrc(vul), news=sumsrc(news)))
+                summaries=dict(vuln=sumsrc(vul), news=sumsrc(news)),
+                updates=dict(total=len(upd), last24=recent(upd, 24), last7=recent(upd, 24 * 7),      # [CTI] pillar 3
+                             action=sum(1 for r in upd if r["kev"] or r["vendor_flag"] == "exploited"),
+                             by_vendor=_count(r["system"] for r in upd), by_utype=_count(r["utype"] for r in upd)))
 
 def telegram(text):
     if not (TG_TOKEN and TG_CHAT): return False
@@ -677,7 +803,8 @@ def run(a, fetchers=None, summarizer=None, notifier=None):
         kev_ids, kev_items = (fetchers or {}).get("kev", lambda: parse_kev(json.loads(http(KEV_URL))))(); raw += kev_items
         event(con, "fetch", "", "kev:ok")
     except Exception as e: ERR.append(("kev", str(e))); event(con, "fetch", "", f"kev:fail:{e}")
-    for name, fn in [("nvd", (fetchers or {}).get("nvd", lambda: fetch_nvd(nvd_window(con, a.hours)))), ("rss", (fetchers or {}).get("rss", fetch_rss))]:
+    for name, fn in [("nvd", (fetchers or {}).get("nvd", lambda: fetch_nvd(nvd_window(con, a.hours)))), ("rss", (fetchers or {}).get("rss", fetch_rss)),
+                     ("upd", (fetchers or {}).get("upd", fetch_updates if not fetchers else (lambda: [])))]:
         try: raw += fn(); event(con, "fetch", "", f"{name}:ok")
         except Exception as e: ERR.append((name, str(e))); event(con, "fetch", "", f"{name}:fail:{e}")
     kinfo = getattr(kev_ids, "info", {})
@@ -705,10 +832,12 @@ def run(a, fetchers=None, summarizer=None, notifier=None):
         if it["uid"] in kev_ids:
             it["kev"] = 1
             for k, v in kinfo.get(it["uid"], {}).items(): it.setdefault(k, v)
+        if it["kind"] == "update" and kev_ids and any(c in kev_ids for c in (it.get("cves") or "").split(",")):
+            it["kev"] = 1     # [CTI] the update fixes at least one CVE that CISA lists as exploited: action needed
         row = con.execute("SELECT kev, score, title, link FROM items WHERE uid=?", (it["uid"],)).fetchone()
         if it["uid"] in seen or row:
             st["duplicates"] += 1
-            if row and it["kev"] and not row["kev"]:           # أصبحت الثغرة مستغلة فعلياً: نحدّثها وننبّه
+            if row and it["kind"] == "vuln" and it["kev"] and not row["kev"]:           # أصبحت الثغرة مستغلة فعلياً: نحدّثها وننبّه
                 mark_kev(it["uid"], row["score"], it["title"], it["link"])
             continue
         seen.add(it["uid"]); st["new"] += 1
@@ -759,6 +888,10 @@ def run(a, fetchers=None, summarizer=None, notifier=None):
             info = kinfo.get(r["uid"])
             if info: con.execute("UPDATE items SET kev_added=?, kev_action=?, kev_due=?, kev_ransom=? WHERE uid=?",
                                  (info["kev_added"], info["kev_action"], info["kev_due"], info["kev_ransom"], r["uid"]))
+    if kev_ids:   # [CTI] stored updates whose CVEs entered the CISA list since they were fetched
+        for r in con.execute("SELECT uid, cves, system, product, utype, fixed_ver, affected_ver, vendor_flag, kind FROM items "
+                             "WHERE kind='update' AND kev=0 AND COALESCE(cves,'')<>''").fetchall():
+            if any(c in kev_ids for c in r["cves"].split(",")): con.execute("UPDATE items SET kev=1 WHERE uid=?", (r["uid"],))
     # إعادة محاولة التلخيص للعناصر المعلّقة
     if summarizer and not llm_down:
         budget = max(0, max_llm - st["llm_calls"])               # إعادة المحاولة تأخذ ما بقي من حد الدورة نفسه
