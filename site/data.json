@@ -1,6 +1,36 @@
 {
- "generated_at": "2026-11-27T07:19:57+00:00",
+ "generated_at": "2026-11-27T08:19:52+00:00",
  "items": [
+  {
+   "id": "CVE-2026-77679",
+   "type": "vul",
+   "title": "CVE-2026-77679: A path traversal (ZIP slip) vulnerability exists in Epiphany when installing WebExtension",
+   "summary": "ثغرة أمنية خطورتها غير مقيّمة بعد تؤثر على Epiphany. التفاصيل الكاملة في رابط المصدر.",
+   "severity": "unknown",
+   "score": null,
+   "kev": false,
+   "system": "Epiphany",
+   "source": "NVD",
+   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-77679",
+   "date": "2026-11-27T07:17:03+00:00",
+   "sum_src": "template",
+   "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
+  },
+  {
+   "id": "CVE-2026-77682",
+   "type": "vul",
+   "title": "CVE-2026-77682: A code injection vulnerability exists in Epiphany when the user invokes form autofill from",
+   "summary": "ثغرة أمنية خطورتها غير مقيّمة بعد تؤثر على Epiphany. التفاصيل الكاملة في رابط المصدر.",
+   "severity": "unknown",
+   "score": null,
+   "kev": false,
+   "system": "Epiphany",
+   "source": "NVD",
+   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-77682",
+   "date": "2026-11-27T07:17:03+00:00",
+   "sum_src": "template",
+   "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
+  },
   {
    "id": "CVE-2026-137721",
    "type": "vul",
@@ -1738,7 +1768,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-134997",
    "date": "2026-11-26T20:17:23+00:00",
-   "sum_src": "pending",
+   "sum_src": "failed",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -1828,7 +1858,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-134489",
    "date": "2026-11-26T20:17:22+00:00",
-   "sum_src": "pending",
+   "sum_src": "failed",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -1858,7 +1888,7 @@
    "source": "NVD",
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-134720",
    "date": "2026-11-26T20:17:22+00:00",
-   "sum_src": "pending",
+   "sum_src": "failed",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
@@ -3854,36 +3884,6 @@
    "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-137466",
    "date": "2026-11-26T16:17:55+00:00",
    "sum_src": "template",
-   "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
-  },
-  {
-   "id": "CVE-2026-137467",
-   "type": "vul",
-   "title": "CVE-2026-137467: SiYuan before 3.8.11 uses DejaVu sync code that accepts a non-hexadecimal 40-byte remote i",
-   "summary": "",
-   "severity": "high",
-   "score": 7.5,
-   "kev": false,
-   "system": "SiYuan",
-   "source": "NVD",
-   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-137467",
-   "date": "2026-11-26T16:17:55+00:00",
-   "sum_src": "failed",
-   "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
-  },
-  {
-   "id": "CVE-2026-137468",
-   "type": "vul",
-   "title": "CVE-2026-137468: SiYuan from 3.8.0 before 3.8.11 contains a lockout bypass vulnerability that allows remote",
-   "summary": "تحتوي إصدارات SiYuan من 3.8.0 إلى 3.8.11 على ثغرة تسمح للمهاجم عن بُعد بتجاوز حظر الحساب عبر تزوير ملفات الترميز التي يمكن حسابها محليًا لمحاكاة تحميل كلمات المرور.",
-   "severity": "high",
-   "score": 7.5,
-   "kev": false,
-   "system": "SiYuan",
-   "source": "NVD",
-   "link": "https://nvd.nist.gov/vuln/detail/CVE-2026-137468",
-   "date": "2026-11-26T16:17:55+00:00",
-   "sum_src": "llm",
    "advice": "حدّث النظام أو البرنامج المتأثر إلى أحدث إصدار من المصدر الرسمي، وراجع نشرة الشركة لتفاصيل الإصلاح."
   },
   {
