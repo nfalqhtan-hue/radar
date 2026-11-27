@@ -585,4 +585,18 @@
     }
     box.appendChild(n);
   };
+
+  // ---------- Visit counter (GoatCounter, account "mr7con"): one image request per page view. No cookies, no script from
+  // a third party, nothing stored in the browser. It sends only the page path, its title, the referring site and the
+  // screen width. Skipped outside the published site (local testing) and when the browser asks not to be tracked.
+  try {
+    if (location.hostname === "nfalqhtan-hue.github.io" && navigator.doNotTrack !== "1") {
+      var cq = new URLSearchParams();
+      cq.set("p", location.pathname); cq.set("t", document.title);
+      if (document.referrer && document.referrer.indexOf(location.origin) !== 0) cq.set("r", document.referrer);
+      cq.set("s", String(screen.width)); cq.set("rnd", Math.random().toString(36).slice(2));
+      var px = new Image(); px.referrerPolicy = "strict-origin-when-cross-origin";
+      px.src = "https://mr7con.goatcounter.com/count?" + cq.toString();
+    }
+  } catch (e) {}
 })();
