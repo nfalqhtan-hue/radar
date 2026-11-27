@@ -286,4 +286,50 @@ check("glossary term not in the source is rejected («المفوضية الأو�
       and rp.summary_problem("تحتوي ESX على ثغرة كتابة خارج الحدود، وتصنف Broadcom خطورتها 9.8.", esx) is None)
 check("stray Latin letter inside a name is rejected",
       bool(rp.summary_problem("ثغرة في توسعة Joomla J ChronoForms تسمح برفع ملفات.", "Joomla Extension ChronoForms extension upload")))
+# ---------------------------------------------------------------- [CTI] risk engine
+from datetime import datetime, timezone, timedelta
+NOW = datetime(2026, 11, 27, 12, 0, tzinfo=timezone.utc)
+cv = rp.parse_nvd({"vulnerabilities": [{"cve": {"id": "CVE-2026-2001", "published": "2026-11-26T07:00:00.000", "vulnStatus": "Analyzed",
+      "descriptions": [{"lang": "en", "value": "RCE in Foo."}], "weaknesses": [{"description": [{"lang": "en", "value": "CWE-78"}, {"lang": "en", "value": "NVD-CWE-noinfo"}]}],
+      "references": [{"url": "https://ex.com/poc", "tags": ["Exploit", "Third Party Advisory"]}, {"url": "https://ex.com/fix", "tags": ["Patch"]},
+                     {"url": "https://ex.com/news", "tags": ["Press/Media Coverage"]}, {"url": "javascript:alert(1)", "tags": ["Patch"]}],
+      "metrics": {"cvssMetricV31": [{"type": "Primary", "cvssData": {"baseScore": 9.8, "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"}}]}}}]})[0]
+check("NVD refs: only Exploit/Patch/Advisory tags kept, non-http links dropped; CWE and status stored",
+      json.loads(cv["refs"]) == [{"u": "https://ex.com/poc", "t": ["Exploit"]}, {"u": "https://ex.com/fix", "t": ["Patch"]}]
+      and cv["cwe"] == "CWE-78" and cv["nvd_status"] == "Analyzed")
+base = dict(score=9.8, kev=0, refs="[]", text="RCE.", vector="CVSS:3.1/AV:N/AC:L/PR:N/UI:N", published="2026-11-26T07:00:00+00:00")
+r0 = rp.risk_score(base, NOW)
+check("risk is reproducible: same inputs and time give the same score", r0 == rp.risk_score(dict(base), NOW))
+# known: cvss .98*35 + kev 0*35 + exposure 1*10 = 44.3 / 80 -> 55
+check("unknown factors are excluded from the weight (no exploit info, no patch info): 9.8 not exploited = 55 medium",
+      r0["score"] == 55 and r0["level"] == "medium" and r0["factors"]["exploit"][0] is None and r0["factors"]["patch"][0] is None)
+rk = rp.risk_score(dict(base, kev=1), NOW)
+check("KEV raises the score to critical (99), severity field itself is not touched", rk["score"] == 99 and rk["level"] == "critical")
+rp_ = rp.risk_score(dict(base, kev=1, refs=cv["refs"]), NOW)
+check("public exploit + patch reference both counted with their evidence", rp_["evidence"].get("exploit") == "nvd" and rp_["evidence"].get("patch") == 1
+      and rp_["factors"]["patch"][0] == 0.0 and rp_["score"] == round(100 * (34.3 + 35 + 15 + 10) / 100))
+rc = rp.risk_score(dict(base, text="The exploit has been released to the public and may be used."), NOW)
+check("CNA description stating a public exploit counts as exploit evidence, not as exploitation",
+      rc["evidence"]["exploit"] == "cna" and rc["factors"]["kev"][0] == 0.0)
+check("'exploited in the wild' text alone does NOT count (only CISA KEV confirms exploitation)",
+      rp.risk_score(dict(base, text="This flaw is exploited in the wild."), NOW)["factors"]["exploit"][0] is None)
+check("no CVSS and not in KEV -> not enough data (None)", rp.risk_score(dict(base, score=None), NOW) is None)
+rn = rp.risk_score(dict(base, score=None, kev=1), NOW)
+check("KEV without CVSS still scored from known factors", rn is not None and rn["factors"]["cvss"][0] is None and rn["level"] == "critical")
+old = rp.risk_score(dict(base, score=5.0, vector="CVSS:3.1/AV:L/PR:L/UI:R", published="2025-01-01T00:00:00+00:00"), NOW)
+check("old local medium vuln is low risk (exposure = mean(recency .4, AV:L .3))", old["factors"]["exposure"][0] == 0.35 and old["level"] == "low")
+check("risk levels thresholds 90/70/40", [next(l for t, l in rp.RISK_LEVELS if s_ >= t) for s_ in (90, 89, 70, 69, 40, 39)]
+      == ["critical", "high", "high", "medium", "medium", "low"])
+# export: risk in data.json, factors in details.json, distribution in stats.json
+dr = tempfile.mkdtemp()
+ar = argparse.Namespace(db=os.path.join(dr, "r.db"), out=os.path.join(dr, "data.json"), hours=2, no_llm=True, no_alert=True, max_llm=30)
+cvi = dict(cv, date=(datetime.now(timezone.utc) - timedelta(hours=3)).isoformat())
+rp.run(ar, dict(kev=lambda: ({"CVE-2026-2001"}, []), nvd=lambda: [dict(cvi)], rss=lambda: [], refresh=lambda u: None), None, None)
+dj = json.load(open(ar.out, encoding="utf-8")); de = json.load(open(os.path.join(dr, "details.json"), encoding="utf-8"))
+st = json.load(open(os.path.join(dr, "stats.json"), encoding="utf-8"))
+it = next(i for i in dj["items"] if i["id"] == "CVE-2026-2001")
+check("export: risk + level in data.json, factors/evidence/refs in details.json, by_risk in stats.json",
+      it["risk_level"] == "critical" and isinstance(it["risk"], int) and dj["risk_model"]["weights"]["kev"] == 35
+      and de["items"]["CVE-2026-2001"]["risk_f"]["kev"] == [1.0, 35] and de["items"]["CVE-2026-2001"]["refs"][0]["t"] == ["Exploit"]
+      and st["vulns"]["by_risk"]["critical"] == 1 and st["vulns"]["public_exploit"] == 1)
 print(f"\n{ok} checks passed")

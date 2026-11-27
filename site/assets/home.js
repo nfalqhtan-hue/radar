@@ -6,10 +6,10 @@
   var PAGE = 40, WINDOW_H = 24, SWEEP_MS = 7000;
   // فلتر التاريخ: حسب تاريخ النشر (ولعناصر قائمة CISA تاريخ إدراجها)
   var RANGES = [["", L("الكل", "Any time"), 0], ["24h", L("آخر 24 ساعة", "Last 24 hours"), 24], ["7d", L("آخر 7 أيام", "Last 7 days"), 168], ["30d", L("آخر 30 يوماً", "Last 30 days"), 720]];
-  var SORTS = { "new": 1, old: 1, imp: 1 };
+  var SORTS = { "new": 1, old: 1, imp: 1, risk: 1 };
 
   var all = [], byId = {}, det = null, genAt = null, lastVisit = null, topIds = {};
-  var st = { type: "", sev: "", q: "", since: "", sort: "new", newOnly: false, shown: PAGE };
+  var st = { type: "", sev: "", risk: "", q: "", since: "", sort: "new", newOnly: false, shown: PAGE };
   var FIRST_VISIT_H = 6;   // في أول زيارة لا يوجد «منذ آخر زيارة»، فيُعد جديداً ما وصل في آخر 6 ساعات
   function baseline() { return lastVisit || (genAt - FIRST_VISIT_H * 36e5); }
   function isNew(it) { return it.t > baseline(); }
@@ -31,13 +31,14 @@
   }
   function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967296; }
   function scrollTo(node, block) { node.scrollIntoView({ behavior: R.reduced ? "auto" : "smooth", block: block || "start" }); }
-  function filtering() { return !!(st.type || st.sev || st.q || st.since || st.newOnly); }
+  function filtering() { return !!(st.type || st.sev || st.risk || st.q || st.since || st.newOnly); }
 
   // ---------- الحالة في الرابط (لمشاركة نتيجة بحث أو تصفية)
   function readHash() {
     var p = R.hashParams();
     st.type = TYPES[p.get("type")] ? p.get("type") : "";
     st.sev = (SEV[p.get("sev")] || p.get("sev") === "kev") ? p.get("sev") : "";
+    st.risk = R.RISK[p.get("r")] ? p.get("r") : "";
     st.q = (p.get("q") || "").replace(/[\u0000-\u001f<>]/g, "").slice(0, 80);
     st.since = RANGES.some(function (r) { return r[0] && r[0] === p.get("d"); }) ? p.get("d") : "";
     st.sort = SORTS[p.get("sort")] ? p.get("sort") : "new";
@@ -48,6 +49,7 @@
     var p = new URLSearchParams();
     if (st.type) p.set("type", st.type);
     if (st.sev) p.set("sev", st.sev);
+    if (st.risk) p.set("r", st.risk);
     if (st.q) p.set("q", st.q);
     if (st.since) p.set("d", st.since);
     if (st.sort !== "new") p.set("sort", st.sort);
@@ -75,6 +77,7 @@
       if (st.sev === "kev") { if (!it.kev) return false; }
       else if (sevOf(it) !== st.sev) return false;
     }
+    if (skip !== "risk" && st.risk && it.riskLevel !== st.risk) return false;
     if (skip !== "date" && st.since) {
       var hrs = RANGES.filter(function (r) { return r[0] === st.since; })[0][2];
       if (ageH(it) > hrs) return false;
@@ -87,7 +90,8 @@
   }
   function filtered(skip) { var tq = terms(); return all.filter(function (it) { return match(it, skip, tq); }); }
   function sorted(list) {
-    return list.slice().sort(st.sort === "imp" ? function (a, b) { return rank(b) - rank(a) || b.t - a.t; }
+    return list.slice().sort(st.sort === "risk" ? function (a, b) { return R.riskRank(b) - R.riskRank(a) || rank(b) - rank(a) || b.t - a.t; }
+      : st.sort === "imp" ? function (a, b) { return rank(b) - rank(a) || b.t - a.t; }
       : st.sort === "old" ? function (a, b) { return a.t - b.t; } : function (a, b) { return b.t - a.t; });
   }
 
@@ -103,6 +107,7 @@
     if (cv.id) top.appendChild(el("bdi", "cve", cv.id));
     if (sv) top.appendChild(el("span", "pill", SEV[sv] + (it.score != null ? " " + Number(it.score).toFixed(1) : "")));
     if (it.kev) top.appendChild(el("span", "pill kev", L("ثبت استغلالها", "Known exploited")));
+    if (sv) top.appendChild(R.riskBadge(it));
     if (lastVisit && it.t > lastVisit) top.appendChild(el("span", "new", L("جديد منذ زيارتك", "New since your visit")));
     var tm = el("time", "time", R.timeF.format(it.t)); tm.dateTime = new Date(it.t).toISOString(); top.appendChild(tm);
     body.appendChild(top);
@@ -148,7 +153,7 @@
     base.forEach(function (it) { cnt[it.type] = (cnt[it.type] || 0) + 1; });
     chip(box, !st.type, L("الكل", "All"), base.length, function () { st.type = ""; update(); });
     R.TYPE_ORDER.filter(function (t) { return cnt[t] || st.type === t; }).forEach(function (t) {
-      chip(box, st.type === t, TYPES[t], cnt[t] || 0, function () { st.type = t; if (t !== "vul") st.sev = ""; update(); });
+      chip(box, st.type === t, TYPES[t], cnt[t] || 0, function () { st.type = t; if (t !== "vul") { st.sev = ""; st.risk = ""; } update(); });
     });
 
     var db = $("dates"); db.textContent = "";
@@ -181,8 +186,17 @@
       li.appendChild(b); lg.appendChild(li);
     }
     $("sev-box").hidden = !vul.length && !st.sev;
+    // [CTI] risk-level filter: each count respects the other filters
+    var rb = $("risks"); rb.textContent = "";
+    var rv = filtered("risk").filter(function (it) { return it.type === "vul"; }), rc = {};
+    rv.forEach(function (it) { rc[it.riskLevel] = (rc[it.riskLevel] || 0) + 1; });
+    R.RISK_ORDER.forEach(function (k) {
+      if (!rc[k] && st.risk !== k) return;
+      chip(rb, st.risk === k, R.RISK[k], rc[k] || 0, function () { st.risk = st.risk === k ? "" : k; if (st.risk) st.type = "vul"; update(); });
+    });
+    $("risk-box").hidden = !rv.length && !st.risk;
     $("clear-wrap").hidden = !filtering();
-    var n = (st.type ? 1 : 0) + (st.sev ? 1 : 0) + (st.since ? 1 : 0) + (st.newOnly ? 1 : 0);
+    var n = (st.type ? 1 : 0) + (st.sev ? 1 : 0) + (st.risk ? 1 : 0) + (st.since ? 1 : 0) + (st.newOnly ? 1 : 0);
     $("filters-on").textContent = n ? (R.en ? n + " active" : n === 1 ? "تصفية واحدة فعّالة" : n === 2 ? "تصفيتان فعّالتان" : nf.format(n) + " تصفيات فعّالة") : "";
   }
 
@@ -211,7 +225,7 @@
     renderNewSwitch();
     var lastDay = null, frag = document.createDocumentFragment();
     list.slice(0, st.shown).forEach(function (it) {
-      if (st.sort !== "imp") { var d = R.dayLabel(it.t); if (d !== lastDay) { frag.appendChild(el("h3", "day", d)); lastDay = d; } }
+      if (st.sort !== "imp" && st.sort !== "risk") { var d = R.dayLabel(it.t); if (d !== lastDay) { frag.appendChild(el("h3", "day", d)); lastDay = d; } }
       frag.appendChild(item(it));
     });
     feed.appendChild(frag);
@@ -237,7 +251,7 @@
   // ---------- الانتقال إلى عنصر (من الرادار)
   function focusItem(id) {
     var it = byId[id]; if (!it) return;
-    if (!match(it)) { st.type = ""; st.sev = ""; st.q = ""; st.since = ""; st.newOnly = false; $("q").value = ""; }
+    if (!match(it)) { st.type = ""; st.sev = ""; st.risk = ""; st.q = ""; st.since = ""; st.newOnly = false; $("q").value = ""; }
     var idx = sorted(filtered()).indexOf(it);
     if (idx >= st.shown) st.shown = Math.ceil((idx + 1) / PAGE) * PAGE;
     update(true);
@@ -368,7 +382,7 @@
     }, 160);
   });
   $("q").addEventListener("keydown", function (e) { if (e.key === "Escape" && this.value) { this.value = ""; st.q = ""; update(); } });
-  $("clear").onclick = function () { st.type = ""; st.sev = ""; st.q = ""; st.since = ""; st.newOnly = false; $("q").value = ""; update(); };
+  $("clear").onclick = function () { st.type = ""; st.sev = ""; st.risk = ""; st.q = ""; st.since = ""; st.newOnly = false; $("q").value = ""; update(); };
   $("newonly").onclick = function () { st.newOnly = !st.newOnly; update(); };
   $("more").onclick = function () { st.shown += PAGE; update(true); };
   document.querySelectorAll(".sort button").forEach(function (b) { b.onclick = function () { st.sort = b.dataset.sort; update(); }; });
@@ -377,10 +391,11 @@
     var p = [];
     if (st.type) p.push(TYPES[st.type]);
     if (st.sev) p.push(st.sev === "kev" ? L("ثبت استغلالها", "Known exploited") : L("الخطورة: ", "Severity: ") + SEV[st.sev]);
+    if (st.risk) p.push(R.RISK[st.risk]);
     if (st.since) p.push(RANGES.filter(function (r) { return r[0] === st.since; })[0][1]);
     if (st.q) p.push(L("بحث: «", "Search: “") + st.q + L("»", "”"));
     if (st.newOnly) p.push(L("الجديد فقط", "New only"));
-    p.push(st.sort === "imp" ? L("مرتبة حسب الخطورة", "sorted by severity") : st.sort === "old" ? L("الأقدم أولاً", "oldest first") : L("الأحدث أولاً", "newest first"));
+    p.push(st.sort === "risk" ? L("مرتبة حسب درجة الخطر", "sorted by risk score") : st.sort === "imp" ? L("مرتبة حسب الخطورة", "sorted by severity") : st.sort === "old" ? L("الأقدم أولاً", "oldest first") : L("الأحدث أولاً", "newest first"));
     return (filtering() ? "" : L("كل ما في الموقع، ", "Everything on the site, ")) + p.join(R.comma);
   }
   $("export").onclick = function () {

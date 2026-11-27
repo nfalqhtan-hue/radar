@@ -62,3 +62,8 @@
 @media print {
   .ab-live { display: none; }
 }
+/* [CTI] risk formula: the value column holds sentences, not short codes */
+.ab-risk .ab-table td:last-child { white-space: normal; color: var(--text); }
+.ab-risk .ab-table td:nth-child(2) { white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 600; }
+.ab-risk .ab-table-wrap { margin-bottom: 14px; }
+.ab-formula { color: var(--text) !important; border-inline-start: 3px solid var(--brass); padding: 10px 14px; background: var(--surface); border-radius: var(--r-md); }

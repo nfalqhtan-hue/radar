@@ -13,8 +13,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/app.css?v=p9">
-<link rel="stylesheet" href="assets/dashboard.css?v=p9">
+<link rel="stylesheet" href="assets/app.css?v=r1">
+<link rel="stylesheet" href="assets/dashboard.css?v=r1">
 </head>
 <body>
 <a class="skip" href="#main" data-en="Skip to the statistics">انتقل إلى الإحصائيات</a>
@@ -73,9 +73,13 @@
       </section>
 
       <section class="card" aria-labelledby="h-sev">
-        <h2 id="h-sev" data-en="Vulnerabilities by severity">الثغرات حسب الخطورة</h2>
-        <p class="s-note" data-en="CVSS score from NVD. Click a level to see its vulnerabilities.">درجة CVSS من قاعدة NVD. اضغط أي مستوى لعرض ثغراته.</p>
+        <h2 id="h-sev" data-en="Severity and risk">الخطورة ودرجة الخطر</h2>
+        <p class="s-note" data-en="Two different measures. Click a level to see its vulnerabilities.">مقياسان مختلفان. اضغط أي مستوى لعرض ثغراته.</p>
+        <h3 data-en="Severity (CVSS score from NVD)">الخطورة (درجة CVSS من قاعدة NVD)</h3>
         <ul class="hbars" id="sev"></ul>
+        <h3 data-en="Risk score (priority for action, out of 100)">درجة الخطر (أولوية التصرف من 100)</h3>
+        <ul class="hbars" id="risk"></ul>
+        <p class="s-note" id="risk-note"></p>
       </section>
 
       <section class="card" aria-labelledby="h-sys">
@@ -112,7 +116,7 @@
   </footer>
 </div>
 
-<script src="assets/core.js?v=p9"></script>
-<script src="assets/dashboard.js?v=p9"></script>
+<script src="assets/core.js?v=r1"></script>
+<script src="assets/dashboard.js?v=r1"></script>
 </body>
 </html>

@@ -95,8 +95,22 @@ def parse_nvd(data):
         out.append(dict(kind="vuln", source="NVD", uid=c.get("id", ""), title=c.get("id", "") + ": " + desc[:90],
                         link="https://nvd.nist.gov/vuln/detail/" + c.get("id", ""), text=desc,
                         date=c.get("published", ""), score=score, vector=vector, cvss_ver=ver,
-                        modified=c.get("lastModified", "")))
+                        modified=c.get("lastModified", ""), **nvd_refs(c)))
     return out
+
+# [CTI: risk engine] NVD reference tags assigned by NVD analysts or the CNA. Only tagged links are kept:
+# "Exploit" = public exploit code/write-up, "Patch" = official fix, "Vendor Advisory" = vendor bulletin.
+REF_TAGS = ("Exploit", "Patch", "Vendor Advisory", "Mitigation")
+def nvd_refs(c):
+    refs = []
+    for r in c.get("references", []):
+        tags = [t for t in (r.get("tags") or []) if t in REF_TAGS]
+        u = r.get("url", "")
+        if tags and u.startswith(("https://", "http://")) and len(refs) < 12:
+            refs.append(dict(u=u[:300], t=tags))
+    cwe = sorted({d.get("value", "") for w in c.get("weaknesses", []) for d in w.get("description", [])
+                  if re.fullmatch(r"CWE-\d+", d.get("value", ""))})
+    return dict(refs=json.dumps(refs, separators=(",", ":")), cwe=",".join(cwe[:4]), nvd_status=c.get("vulnStatus", ""))
 
 def nvd_lookup(cve_id):
     """[إصلاح أسبوع 6] يجلب درجة CVSS وتاريخ النشر لرقم CVE واحد من NVD (لعناصر CISA KEV التي تصل بلا درجة)."""
@@ -106,8 +120,8 @@ def nvd_lookup(cve_id):
     time.sleep(0.7 if NVD_KEY else 6.2)          # حد NVD بدون مفتاح: 5 طلبات كل 30 ثانية
     return r[0] if r else None
 
-def fetch_nvd(hours):
-    end = datetime.now(timezone.utc); start = end - timedelta(hours=hours)
+def fetch_nvd(hours, start=None, end=None):
+    end = end or datetime.now(timezone.utc); start = start or end - timedelta(hours=hours)
     f = lambda d: urllib.parse.quote(d.strftime("%Y-%m-%dT%H:%M:%S.000+00:00"))
     h = {"User-Agent": "radar-altaqniya/0.6"}
     if NVD_KEY: h["apiKey"] = NVD_KEY
@@ -381,7 +395,8 @@ SCHEMA = """CREATE TABLE IF NOT EXISTS items(uid TEXT PRIMARY KEY, kind, type, t
 CREATE TABLE IF NOT EXISTS errors(ts, stage, msg);
 CREATE TABLE IF NOT EXISTS events(ts TEXT, uid TEXT, kind TEXT, detail TEXT);"""
 # [المرحلة 3] أعمدة أُضيفت بعد إنشاء القاعدة: تُضاف تلقائياً للقواعد القديمة (لا نفقد شيئاً من البيانات المخزنة)
-EXTRA_COLS = ["modified", "vector", "cvss_ver", "kev_added", "kev_action", "kev_due", "kev_ransom", "summary_src", "checked", "nvd_published"]
+EXTRA_COLS = ["modified", "vector", "cvss_ver", "kev_added", "kev_action", "kev_due", "kev_ransom", "summary_src", "checked", "nvd_published",
+              "refs", "cwe", "nvd_status"]   # [CTI] NVD reference tags (JSON), CWE ids, NVD analysis status
 QUALITY_VERSION = 9   # [المرحلة 6] رفعه يعيد فحص البيانات المخزنة بقواعد الجودة الحالية مرة واحدة
 ITEM_COLS = ["uid", "kind", "type", "title", "link", "text", "summary", "pending", "source", "published", "severity", "score", "kev",
              "system", "status", "reason", "created"] + EXTRA_COLS
@@ -455,6 +470,61 @@ def template_summary(it):
     if it["kev"]: s += "، ومدرجة في قائمة CISA للثغرات المستغلة فعلياً"
     return s + ". التفاصيل الكاملة في رابط المصدر."
 
+# ---------------------------------------------------------------- [CTI] Risk scoring engine
+# Transparent, reproducible 0-100 priority score. Same inputs + same reference time = same score.
+# Each factor is a value in [0, 1] or None (unknown). Unknown factors are left out of BOTH the sum and the
+# total weight, so missing data never counts against (or for) a vulnerability.
+#   cvss      CVSS base score / 10 (NVD primary metric when present)
+#   kev       1 if listed in CISA KEV (confirmed exploitation), else 0. Always known: the full catalog is checked every cycle.
+#   exploit   1 if public exploit information exists: an NVD reference tagged "Exploit", or the CNA's own description says
+#             the exploit is public. Absence is NOT evidence of absence -> None.
+#   exposure  mean of recency (<=7d 1.0, <=30d 0.8, <=90d 0.6, older 0.4) and attack surface from the CVSS vector
+#             (AV:N with PR:N and UI:N 1.0, other AV:N 0.7, AV:A 0.5, AV:L 0.3, AV:P 0.1). Recency only if no vector.
+#   patch     0 if an official fix is referenced (NVD "Patch" tag), else None (we cannot prove that no fix exists).
+# score = round(100 * sum(w*f) / sum(w for known f)). Unknown level when there is neither a CVSS score nor a KEV listing.
+RISK_WEIGHTS = dict(cvss=35, kev=35, exploit=15, exposure=10, patch=5)
+RISK_LEVELS = ((90, "critical"), (70, "high"), (40, "medium"), (0, "low"))
+_PUBLIC_EXPLOIT = re.compile(r"exploit (?:has been|was|is) (?:disclosed|released|made available|published|made public)"
+                             r"|exploit is publicly available|publicly available exploit|public(?:ly)? (?:available )?(?:proof[- ]of[- ]concept|exploit code)", re.I)
+
+def _vector_exposure(vector):
+    m = dict(p.split(":", 1) for p in (vector or "").split("/") if ":" in p)
+    av = m.get("AV")
+    if not av: return None
+    if av == "N": return 1.0 if m.get("PR") == "N" and m.get("UI") in ("N", None) else 0.7
+    return {"A": 0.5, "L": 0.3, "P": 0.1}.get(av)
+
+def risk_score(r, now):
+    """r: mapping with score, kev, refs (JSON), text, vector, published / nvd_published. now: aware datetime.
+    Returns None (not enough data) or dict(score, level, factors={name: [value, weight]}, evidence={...})."""
+    try: refs = json.loads(r.get("refs") or "[]")
+    except ValueError: refs = []
+    tags = {t for x in refs for t in x.get("t", [])}
+    score, kev = r.get("score"), bool(r.get("kev"))
+    if score is None and not kev: return None
+    ev = {}
+    f = dict(cvss=None if score is None else max(0.0, min(1.0, float(score) / 10)), kev=1.0 if kev else 0.0)
+    if "Exploit" in tags: f["exploit"] = 1.0; ev["exploit"] = "nvd"
+    elif _PUBLIC_EXPLOIT.search(r.get("text") or ""): f["exploit"] = 1.0; ev["exploit"] = "cna"
+    else: f["exploit"] = None
+    pub = r.get("nvd_published") or r.get("published") or ""
+    try: t = datetime.fromisoformat(pub.replace("Z", "+00:00")) if pub else None
+    except ValueError: t = None
+    if t is not None and t.tzinfo is None: t = t.replace(tzinfo=timezone.utc)   # NVD dates without offset are UTC
+    age = None if t is None else (now - t).days
+    rec = None if age is None else (1.0 if age <= 7 else 0.8 if age <= 30 else 0.6 if age <= 90 else 0.4)
+    vex = _vector_exposure(r.get("vector"))
+    parts = [x for x in (rec, vex) if x is not None]
+    f["exposure"] = round(sum(parts) / len(parts), 3) if parts else None
+    if age is not None: ev["age_days"] = max(0, age)
+    f["patch"] = 0.0 if "Patch" in tags else None
+    if "Patch" in tags: ev["patch"] = 1
+    known = {k: v for k, v in f.items() if v is not None}
+    total = sum(RISK_WEIGHTS[k] for k in known)
+    s = round(100 * sum(RISK_WEIGHTS[k] * v for k, v in known.items()) / total)
+    level = next(l for t, l in RISK_LEVELS if s >= t)
+    return dict(score=s, level=level, factors={k: [None if v is None else round(v, 3), RISK_WEIGHTS[k]] for k, v in f.items()}, evidence=ev)
+
 def alert_text(c):
     tag = "مستغلة فعلياً (CISA KEV)" if c.get("kev") else "حرجة"
     return f"تنبيه: ثغرة {tag}\n{c['title']}\nCVSS: {c['score'] if c['score'] is not None else 'غير متوفر'}\n{c['link']}"
@@ -468,18 +538,25 @@ def export(con, out):
     vul += [r for r in con.execute("SELECT * FROM items WHERE status='published' AND kind='vuln' AND kev=1").fetchall() if r["uid"] not in have]
     rows = sorted(con.execute(q, ("news", 120)).fetchall() + vul, key=lambda r: r["published"] or "", reverse=True)
     gen = now_iso()
-    data = {"generated_at": gen, "items": [
+    gnow = datetime.fromisoformat(gen)
+    risk = {r["uid"]: risk_score(dict(r), gnow) for r in rows if r["kind"] == "vuln"}   # [CTI] same reference time for every item
+    def rk(r, k):
+        x = risk.get(r["uid"]); return x[k] if x else None
+    data = {"generated_at": gen, "risk_model": dict(weights=RISK_WEIGHTS, levels=[[t, l] for t, l in RISK_LEVELS]), "items": [
         dict(id=r["uid"], type=r["type"], title=r["title"], summary=r["summary"], severity=r["severity"], score=r["score"],
              kev=bool(r["kev"]), system=r["system"], source=r["source"], link=r["link"], date=r["published"],
              sum_src=r["summary_src"] or ("pending" if r["pending"] else ""),
-             advice=ADVICE if r["kind"] == "vuln" else None) for r in rows]}
+             advice=ADVICE if r["kind"] == "vuln" else None,
+             **({"risk": rk(r, "score"), "risk_level": rk(r, "level") or "unknown"} if r["kind"] == "vuln" else {})) for r in rows]}
     os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
     with open(out, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=1)
     # [المرحلة 3] التفاصيل في ملف منفصل يُحمَّل عند فتح نافذة التفاصيل فقط: الصفحة الرئيسية تبقى خفيفة
     det = {r["uid"]: {k: v for k, v in dict(text=r["text"], modified=r["modified"], vector=r["vector"], cvss_ver=r["cvss_ver"],
                                             kev_added=r["kev_added"], kev_action=r["kev_action"], kev_due=r["kev_due"],
-                                            kev_ransom=r["kev_ransom"], seen=r["created"], nvd_published=r["nvd_published"]).items() if v}
+                                            kev_ransom=r["kev_ransom"], seen=r["created"], nvd_published=r["nvd_published"],
+                                            cwe=r["cwe"], nvd_status=r["nvd_status"], refs=json.loads(r["refs"]) if r["refs"] else None,
+                                            risk_f=rk(r, "factors"), risk_ev=rk(r, "evidence")).items() if v}
            for r in rows}
     with open(os.path.join(os.path.dirname(out) or ".", "details.json"), "w", encoding="utf-8") as f:
         json.dump({"generated_at": gen, "items": det}, f, ensure_ascii=False, separators=(",", ":"))
@@ -514,11 +591,18 @@ def stats(con, gen, days=14):
     def ts(s):
         try: return datetime.fromisoformat((s or "").replace("Z", "+00:00"))
         except ValueError: return None
-    vul = con.execute(f"SELECT uid, severity, score, kev, system, published, summary_src, pending FROM items WHERE {pub} AND kind='vuln'").fetchall()
+    vul = con.execute(f"SELECT uid, severity, score, kev, system, published, summary_src, pending, refs, text, vector, nvd_published "
+                      f"FROM items WHERE {pub} AND kind='vuln'").fetchall()
     news = con.execute(f"SELECT type, source, published, summary_src, pending FROM items WHERE {pub} AND kind='news'").fetchall()
     def recent(rows, hours): return sum(1 for r in rows if (t := ts(r["published"])) and timedelta(0) <= now - t <= timedelta(hours=hours))
     by_sev = {s: 0 for s in SEVS}
     for r in vul: by_sev[r["severity"] if r["severity"] in by_sev else "unknown"] += 1
+    by_risk = {l: 0 for l in ("critical", "high", "medium", "low", "unknown")}   # [CTI] risk-level distribution over the whole DB
+    risk_exploit = 0
+    for r in vul:
+        x = risk_score(dict(r), now)
+        by_risk[x["level"] if x else "unknown"] += 1
+        risk_exploit += bool(x and x["evidence"].get("exploit"))
     # التسلسل اليومي حسب تاريخ النشر، لآخر 14 يوماً بتوقيت السعودية
     today = now.astimezone(RIYADH).date()
     keys = [(today - timedelta(days=i)).isoformat() for i in range(days - 1, -1, -1)]
@@ -557,7 +641,8 @@ def stats(con, gen, days=14):
     return dict(generated_at=gen, first_seen=first, days=days,
                 vulns=dict(total=len(vul), by_sev=by_sev, kev=sum(1 for r in vul if r["kev"]),
                            kev_critical=sum(1 for r in vul if r["kev"] and r["severity"] == "critical"),
-                           last24=recent(vul, 24), last7=recent(vul, 24 * 7), with_system=sum(systems.values())),
+                           last24=recent(vul, 24), last7=recent(vul, 24 * 7), with_system=sum(systems.values()),
+                           by_risk=by_risk, public_exploit=risk_exploit),
                 daily=[daily[k] for k in keys], hourly=[hourly[h.isoformat()] for h in hkeys],
                 top_systems=[dict(name=n, n=c) for n, c in top],
                 news=dict(total=len(news), last24=recent(news, 24), last7=recent(news, 24 * 7),
@@ -627,7 +712,7 @@ def run(a, fetchers=None, summarizer=None, notifier=None):
                 n = enricher(it["uid"])
                 if n and n.get("score") is not None:
                     it["score"] = n["score"]; st["enriched"] += 1
-                    for k in ("vector", "cvss_ver", "modified"): it[k] = n.get(k) or it.get(k)
+                    for k in ("vector", "cvss_ver", "modified", "refs", "cwe", "nvd_status"): it[k] = n.get(k) or it.get(k)
                     it["nvd_published"] = n.get("date") or it.get("nvd_published")
                 it["checked"] = now_iso()
             except Exception as e:
@@ -687,8 +772,12 @@ def run(a, fetchers=None, summarizer=None, notifier=None):
     if refresher and not enrich_down:
         recheck = (datetime.now(timezone.utc) - timedelta(hours=6)).isoformat(timespec="seconds")
         q = ("SELECT uid, score, severity, title, link, kev FROM items WHERE kind='vuln' AND status='published' "
-             "AND (checked IS NULL OR (score IS NULL AND checked < ?) OR (source='CISA KEV' AND nvd_published IS NULL)) ORDER BY (checked IS NULL) DESC, (score IS NULL) DESC, published DESC LIMIT ?")
-        for r in con.execute(q, (recheck, getattr(a, "max_refresh", MAX_REFRESH))).fetchall():
+             "AND (checked IS NULL OR (score IS NULL AND checked < ?) OR (source='CISA KEV' AND nvd_published IS NULL) "
+             # [CTI] NVD adds reference tags (Exploit/Patch) when it analyses a CVE, days after publication: re-check daily for 30 days
+             "OR (COALESCE(nvd_status,'') NOT IN ('Analyzed','Modified','Deferred','Rejected') AND checked < ? AND published > ?)) ORDER BY (checked IS NULL) DESC, (score IS NULL) DESC, published DESC LIMIT ?")
+        day_ago = (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat(timespec="seconds")
+        month_ago = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat(timespec="seconds")
+        for r in con.execute(q, (recheck, day_ago, month_ago, getattr(a, "max_refresh", MAX_REFRESH))).fetchall():
             try: n = refresher(r["uid"])
             except Exception as e: ERR.append(("nvd_refresh", f"{r['uid']}: {e}")); break
             st["refreshed"] += 1
@@ -697,9 +786,10 @@ def run(a, fetchers=None, summarizer=None, notifier=None):
             new_score = n.get("score") if n.get("score") is not None else r["score"]
             new_sev = severity_of(new_score)
             con.execute("UPDATE items SET score=?, severity=?, vector=COALESCE(NULLIF(?,''),vector), cvss_ver=COALESCE(NULLIF(?,''),cvss_ver), "
-                        "modified=COALESCE(NULLIF(?,''),modified), nvd_published=COALESCE(NULLIF(?,''),nvd_published), checked=? WHERE uid=?",
+                        "modified=COALESCE(NULLIF(?,''),modified), nvd_published=COALESCE(NULLIF(?,''),nvd_published), checked=?, "
+                        "refs=COALESCE(?,refs), cwe=COALESCE(?,cwe), nvd_status=COALESCE(NULLIF(?,''),nvd_status) WHERE uid=?",
                         (new_score, new_sev, n.get("vector", ""), n.get("cvss_ver", ""), n.get("modified", ""), to_iso(n["date"]) if n.get("date") else "",
-                         now_iso(), r["uid"]))
+                         now_iso(), n.get("refs"), n.get("cwe"), n.get("nvd_status", ""), r["uid"]))
             if new_score != r["score"]:
                 old = r["score"] if r["score"] is not None else "-"
                 event(con, "score", r["uid"], f"{old}>{new_score}|{r['severity']}>{new_sev}")
@@ -728,6 +818,34 @@ def run(a, fetchers=None, summarizer=None, notifier=None):
     return st
 
 
+def backfill_refs(db):
+    """[CTI] One-time fill of refs/cwe/nvd_status for stored vulns (they were dropped before the risk engine).
+    Only those three columns are written: summaries, scores and history are untouched."""
+    con = sqlite3.connect(db); con.row_factory = sqlite3.Row; con.executescript(SCHEMA); migrate(con)
+    todo = con.execute("SELECT uid, source, COALESCE(nvd_published, published) p FROM items WHERE kind='vuln' AND refs IS NULL").fetchall()
+    def put(n):
+        con.execute("UPDATE items SET refs=?, cwe=?, nvd_status=? WHERE uid=? AND refs IS NULL", (n["refs"], n["cwe"], n["nvd_status"], n["uid"]))
+    nvd = sorted(r["p"] for r in todo if r["source"] == "NVD" and r["p"])
+    done = 0
+    if nvd:
+        start = datetime.fromisoformat(nvd[0].replace("Z", "+00:00")) - timedelta(hours=1)
+        last = datetime.fromisoformat(nvd[-1].replace("Z", "+00:00")) + timedelta(hours=1)
+        while start < last:                       # NVD allows at most 120 days per request
+            end = min(last, start + timedelta(days=110))
+            for n in fetch_nvd(0, start, end): put(n); done += 1
+            start = end; time.sleep(0.7 if NVD_KEY else 6.2)
+        con.commit()
+    left = [r["uid"] for r in con.execute("SELECT uid FROM items WHERE kind='vuln' AND refs IS NULL")]
+    for uid in left:                              # CISA KEV items (old CVEs) and anything outside the windows
+        try: n = nvd_lookup(uid)
+        except Exception as e: log.warning("backfill %s: %s", uid, e); break
+        if n: put(n); done += 1
+        else: con.execute("UPDATE items SET refs='[]' WHERE uid=? AND refs IS NULL", (uid,))
+        con.commit()
+    missing = con.execute("SELECT COUNT(*) FROM items WHERE kind='vuln' AND refs IS NULL").fetchone()[0]
+    con.commit(); con.close()
+    return dict(candidates=len(todo), updated_rows_seen=done, still_missing=missing)
+
 def main():
     p = argparse.ArgumentParser(description="رادار التقنية: خط معالجة الوكيل")
     p.add_argument("--db", default=os.environ.get("RADAR_DB", "radar.db")); p.add_argument("--out", default=os.environ.get("RADAR_OUT", "site/data.json"))
@@ -736,7 +854,10 @@ def main():
     p.add_argument("--max-llm", type=int, default=30, help="أقصى عدد تلخيصات بالنموذج في الدورة (الباقي يُلخَّص في الدورة التالية)")
     p.add_argument("--max-refresh", type=int, default=MAX_REFRESH, help="أقصى عدد ثغرات مخزنة يُعاد فحصها في NVD في الدورة")
     p.add_argument("--json", action="store_true", help="طباعة النتيجة بصيغة JSON (لاستخدام n8n)")
+    p.add_argument("--backfill-refs", action="store_true", help="[CTI] fill NVD reference tags/CWE for stored vulns, then exit")
     a = p.parse_args(); logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
+    if a.backfill_refs:
+        print(json.dumps(backfill_refs(a.db))); return 0
     st = run(a)
     print(json.dumps(st, ensure_ascii=False) if a.json else json.dumps(st, ensure_ascii=False, indent=1))
     return 0

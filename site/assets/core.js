@@ -52,6 +52,22 @@
     var s = R.sevOf(it);
     return (it.kev ? 100 : 0) + (s ? (5 - R.SEV_ORDER.indexOf(s)) * 10 + (it.score || 0) : 0);
   };
+  // ---------- [CTI] Risk score (0-100) computed by the pipeline from CVSS, CISA KEV, public-exploit evidence, age/exposure, patch.
+  // It is a priority for action, separate from CVSS severity. Labels say «خطر» so they never read as the CVSS rating.
+  R.RISK = R.en
+    ? { critical: "Critical risk", high: "High risk", medium: "Medium risk", low: "Low risk", unknown: "Not enough data" }
+    : { critical: "خطر حرج", high: "خطر عالٍ", medium: "خطر متوسط", low: "خطر منخفض", unknown: "بيانات غير كافية" };
+  R.RISK_ORDER = ["critical", "high", "medium", "low", "unknown"];
+  R.riskRank = function (it) { return it.risk != null ? it.risk + (it.kev ? 0.5 : 0) : -1; };
+  R.riskBadge = function (it) {
+    var lv = it.riskLevel || "unknown", b = R.el("span", "risk-b");
+    b.style.setProperty("--c", "var(--s-" + lv + ")");
+    var m = R.el("i"); m.setAttribute("aria-hidden", "true"); m.style.setProperty("--p", (it.risk != null ? it.risk : 0) + "%"); b.appendChild(m);
+    b.appendChild(R.el("span", null, it.risk != null ? L("خطر ", "Risk ") + it.risk : R.RISK.unknown));
+    b.title = (it.risk != null ? R.RISK[lv] + L(": ", ": ") + it.risk + L(" من 100", "/100") : L("لا درجة CVSS ولا إدراج في قائمة CISA بعد", "No CVSS score and no CISA listing yet"))
+      + L(". أولوية التصرف، وتختلف عن خطورة CVSS.", ". Priority for action, separate from CVSS severity.");
+    return b;
+  };
   // العنوان يصل بصيغة «CVE-2026-1234: وصف»، فنفصل الرقم عن الوصف للعرض
   R.splitCve = function (it) {
     var m = /^(CVE-\d{4}-\d{4,})\s*:\s*(.*)$/.exec(it.title || "");
@@ -146,6 +162,9 @@
     var sc = typeof it.score === "number" && isFinite(it.score) && it.score >= 0 && it.score <= 10 ? it.score : null;
     o.score = sc;
     o.severity = o.type === "vul" ? (R.SEV[it.severity] ? it.severity : "unknown") : null;
+    var rs = typeof it.risk === "number" && isFinite(it.risk) && it.risk >= 0 && it.risk <= 100 ? Math.round(it.risk) : null;
+    o.risk = o.type === "vul" ? rs : null;
+    o.riskLevel = o.type === "vul" ? (rs != null && R.RISK[it.risk_level] && it.risk_level !== "unknown" ? it.risk_level : "unknown") : null;
     o.t = Date.parse(o.date) || genAt;
     return o;
   }
@@ -246,6 +265,25 @@
     scoreBox.appendChild(scale);
     box.appendChild(scoreBox);
 
+    // [CTI] Risk score: number + level now (from data.json), factor breakdown when details.json arrives
+    var riskSec = R.el("section", "d-sec d-risk"); riskSec.style.setProperty("--c", "var(--s-" + (it.riskLevel || "unknown") + ")");
+    var rh = R.el("div", "d-risk-head");
+    var rn = R.el("div", "d-risk-num");
+    rn.appendChild(R.el("b", "num", it.risk != null ? String(it.risk) : "?"));
+    rn.appendChild(R.el("span", null, it.risk != null ? L("من 100", "out of 100") : ""));
+    rh.appendChild(rn);
+    var rt = R.el("div");
+    rt.appendChild(R.el("h3", null, L("درجة الخطر: ", "Risk score: ") + R.RISK[it.riskLevel || "unknown"]));
+    rt.appendChild(R.el("p", "d-note", it.risk != null
+      ? L("أولوية التصرف، محسوبة من درجة CVSS وثبوت الاستغلال ومعلومات الاستغلال المنشورة وعمر الثغرة وتوفر الإصلاح. تختلف عن خطورة CVSS أعلاه.",
+          "Priority for action, computed from the CVSS score, confirmed exploitation, published exploit information, age and patch availability. Separate from the CVSS severity above.")
+      : L("لا نحسب درجة لثغرة بلا درجة CVSS وغير مدرجة في قائمة CISA، بدل أن نعرض رقماً غير موثوق.",
+          "We do not score a vulnerability with no CVSS score and no CISA listing, rather than show an unreliable number.")));
+    rh.appendChild(rt); riskSec.appendChild(rh);
+    var rBody = R.el("div"); riskSec.appendChild(rBody);
+    if (it.risk != null) rBody.appendChild(R.el("span", "skel"));
+    box.appendChild(riskSec);
+
     var desc = R.el("section", "d-sec");
     desc.appendChild(R.el("h3", null, L("وصف الثغرة", "Description")));
     var title = R.el("p", "d-title-text", cv.rest || it.title); title.setAttribute("dir", "auto"); desc.appendChild(title);
@@ -333,6 +371,7 @@
       mod.textContent = x.modified ? R.fmtDate(x.modified) : L("لم نسجّله بعد", "Not recorded yet");
       if (!x.modified) mod.appendChild(R.el("small", null, L("يُجلب تدريجياً في دورات التحديث", "Fetched gradually during update cycles")));
       seen.textContent = x.seen ? R.fmtDate(x.seen) + L("، الساعة ", ", ") + R.timeF.format(Date.parse(x.seen)) : L("غير مسجّل", "Not recorded");
+      renderRisk(rBody, it, x);
       if (x.vector) { vec.textContent = ""; var vb = R.el("bdi", "d-vec", (x.cvss_ver ? "v" + x.cvss_ver + " " : "") + x.vector); vb.setAttribute("dir", "ltr"); vec.appendChild(vb); vec.parentNode.hidden = false; }
       if (it.kev) {
         if (x.kev_added) expl.textContent = L("ثبت استغلالها: أضافتها CISA إلى قائمتها في ", "Known exploited: CISA added it to its list on ") + R.fmtDate(x.kev_added);
@@ -350,9 +389,86 @@
       orig.textContent = ""; orig.appendChild(R.el("p", "d-note", L("تعذّر تحميل التفاصيل الإضافية (الوصف الأصلي وتاريخ التحديث). البيانات أعلاه من الملف الرئيسي.",
         "Could not load the extra details (original description and update date). The facts above come from the main data file.")));
       mod.textContent = L("غير متوفر", "Not available"); seen.textContent = L("غير متوفر", "Not available");
+      rBody.textContent = "";
       if (pubN) pubN.textContent = L("غير متوفر", "Not available");
     });
   };
+  // ---------- [CTI] Risk breakdown: each factor, its weight, and the points it adds. Points of known factors sum to the score.
+  var AV = { N: L("عبر الشبكة", "over the network"), A: L("من شبكة مجاورة", "from an adjacent network"), L: L("بوصول محلي", "with local access"), P: L("بوصول مادي", "with physical access") };
+  function vecText(v) {
+    var m = {}; String(v || "").split("/").forEach(function (p) { var kv = p.split(":"); if (kv.length === 2) m[kv[0]] = kv[1]; });
+    if (!AV[m.AV]) return "";
+    var s = L("الهجوم ", "attack ") + AV[m.AV];
+    if (m.AV === "N" && m.PR === "N" && (m.UI === "N" || !m.UI)) s += L(" بلا صلاحيات ولا تفاعل من المستخدم", ", no privileges or user action needed");
+    return s;
+  }
+  function renderRisk(box, it, x) {
+    box.textContent = "";
+    var f = x.risk_f, ev = x.risk_ev || {};
+    if (it.risk == null || !f || typeof f !== "object") {
+      box.appendChild(R.el("p", "d-note", it.risk == null ? L("ستُحسب حين تقيّمها NVD أو تُدرجها CISA.", "It will be computed once NVD scores it or CISA lists it.")
+        : L("تفاصيل الحساب غير متوفرة في هذه النسخة من البيانات.", "Calculation details are not in this copy of the data.")));
+      return;
+    }
+    function val(k) { var v = f[k]; return Array.isArray(v) && typeof v[0] === "number" ? v[0] : null; }
+    function w(k) { var v = f[k]; return Array.isArray(v) && typeof v[1] === "number" ? v[1] : 0; }
+    var keys = ["cvss", "kev", "exploit", "exposure", "patch"], total = 0;
+    keys.forEach(function (k) { if (val(k) != null) total += w(k); });
+    var age = typeof ev.age_days === "number" ? ev.age_days : null;
+    var rows = {
+      cvss: [L("درجة CVSS", "CVSS score"), val("cvss") != null ? Number(it.score).toFixed(1) + L(" من 10", " of 10") : L("لم تُقيَّم بعد", "Not scored yet")],
+      kev: [L("استغلال مؤكد (قائمة CISA)", "Confirmed exploitation (CISA KEV)"), val("kev") ? L("مدرجة في القائمة", "Listed") : L("غير مدرجة", "Not listed")],
+      exploit: [L("معلومات استغلال منشورة", "Public exploit information"),
+        ev.exploit === "nvd" ? L("نعم: رابط موسوم «Exploit» في NVD", "Yes: a reference tagged “Exploit” in NVD")
+          : ev.exploit === "cna" ? L("نعم: بحسب وصف الجهة المبلّغة عن الثغرة", "Yes: per the reporting organisation's description")
+          : L("لا معلومات (لا يعني أنه غير موجود)", "No information (does not mean none exists)")],
+      exposure: [L("العمر ونطاق التعرض", "Age and exposure"),
+        [age != null ? (R.en ? "Published " + R.countL(age, null, ["day", "days"]) + " ago" : age === 0 ? "نُشرت اليوم" : "نُشرت قبل " + R.count(age, "يوم", "يومين", "أيام", "يوماً")) : "", vecText(x.vector)]
+          .filter(Boolean).join(R.comma) || L("غير معروف", "Unknown")],
+      patch: [L("إصلاح رسمي", "Official fix"), val("patch") === 0 ? L("يوجد رابط إصلاح في NVD (يخفض الأولوية)", "A fix is referenced in NVD (lowers priority)") : L("غير معروف", "Unknown")]
+    };
+    var tb = R.el("table", "risk-t"), th = R.el("tr");
+    [L("العامل", "Factor"), L("القيمة", "Value"), L("الوزن", "Weight"), L("النقاط", "Points")].forEach(function (h) { var c = R.el("th", null, h); c.scope = "col"; th.appendChild(c); });
+    var thead = R.el("thead"); thead.appendChild(th); tb.appendChild(thead);
+    var tbody = R.el("tbody");
+    keys.forEach(function (k) {
+      var v = val(k), tr = R.el("tr", v == null ? "off" : null);
+      tr.appendChild(R.el("th", null, rows[k][0])).scope = "row";
+      tr.appendChild(R.el("td", null, rows[k][1]));
+      tr.appendChild(R.el("td", "num", w(k) + "%"));
+      tr.appendChild(R.el("td", "num", v == null ? L("غير محسوب", "Not counted") : "+" + R.nf.format(Math.round(1000 * w(k) * v / total) / 10)));
+      tbody.appendChild(tr);
+    });
+    tb.appendChild(tbody);
+    var wrap = R.el("div", "risk-tw"); wrap.appendChild(tb); box.appendChild(wrap);
+    box.appendChild(R.el("p", "d-note", L("العوامل غير المعروفة لا تُحسب ضدها ولا لها: تُستبعد من الوزن الكلي (", "Unknown factors count neither for nor against: they are left out of the total weight (")
+      + total + L("% هنا). المعادلة كاملة في صفحة «عن المشروع».", "% here). The full formula is on the About page.")));
+    // Recommended action: fixed rules tied to the facts above, not generated text
+    var act = R.el("div", "notice d-act"); act.style.setProperty("--c", "var(--s-" + it.riskLevel + ")");
+    act.appendChild(R.el("b", null, L("الإجراء المقترح", "Recommended action")));
+    var acts = [];
+    if (it.kev) acts.push(L("أولوية قصوى: ثبت أن المهاجمين يستغلونها. طبّق الإجراء الذي تطلبه CISA", "Top priority: attackers are exploiting it. Apply the action CISA requires")
+      + (x.kev_due ? L(" قبل ", " by ") + R.fmtDate(x.kev_due) : "") + ".");
+    else if (ev.exploit) acts.push(L("افحص بسرعة إن كان المنتج مستخدماً عندك: توجد معلومات استغلال منشورة، فقد يُستغل قريباً.", "Check soon whether you use this product: exploit information is public, so exploitation may follow."));
+    if (ev.patch) acts.push(L("يوجد إصلاح رسمي مرجعه في NVD: طبّقه من رابط الشركة أدناه.", "An official fix is referenced in NVD: apply it from the vendor link below."));
+    if (!it.kev && !ev.exploit) acts.push(it.riskLevel === "medium"
+      ? L("تابعها ضمن دورة التحديثات المعتادة، وطبّق التحديث الرسمي حين يصدر.", "Handle it in your regular patch cycle and apply the official update when available.")
+      : L("أولوية منخفضة الآن: راقبها، وأعد تقييمها إن ظهرت معلومات استغلال.", "Low priority for now: keep watching and reassess if exploit information appears."));
+    var ul = R.el("ul"); acts.forEach(function (a) { ul.appendChild(R.el("li", null, a)); }); act.appendChild(ul);
+    box.appendChild(act);
+    // Official vendor links tagged in NVD (patch / advisory / mitigation). Exploit-code links are not linked from here.
+    var refs = Array.isArray(x.refs) ? x.refs : [], shown = 0, rl = R.el("ul", "d-refs");
+    refs.forEach(function (r) {
+      var t = (r && Array.isArray(r.t)) ? r.t : [], u = r && R.safeUrl(r.u);
+      if (!u || shown >= 6) return;
+      var kind = t.indexOf("Patch") >= 0 ? L("إصلاح", "Patch") : t.indexOf("Vendor Advisory") >= 0 ? L("نشرة الشركة", "Vendor advisory") : t.indexOf("Mitigation") >= 0 ? L("تخفيف", "Mitigation") : null;
+      if (!kind) return;
+      var li = R.el("li"); li.appendChild(R.el("span", "pill", kind));
+      var a = R.link(R.el("a", null, u.replace(/^https?:\/\//, "").slice(0, 70)), u); a.setAttribute("dir", "ltr"); li.appendChild(a);
+      rl.appendChild(li); shown++;
+    });
+    if (shown) { box.appendChild(R.el("h4", null, L("روابط رسمية من NVD", "Official links from NVD"))); box.appendChild(rl); }
+  }
   R.closeDetail = function () { if (dlg && dlg.open) closeDlg(); };
   // فتح التفاصيل من رابط مشارَك (#v=CVE-...)
   R.openFromHash = function (byId) {
@@ -402,7 +518,7 @@
     }
 
     var tb = R.el("table", "pr-table"), th = R.el("thead"), tr = R.el("tr");
-    [L("#", "#"), L("العنصر", "Item"), L("المنتج المتأثر", "Affected product"), "CVSS", L("الخطورة", "Severity"), L("الاستغلال", "Exploitation"), L("التاريخ", "Date"), L("رابط المصدر", "Source link")]
+    [L("#", "#"), L("العنصر", "Item"), L("المنتج المتأثر", "Affected product"), "CVSS", L("الخطورة", "Severity"), L("درجة الخطر", "Risk"), L("الاستغلال", "Exploitation"), L("التاريخ", "Date"), L("رابط المصدر", "Source link")]
       .forEach(function (h) { tr.appendChild(R.el("th", null, h)); });
     th.appendChild(tr); tb.appendChild(th);
     var body = R.el("tbody");
@@ -418,6 +534,7 @@
       r.appendChild(R.el("td", "num", it.score != null ? Number(it.score).toFixed(1) : "—"));
       var sc = R.el("td"); if (sv) { var p = R.el("span", "pill", R.SEV[sv]); p.style.setProperty("--c", "var(--p-" + sv + ")"); sc.appendChild(p); } else sc.textContent = "—";
       r.appendChild(sc);
+      r.appendChild(R.el("td", "num", it.type !== "vul" ? "—" : it.risk != null ? it.risk + " · " + R.RISK[it.riskLevel] : R.RISK.unknown));
       r.appendChild(R.el("td", it.kev ? "kev" : "muted", it.type !== "vul" ? "—" : it.kev ? L("ثبت استغلالها", "Known exploited") : L("لا دليل منشور", "No evidence")));
       r.appendChild(R.el("td", "num", R.fmtDate(it.date) || "—"));
       var u = it.type === "vul" ? "https://nvd.nist.gov/vuln/detail/" + encodeURIComponent(cv.id || it.id) : R.safeUrl(it.link);
@@ -425,8 +542,8 @@
       body.appendChild(r);
     });
     tb.appendChild(body); rep.appendChild(tb);
-    rep.appendChild(R.el("p", "pr-note", L("درجات CVSS منقولة من قاعدة NVD الأمريكية، وحالة الاستغلال من قائمة وكالة CISA. الخطورة والاستغلال أمران منفصلان. الملخصات العربية يكتبها نموذج آلي وقد تخطئ، والمرجع هو رابط المصدر.",
-      "CVSS scores come from the US NVD database and exploitation status from CISA's list; severity and exploitation are separate facts. Arabic summaries are machine-written and can be wrong; the source link is the reference.")));
+    rep.appendChild(R.el("p", "pr-note", L("درجات CVSS منقولة من قاعدة NVD الأمريكية، وحالة الاستغلال من قائمة وكالة CISA. الخطورة والاستغلال أمران منفصلان. درجة الخطر (من 100) أولوية تصرف يحسبها الرادار بمعادلة منشورة في صفحة «عن المشروع». الملخصات العربية يكتبها نموذج آلي وقد تخطئ، والمرجع هو رابط المصدر.",
+      "CVSS scores come from the US NVD database and exploitation status from CISA's list; severity and exploitation are separate facts. The risk score (out of 100) is a priority computed by the radar with a formula published on the About page. Arabic summaries are machine-written and can be wrong; the source link is the reference.")));
     rep.appendChild(R.el("p", "pr-note", "nfalqhtan-hue.github.io/radar"));
     document.body.appendChild(rep);
     R.closeDetail();

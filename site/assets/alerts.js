@@ -7,6 +7,8 @@
   var TABS = [
     { k: "all", label: L("كل التنبيهات", "All alerts"), c: "var(--brass)", test: function (it) { return it.kev || it.severity === "critical" || it.severity === "high"; },
       explain: L("كل ثغرة ثبت استغلالها، أو درجتها 7 فأكثر.", "Every known-exploited vulnerability, or any scored 7 or higher.") },
+    { k: "risk", label: L("خطر حرج أو عالٍ (70+)", "Critical or high risk (70+)"), c: "var(--s-high)", test: function (it) { return it.risk != null && it.risk >= 70; },
+      explain: L("درجة الخطر 70 من 100 فأكثر: أولوية تصرف يحسبها الرادار من CVSS وثبوت الاستغلال ومعلومات الاستغلال المنشورة وعمر الثغرة وتوفر الإصلاح.", "Risk score 70 or more out of 100: a priority the radar computes from CVSS, confirmed exploitation, public exploit information, age and patch availability.") },
     { k: "kev", label: L("ثبت استغلالها", "Known exploited"), c: "var(--s-critical)", test: function (it) { return it.kev; },
       explain: L("أدرجتها وكالة CISA الأمريكية في قائمة الثغرات التي ثبت أن المهاجمين استغلوها فعلاً. أياً كانت درجتها، هذه أولوية التحديث الأولى.", "Listed by the US agency CISA as vulnerabilities attackers have actually exploited. Whatever their score, these are the first to patch.") },
     { k: "critical", label: L("حرجة (CVSS 9 فأكثر)", "Critical (CVSS 9+)"), c: "var(--s-critical)", test: function (it) { return it.severity === "critical"; },
@@ -19,7 +21,7 @@
   function readHash() {
     var p = R.hashParams();
     st.tab = TABS.some(function (t) { return t.k === p.get("tab"); }) ? p.get("tab") : "all";
-    st.sort = p.get("sort") === "imp" ? "imp" : "new";
+    st.sort = ({ imp: 1, risk: 1 })[p.get("sort")] ? p.get("sort") : "new";
   }
   function writeHash() {
     var p = new URLSearchParams();
@@ -28,6 +30,11 @@
     var v = R.hashParams().get("v"); if (v) p.set("v", v);
     R.setHash(p);
   }
+  function cmp() {
+    return st.sort === "risk" ? function (a, b) { return R.riskRank(b) - R.riskRank(a) || R.rank(b) - R.rank(a) || b.t - a.t; }
+      : st.sort === "imp" ? function (a, b) { return R.rank(b) - R.rank(a) || b.t - a.t; } : function (a, b) { return b.t - a.t; };
+  }
+  function sortName() { return st.sort === "risk" ? L("درجة الخطر", "risk score") : st.sort === "imp" ? L("الخطورة", "severity") : L("التاريخ", "date"); }
   function tabOf(k) { return TABS.filter(function (t) { return t.k === k; })[0]; }
 
   function renderTabs() {
@@ -61,6 +68,7 @@
     cell("c-sys", L("المنتج", "Product"), el("bdi", it.system && it.system !== R.UNSPEC ? null : "muted", R.sysName(it.system)));
     cell("c-score", "CVSS", it.score != null ? Number(it.score).toFixed(1) : "—");
     cell("c-sev", L("الخطورة", "Severity"), el("span", "pill", R.SEV[sv])).firstChild.style.setProperty("--c", "var(--s-" + sv + ")");
+    cell("c-risk", L("درجة الخطر", "Risk"), R.riskBadge(it));
     cell("c-kev", L("الاستغلال", "Exploitation"), it.kev ? el("span", "pill kev", L("ثبت استغلالها", "Known exploited")) : el("span", "muted", L("لا دليل منشور", "No published evidence")));
     cell("c-src", L("المصدر", "Source"), el("bdi", null, R.srcName(it.source)));
     var d = el("time", null, R.fmtDate(it.date) || "—"); if (it.t) d.dateTime = new Date(it.t).toISOString();
@@ -72,12 +80,10 @@
 
   function renderRows() {
     var t = tabOf(st.tab);
-    var list = all.filter(t.test).sort(st.sort === "imp"
-      ? function (a, b) { return R.rank(b) - R.rank(a) || b.t - a.t; }
-      : function (a, b) { return b.t - a.t; });
+    var list = all.filter(t.test).sort(cmp());
     var body = $("rows"), state = $("state"); body.textContent = ""; state.textContent = "";
-    $("cap").textContent = R.en ? t.label + ", " + list.length + " vulnerabilities, sorted by " + (st.sort === "imp" ? "severity" : "date")
-      : t.label + "، " + nf.format(list.length) + " ثغرة، مرتبة حسب " + (st.sort === "imp" ? "الخطورة" : "التاريخ");
+    $("cap").textContent = R.en ? t.label + ", " + list.length + " vulnerabilities, sorted by " + sortName()
+      : t.label + "، " + nf.format(list.length) + " ثغرة، مرتبة حسب " + sortName();
     if (!list.length) {
       var e = el("div", "empty"); e.appendChild(el("b", null, L("لا توجد ثغرات في هذا التصنيف الآن. ", "No vulnerabilities in this category right now. ")));
       e.appendChild(document.createTextNode(L("الرادار يتحدث كل ساعة.", "The radar updates hourly.")));
@@ -135,10 +141,9 @@
   document.querySelectorAll(".sort button").forEach(function (b) { b.onclick = function () { st.sort = b.dataset.sort; update(); }; });
   var genAt = null;
   $("export").onclick = function () {
-    var t = tabOf(st.tab), list = all.filter(t.test).sort(st.sort === "imp"
-      ? function (a, b) { return R.rank(b) - R.rank(a) || b.t - a.t; } : function (a, b) { return b.t - a.t; });
+    var t = tabOf(st.tab), list = all.filter(t.test).sort(cmp());
     R.printReport(list, { genAt: genAt, title: L("تقرير التنبيهات الأمنية", "Security alerts report"),
-      scope: t.label + R.comma + (st.sort === "imp" ? L("مرتبة حسب الخطورة", "sorted by severity") : L("الأحدث أولاً", "newest first")) });
+      scope: t.label + R.comma + (st.sort === "new" ? L("الأحدث أولاً", "newest first") : L("مرتبة حسب ", "sorted by ") + sortName()) });
   };
   window.addEventListener("hashchange", function () { if (!all.length) return; if (!R.openFromHash(byId)) R.closeDetail(); readHash(); update(); });
 

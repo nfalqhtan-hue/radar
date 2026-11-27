@@ -13,8 +13,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/app.css?v=p9">
-<link rel="stylesheet" href="assets/about.css?v=p9">
+<link rel="stylesheet" href="assets/app.css?v=r1">
+<link rel="stylesheet" href="assets/about.css?v=r1">
 </head>
 <body>
 <a class="skip" href="#main" data-en="Skip to the content">انتقل إلى المحتوى</a>
@@ -95,12 +95,31 @@
       <table class="ab-table">
         <thead><tr><th scope="col" data-en="Source">المصدر</th><th scope="col" data-en="What we take from it">ماذا نأخذ منه</th><th scope="col" data-en="How">الطريقة</th></tr></thead>
         <tbody>
-          <tr><th scope="row"><bdi>NVD</bdi><small data-en="US National Vulnerability Database (NIST)">قاعدة الثغرات الوطنية الأمريكية (NIST)</small></th><td data-en="Every new CVE: description, CVSS score and vector, publish and last-modified dates. Stored CVEs are re-checked for score changes.">كل ثغرة CVE جديدة: الوصف، ودرجة CVSS ومتجهها، وتاريخا النشر وآخر تعديل. والثغرات المخزنة يُعاد فحصها لرصد تغير الدرجة.</td><td>REST API 2.0</td></tr>
+          <tr><th scope="row"><bdi>NVD</bdi><small data-en="US National Vulnerability Database (NIST)">قاعدة الثغرات الوطنية الأمريكية (NIST)</small></th><td data-en="Every new CVE: description, CVSS score and vector, publish and last-modified dates, weakness type (CWE) and reference links tagged Exploit, Patch or Vendor Advisory. Stored CVEs are re-checked for score changes and new tags.">كل ثغرة CVE جديدة: الوصف، ودرجة CVSS ومتجهها، وتاريخا النشر وآخر تعديل، ونوع الضعف (CWE)، والروابط الموسومة «Exploit» أو «Patch» أو «Vendor Advisory». والثغرات المخزنة يُعاد فحصها لرصد تغير الدرجة والوسوم الجديدة.</td><td>REST API 2.0</td></tr>
           <tr><th scope="row"><bdi>CISA KEV</bdi><small data-en="US Cybersecurity and Infrastructure Security Agency">وكالة الأمن السيبراني وأمن البنية التحتية الأمريكية</small></th><td data-en="Which vulnerabilities attackers have actually exploited, when they were added, the required action and ransomware use.">الثغرات التي ثبت أن المهاجمين استغلوها، وتاريخ إدراجها، والإجراء المطلوب، واستخدامها في حملات الفدية.</td><td>JSON</td></tr>
           <tr><th scope="row"><bdi>RSS</bdi><small data-en="Tech and security news">أخبار التقنية والأمن</small></th><td><bdi data-en="The Hacker News, BleepingComputer, Ars Technica, The Verge, TechCrunch">The Hacker News، BleepingComputer، Ars Technica، The Verge، TechCrunch</bdi></td><td>RSS / Atom</td></tr>
         </tbody>
       </table>
     </div>
+  </section>
+
+  <section id="risk" class="ab-risk" aria-labelledby="h-risk">
+    <h2 id="h-risk" data-en="How the risk score is computed">كيف تُحسب درجة الخطر</h2>
+    <p class="ab-note" data-en="The risk score (0 to 100) ranks which vulnerabilities need action first. It is separate from CVSS severity: severity says how bad a flaw could be, risk adds whether it is being exploited, whether exploit details are public, how exposed it is and whether a fix exists. Every score comes from the data shown on the vulnerability page and can be recomputed by hand.">درجة الخطر (من 0 إلى 100) ترتّب الثغرات حسب أولوية التصرف. وهي غير خطورة CVSS: الخطورة تقول كم قد تكون الثغرة سيئة، ودرجة الخطر تضيف إليها هل تُستغل فعلاً، وهل تفاصيل استغلالها منشورة، ومدى تعرّضها، وهل يوجد إصلاح. كل درجة محسوبة من البيانات الظاهرة في صفحة الثغرة، ويمكن إعادة حسابها يدوياً.</p>
+    <div class="ab-table-wrap">
+      <table class="ab-table">
+        <thead><tr><th scope="col" data-en="Factor">العامل</th><th scope="col" data-en="Weight">الوزن</th><th scope="col" data-en="Value (0 to 1)">القيمة (من 0 إلى 1)</th></tr></thead>
+        <tbody>
+          <tr><th scope="row" data-en="CVSS score">درجة CVSS</th><td>35%</td><td data-en="The NVD score divided by 10.">درجة NVD مقسومة على 10.</td></tr>
+          <tr><th scope="row" data-en="Confirmed exploitation">الاستغلال المؤكد</th><td>35%</td><td data-en="1 if listed in CISA's Known Exploited Vulnerabilities catalog, otherwise 0. This is the only source we accept as proof of exploitation.">1 إن كانت مدرجة في قائمة CISA للثغرات المستغلة، وإلا 0. هذا المصدر الوحيد الذي نقبله دليلاً على الاستغلال.</td></tr>
+          <tr><th scope="row" data-en="Public exploit information">معلومات استغلال منشورة</th><td>15%</td><td data-en="1 if NVD tags a reference as “Exploit”, or the reporting organisation's description says the exploit is public. Otherwise unknown, not 0: no tag does not mean no exploit.">1 إن وسمت NVD رابطاً بـ«Exploit»، أو ذكر وصف الجهة المبلّغة أن الاستغلال منشور. وإلا فغير معروف، لا صفر: غياب الوسم لا يعني غياب الاستغلال.</td></tr>
+          <tr><th scope="row" data-en="Age and exposure">العمر ونطاق التعرض</th><td>10%</td><td data-en="Average of recency (7 days or less 1, 30 days 0.8, 90 days 0.6, older 0.4) and attack surface from the CVSS vector (over the network with no privileges or user action 1, other network 0.7, adjacent 0.5, local 0.3, physical 0.1).">متوسط الحداثة (7 أيام فأقل 1، و30 يوماً 0.8، و90 يوماً 0.6، وأقدم 0.4) ونطاق الهجوم من متجه CVSS (عبر الشبكة بلا صلاحيات ولا تفاعل 1، وشبكة بغير ذلك 0.7، وشبكة مجاورة 0.5، ومحلي 0.3، ومادي 0.1).</td></tr>
+          <tr><th scope="row" data-en="Official fix">الإصلاح الرسمي</th><td>5%</td><td data-en="0 if NVD tags a reference as “Patch” (a fix exists, which lowers priority). Otherwise unknown: we cannot prove no fix exists.">0 إن وسمت NVD رابطاً بـ«Patch» (يوجد إصلاح، فتنخفض الأولوية). وإلا فغير معروف: لا نستطيع إثبات عدم وجود إصلاح.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="ab-note ab-formula" data-en="Score = 100 × (sum of weight × value for the known factors) ÷ (sum of the weights of the known factors). Unknown factors are left out of both sums, so missing data counts neither for nor against a vulnerability. Levels: 90 to 100 critical, 70 to 89 high, 40 to 69 medium, below 40 low. With no CVSS score and no CISA listing we show “Not enough data” instead of a number.">الدرجة = 100 × (مجموع الوزن × القيمة للعوامل المعروفة) ÷ (مجموع أوزان العوامل المعروفة). العوامل غير المعروفة تُستبعد من المجموعين، فلا يُحسب نقص البيانات ضد الثغرة ولا لها. المستويات: من 90 إلى 100 حرج، ومن 70 إلى 89 عالٍ، ومن 40 إلى 69 متوسط، وأقل من 40 منخفض. وإن لم تكن للثغرة درجة CVSS ولا إدراج في قائمة CISA نعرض «بيانات غير كافية» بدل الرقم.</p>
+    <p class="ab-note" data-en="What we found when we checked these weights against our data (27 November 2026, 1,190 vulnerabilities): only vulnerabilities confirmed as exploited reach high or critical risk, so a CVSS 9.8 that nobody is known to exploit lands at medium. That matches CISA's advice to patch exploited flaws first. Public exploit information was available for 52 vulnerabilities, a fix link for 4: most new CVEs have not been analysed by NVD yet.">ما وجدناه حين طبّقنا هذه الأوزان على بياناتنا (27 نوفمبر 2026، 1,190 ثغرة): لا يصل إلى خطر عالٍ أو حرج إلا ما ثبت استغلاله، فثغرة درجتها 9.8 بلا استغلال معروف تقع في «متوسط». وهذا يوافق توصية CISA بإصلاح المستغل أولاً. معلومات الاستغلال المنشورة توفرت لـ52 ثغرة، ورابط الإصلاح لـ4 فقط، لأن أغلب الثغرات الجديدة لم تحللها NVD بعد.</p>
   </section>
 
   <section aria-labelledby="h-tech">
@@ -125,7 +144,7 @@
       <div><dt data-en="CVSS matches NVD">مطابقة CVSS مع NVD</dt><dd><span class="num">100%</span><small data-en="8 of 8">8 من 8</small></dd></div>
       <div><dt data-en="Known critical alerts delivered">تنبيه الثغرات الحرجة المعروفة</dt><dd><span class="num">3/3</span><small data-en="No duplicates">دون تكرار</small></dd></div>
       <div><dt data-en="Correct published summaries">ملخصات منشورة سليمة</dt><dd><span class="num">65%</span><small data-en="11 of 17; the weakest part, see below">11 من 17، وهو أضعف جزء، انظر أدناه</small></dd></div>
-      <div><dt data-en="Automated tests">اختبارات آلية</dt><dd><span class="num">77</span><small data-en="Run without internet on every change">تعمل دون إنترنت مع كل تعديل</small></dd></div>
+      <div><dt data-en="Automated tests">اختبارات آلية</dt><dd><span class="num">89</span><small data-en="Run without internet on every change">تعمل دون إنترنت مع كل تعديل</small></dd></div>
     </dl>
   </section>
 
@@ -164,7 +183,7 @@
   </footer>
 </div>
 
-<script src="assets/core.js?v=p9"></script>
-<script src="assets/about.js?v=p9"></script>
+<script src="assets/core.js?v=r1"></script>
+<script src="assets/about.js?v=r1"></script>
 </body>
 </html>

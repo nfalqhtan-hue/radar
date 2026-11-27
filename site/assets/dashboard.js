@@ -52,6 +52,17 @@
     bars("sev", R.SEV_ORDER.map(function (s) {
       return [R.SEV[s], num(b[s]), { color: "var(--s-" + s + ")", href: "./#type=vul&sev=" + s }];
     }));
+    // [CTI] risk-level distribution over the whole database (older stats.json files have none)
+    var rk = S.vulns.by_risk;
+    $("risk").closest("section").querySelectorAll("#risk, #risk + .s-note").forEach(function (n) { n.hidden = !rk; });
+    if (!rk) return;
+    bars("risk", R.RISK_ORDER.map(function (k) {
+      return [R.RISK[k], num(rk[k]), { color: "var(--s-" + k + ")", href: "./#type=vul&r=" + k }];
+    }));
+    var hi = num(rk.critical) + num(rk.high);
+    $("risk-note").textContent = R.en
+      ? hi + " vulnerabilities score 70 or more. " + num(S.vulns.public_exploit) + " have public exploit information (NVD tag or the reporter's description)."
+      : nf.format(hi) + " ثغرة درجة خطرها 70 فأكثر، و" + nf.format(num(S.vulns.public_exploit)) + " لها معلومات استغلال منشورة (وسم في NVD أو وصف الجهة المبلّغة).";
   }
 
   // ---------- الرسم الزمني
