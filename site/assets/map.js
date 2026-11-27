@@ -127,7 +127,7 @@
     var n = M.incidents.filter(passes).length, un = M.unlocated.filter(passes);
     $("map-note").textContent = R.en
       ? n + " located " + (n === 1 ? "incident" : "incidents") + " and " + un.length + " unlocated in this period. Location is never inferred: it comes from the article's own words, quoted under each incident."
-      : nf.format(n) + " حادثة بموقع و" + nf.format(un.length) + " بلا موقع في هذه الفترة. الموقع لا يُستنتج أبداً: مصدره كلمات الخبر نفسه، ومقتبسة تحت كل حادثة.";
+      : R.count(n, "حادثة واحدة", "حادثتان", "حوادث", "حادثة") + " بموقع، و" + R.count(un.length, "واحدة", "اثنتان", "حوادث", "حادثة") + " بلا موقع في هذه الفترة. الموقع لا يُستنتج أبداً: مصدره كلمات الخبر نفسه، ومقتبسة تحت كل حادثة.";
     var ul = $("unloc"); ul.textContent = "";
     un.slice(0, 60).forEach(function (x) { ul.appendChild(itemLi(x, null)); });
     if (!un.length) ul.appendChild(el("li", "m-note", L("لا شيء في هذه الفترة.", "Nothing in this period.")));
