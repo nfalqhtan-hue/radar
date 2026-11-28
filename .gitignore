@@ -11,3 +11,5 @@ update_site.log
 backup_phase3/
 _work/
 geo_src/
+x_post.log
+x_post_run.log
