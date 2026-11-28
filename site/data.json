@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-28T08:07:54+00:00",
+ "generated_at": "2026-11-28T09:12:47+00:00",
  "risk_model": {
   "weights": {
    "cvss": 35,
@@ -27,6 +27,21 @@
   ]
  },
  "items": [
+  {
+   "id": "ed56aac972a34714",
+   "type": "gen",
+   "title": "pCloud Password Manager Hit by Cyber Attack Involving Email Address Exposure and Login Attempts",
+   "summary": "أكدت شركة pCloud أنها تعرضت لعملية هجوم سيبراني أدت إلى تسريب عناوين بريد إلكتروني لمستخدمي pCloud Pass ومحاولة تسجيل الدخول من أجهزة غير معروفة.",
+   "severity": null,
+   "score": null,
+   "kev": false,
+   "system": "",
+   "source": "feeds.feedburner.com",
+   "link": "https://thehackernews.com/2026/11/pcloud-password-manager-hit-by-cyber.html",
+   "date": "2026-11-28T08:08:11+00:00",
+   "sum_src": "llm",
+   "advice": null
+  },
   {
    "id": "CVE-2026-112232",
    "type": "vul",
@@ -7097,21 +7112,6 @@
    "link": "https://www.bleepingcomputer.com/news/security/new-shirudo-tool-uses-ai-to-shield-unpatched-linux-systems-from-exploits/",
    "date": "2026-11-24T13:34:23+00:00",
    "sum_src": "failed",
-   "advice": null
-  },
-  {
-   "id": "db22ce6bdf496569",
-   "type": "sec",
-   "title": "VMware vCenter Hit by Another Critical 9.8-Rated Auth Bypass Flaw After Zero-Day Exploitation",
-   "summary": "Broadcom أصدرت تحديثات لمعالجة 23 ثغرة تؤثر على منتجات VMware بما فيها خدمة الاتصالات \"vmdir\"، ومن بينها ثغرة حرجة تُعرف بـ CVE-2026-123903 وتُقيّم بـ 9.8 من 10.0.",
-   "severity": null,
-   "score": null,
-   "kev": false,
-   "system": "",
-   "source": "feeds.feedburner.com",
-   "link": "https://thehackernews.com/2026/11/vmware-vcenter-hit-by-another-critical.html",
-   "date": "2026-11-24T13:28:26+00:00",
-   "sum_src": "llm",
    "advice": null
   },
   {
